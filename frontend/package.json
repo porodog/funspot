@@ -14,10 +14,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "_start": "env-cmd -f .env.local react-scripts start",
-    "start": "env-cmd -f .env.production react-scripts start",
-    "_build": "env-cmd -f .env.local react-scripts build",
-    "build": "env-cmd -f .env.production react-scripts build",
+    "start": "env-cmd -f .env.local react-scripts start",
+    "_start": "env-cmd -f .env.production react-scripts start",
+    "build": "env-cmd -f .env.local react-scripts build",
+    "_build": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
