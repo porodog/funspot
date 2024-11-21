@@ -1,12 +1,16 @@
 package com.spot.fun.config;
 
+import com.spot.fun.config.jwt.JwtTokenFilter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -15,24 +19,23 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@RequiredArgsConstructor
+public class WebSecurityConfig {
+    private final JwtTokenFilter jwtTokenFilter;
+
+    @Value("${security.check.path.none}")
+    private String[] PERMITTED_PATHS;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        final String[] PERMITTED_PATHS = {
-                "/",
-                "/login",
-                "/signup",
-                "/user",
-                "/api/**"
-        };
 
         return http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(PERMITTED_PATHS).permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated())
+                        .requestMatchers(PERMITTED_PATHS).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .formLogin((auth) -> auth
                         .loginPage("/login")
                         .loginProcessingUrl("/loginProcess")
@@ -43,6 +46,9 @@ public class SecurityConfig {
                         .configurationSource(corsConfigurationSource())
                 )
                 .csrf((auth) -> auth.disable())
+                .sessionManagement((auth) -> auth // 세션방식 -> jwt 사용
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(this.jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -50,7 +56,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든출처를 허용
+//        configuration.addAllowedOrigin("http://localhost:3000"); // 허용 origin
+//        configuration.addAllowedOrigin(""); // 추가 origin
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 orgin 접근허용
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE")); // 클러라이언트 요청허용 범위설정
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // HTTP헤더 설정(인증,인가,컨텐츠타입 등 클라이언트에서 서버로 요청할 때 사용가능 범위설정)
         configuration.setAllowCredentials(true); // 쿠키,인증정보 등 요청허용 설정
@@ -62,7 +70,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
