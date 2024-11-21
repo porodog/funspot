@@ -14,6 +14,6 @@ public class SampleController {
 
     @GetMapping("/hello")
     public Map<String, Object> hello() {
-        return Map.of("message", "hello");
+        return Map.of("message", "hello@@");
     }
 }

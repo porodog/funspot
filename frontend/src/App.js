@@ -26,7 +26,7 @@ function App() {
                 Edit <code>src/App.js</code> and save to reload.
             </p>
             <p>
-                A message from Spring Boot : <code>{message}</code>
+                A message from Spring Boot@@ : <code>{message}</code>
             </p>
             <a
                 className="App-link"
