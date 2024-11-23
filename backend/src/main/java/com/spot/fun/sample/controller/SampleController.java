@@ -2,19 +2,22 @@ package com.spot.fun.sample.controller;
 
 import com.spot.fun.config.jwt.JwtTokenProvider;
 import com.spot.fun.sample.dto.AuthTokenDTO;
+import com.spot.fun.sample.dto.UserDTO;
 import com.spot.fun.sample.dto.UserRole;
 import com.spot.fun.sample.entity.AuthToken;
 import com.spot.fun.sample.entity.User;
 import com.spot.fun.sample.repository.TokenRepository;
 import com.spot.fun.sample.repository.UserRepository;
+import com.spot.fun.sample.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 
 @Log4j2
@@ -27,6 +30,7 @@ public class SampleController {
     private final TokenRepository tokenRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final LoginService loginService;
 
 
     @GetMapping("/hello")
@@ -45,14 +49,22 @@ public class SampleController {
                         .build()
         );
 
-        String refreshToken = jwtTokenProvider.generateToken(testUser, Duration.ofHours(2));
+        String accessToken = jwtTokenProvider.generateAccessToken(testUser);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(testUser);
         tokenRepository.save(new AuthToken(testUser.getIdx(), refreshToken));
 
         AuthTokenDTO authTokenDTO = new AuthTokenDTO();
         authTokenDTO.setRefreshToken(refreshToken);
-        System.out.println("\n\nauthTokenDTO (accessToken) : " + authTokenDTO.toString());
 
-
-        return Map.of("message", "Hello World!");
+        Map<String, Object> map = new HashMap<>();
+        map.put("access_token", accessToken);
+        map.put("refresh_token", refreshToken);
+        return map;
     }
+
+    @PostMapping("/login")
+    public AuthTokenDTO login(UserDTO userDTO) {
+        return loginService.doLogin(userDTO);
+    }
+
 }

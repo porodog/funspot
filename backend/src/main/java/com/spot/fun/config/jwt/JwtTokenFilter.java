@@ -27,10 +27,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestURI = request.getRequestURI();
 
         // PERMITTED_PATHS에 포함된 경로는 JWT 토큰 검사 건너뛰기
-        if (isPermittedPath(requestURI)) {
+        if (isPermittedPath(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }

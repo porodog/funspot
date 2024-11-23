@@ -25,7 +25,15 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final CustomUserDetailsService customUserDetailsService;
 
-    public String generateToken(User user, Duration expiredAt) {
+    public String generateAccessToken(User user) {
+        return generateToken(user, Duration.ofMinutes(5));
+    }
+
+    public String generateRefreshToken(User user) {
+        return generateToken(user, Duration.ofHours(2));
+    }
+
+    private String generateToken(User user, Duration expiredAt) {
         Date now = new Date();
         return makeToken(user, new Date(now.getTime() + expiredAt.toMillis()));
     }
