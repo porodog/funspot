@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,12 +26,15 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Value("${jwt.refresh.token.hour}")
+    private int REFRESH_TOKEN_HOUR;
+
     public String generateAccessToken(User user) {
         return generateToken(user, Duration.ofMinutes(5));
     }
 
     public String generateRefreshToken(User user) {
-        return generateToken(user, Duration.ofHours(2));
+        return generateToken(user, Duration.ofHours(REFRESH_TOKEN_HOUR));
     }
 
     private String generateToken(User user, Duration expiredAt) {

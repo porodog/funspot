@@ -38,12 +38,6 @@ public class WebSecurityConfig {
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )
-//                .formLogin((auth) -> auth // jwt 사용 시 비활성화
-//                        .loginPage("/login")
-//                        .loginProcessingUrl("/loginProcess")
-//                        .defaultSuccessUrl("/")
-//                        .permitAll()
-//                )
                 .cors((auth) -> auth
                         .configurationSource(corsConfigurationSource())
                 )
@@ -60,9 +54,8 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-//        configuration.addAllowedOrigin("http://localhost:3000"); // 허용 origin 지정
+        configuration.addAllowedOrigin("http://localhost:3000"); // 허용 origin 지정
 //        configuration.addAllowedOrigin(""); // 추가 origin
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 origin 접근허용
 
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE")); // 클러라이언트 요청허용 범위설정
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type")); // HTTP헤더 설정(인증,인가,컨텐츠타입 등 클라이언트에서 서버로 요청할 때 사용가능 범위설정)
