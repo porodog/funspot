@@ -1,4 +1,4 @@
-import BasicLayout from "../../common/layout/BasicLayout";
+import BasicLayout from "../../../common/layout/BasicLayout";
 import HelloComponent from "../component/HelloComponent";
 
 const MainPage = () => {
