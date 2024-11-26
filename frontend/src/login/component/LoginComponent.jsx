@@ -14,6 +14,7 @@ const LoginComponent = () => {
         postLoginApi(formData, (result) => {
             if(result.status !== 200) {
                 window.alert("login failed");
+                localStorage.removeItem("access_token");
                 return;
             }
 

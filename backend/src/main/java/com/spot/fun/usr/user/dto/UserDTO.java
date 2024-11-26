@@ -1,6 +1,6 @@
-package com.spot.fun.sample.dto;
+package com.spot.fun.usr.user.dto;
 
-import com.spot.fun.sample.entity.User;
+import com.spot.fun.usr.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

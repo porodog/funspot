@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
 export const getHelloApi = async(callback) => {
     axios
-        .get(`${API_BASE_URL}/api/sample/hello`)
+        .get(`${API_BASE_URL}/api/usr/main/hello`)
         .then(res => {
             return callback({status: res.status, data: res.data});
         })

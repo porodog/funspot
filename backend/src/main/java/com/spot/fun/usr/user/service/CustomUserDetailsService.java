@@ -1,6 +1,6 @@
-package com.spot.fun.sample.service;
+package com.spot.fun.usr.user.service;
 
-import com.spot.fun.sample.repository.UserRepository;
+import com.spot.fun.usr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

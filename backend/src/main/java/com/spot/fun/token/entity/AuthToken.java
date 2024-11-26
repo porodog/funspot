@@ -1,4 +1,4 @@
-package com.spot.fun.sample.entity;
+package com.spot.fun.token.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

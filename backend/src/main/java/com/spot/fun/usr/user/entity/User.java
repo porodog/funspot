@@ -1,7 +1,7 @@
-package com.spot.fun.sample.entity;
+package com.spot.fun.usr.user.entity;
 
-import com.spot.fun.sample.dto.UserDTO;
-import com.spot.fun.sample.dto.UserRole;
+import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.dto.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

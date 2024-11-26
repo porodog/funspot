@@ -1,6 +1,6 @@
-package com.spot.fun.sample.dto;
+package com.spot.fun.token.dto;
 
-import com.spot.fun.sample.entity.AuthToken;
+import com.spot.fun.token.entity.AuthToken;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

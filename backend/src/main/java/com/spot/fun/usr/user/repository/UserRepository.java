@@ -1,6 +1,6 @@
-package com.spot.fun.sample.repository;
+package com.spot.fun.usr.user.repository;
 
-import com.spot.fun.sample.entity.User;
+import com.spot.fun.usr.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

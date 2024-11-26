@@ -2,16 +2,11 @@ import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
-export const getTestApi = async(param) => {
-    const response = axios.get(`${API_BASE_URL}/api/sample/hello`)
-    return response.data;
-}
-
 export const postRefreshApi = async() => {
     const config = {
         withCredentials: true,
     };
-    const response = axios.post(`${API_BASE_URL}/api/sample/refresh`, null, config);
+    const response = axios.post(`${API_BASE_URL}/api/usr/token/refresh`, null, config);
     return response.data;
 }
 

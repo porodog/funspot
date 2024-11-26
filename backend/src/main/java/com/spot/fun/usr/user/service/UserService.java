@@ -1,6 +1,6 @@
-package com.spot.fun.sample.service;
+package com.spot.fun.usr.user.service;
 
-import com.spot.fun.sample.dto.UserDTO;
+import com.spot.fun.usr.user.dto.UserDTO;
 
 public interface UserService {
     UserDTO findByIdx(Long idx);

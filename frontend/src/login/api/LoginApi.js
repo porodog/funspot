@@ -8,7 +8,7 @@ export const postLoginApi = async(param, callback) => {
     };
 
     axios
-        .post(`${API_BASE_URL}/api/sample/login`, param, config)
+        .post(`${API_BASE_URL}/api/usr/login/login`, param, config)
         .then(res => {
             return callback({status: res.status, data: res.data});
         })

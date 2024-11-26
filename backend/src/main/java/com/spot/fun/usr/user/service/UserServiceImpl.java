@@ -1,8 +1,7 @@
-package com.spot.fun.sample.service.impl;
+package com.spot.fun.usr.user.service;
 
-import com.spot.fun.sample.dto.UserDTO;
-import com.spot.fun.sample.repository.UserRepository;
-import com.spot.fun.sample.service.UserService;
+import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.spot.fun.sample.dto;
+package com.spot.fun.usr.user.dto;
 
 public enum UserRole {
     ROLE_USER("USER"),

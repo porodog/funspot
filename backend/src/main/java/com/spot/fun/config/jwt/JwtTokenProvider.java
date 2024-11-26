@@ -1,7 +1,7 @@
 package com.spot.fun.config.jwt;
 
-import com.spot.fun.sample.entity.User;
-import com.spot.fun.sample.service.CustomUserDetailsService;
+import com.spot.fun.usr.user.entity.User;
+import com.spot.fun.usr.user.service.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
