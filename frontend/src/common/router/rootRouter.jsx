@@ -4,8 +4,9 @@ const { createBrowserRouter } = require("react-router-dom");
 
 const Loading = <div>Loading....</div>;
 
-const MainPage = lazy(() => import("../../main/page/MainPage"));
-const LoginPage = lazy(() => import("../../login/page/LoginPage"));
+const MainPage = lazy(() => import("../../usr/main/page/MainPage"));
+const LoginPage = lazy(() => import("../../usr/login/page/LoginPage"));
+const MyPage = lazy(() => import("../../usr/mypage/page/MyPage"));
 
 
 const rootRouter = createBrowserRouter(
@@ -26,6 +27,15 @@ const rootRouter = createBrowserRouter(
                 </Suspense>
             ),
         },
+        {
+            path: "mypage",
+            element: (
+                <Suspense fallback={Loading}>
+                    <MyPage />
+                </Suspense>
+            ),
+        },
+
     ], {
         future: {
             v7_fetcherPersist: true,

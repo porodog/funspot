@@ -14,12 +14,15 @@ const Aside = () => {
                     <Link to={"/login"}>로그인</Link>
                 </li>
                 <li>
+                    <Link to={"/mypage"}>마이페이지</Link>
+                </li>
+                {/*<li>
                     <button type={"button"}
                             onClick={() => {
                                 localStorage.removeItem("access_token");
                                 navigate({pathname: "/"}, {replace: true});
                             }}>로그아웃</button>
-                </li>
+                </li>*/}
             </ul>
         </aside>
     );

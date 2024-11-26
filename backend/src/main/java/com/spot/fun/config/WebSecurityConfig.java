@@ -33,8 +33,8 @@ public class WebSecurityConfig {
 
         return http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/my/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )

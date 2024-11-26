@@ -7,14 +7,13 @@ export const postLoginApi = async(param, callback) => {
         withCredentials: true
     };
 
-    axios
-        .post(`${API_BASE_URL}/api/usr/login/login`, param, config)
-        .then(res => {
-            return callback({status: res.status, data: res.data});
-        })
-        .catch(err => {
-            console.log(err);
-            return callback({status: err.status, data: null});
-        });
+    await axios.post(`${API_BASE_URL}/api/usr/login/login`, param, config)
+                .then(res => {
+                    return callback({status: res.status, data: res.data});
+                })
+                .catch(err => {
+                    console.log(err);
+                    return callback({status: err.status, data: null});
+                });
 }
 
