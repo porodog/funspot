@@ -7,6 +7,7 @@ const Loading = <div>Loading....</div>;
 const MainPage = lazy(() => import("../../usr/main/page/MainPage"));
 const LoginPage = lazy(() => import("../../usr/login/page/LoginPage"));
 const MyPage = lazy(() => import("../../usr/mypage/page/MyPage"));
+const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 
 
 const rootRouter = createBrowserRouter(
@@ -35,6 +36,14 @@ const rootRouter = createBrowserRouter(
                 </Suspense>
             ),
         },
+     {
+                path: "Signup",
+                element:(
+                    <Suspense fallback={Loading}>
+                        <SignupPage/>
+                    </Suspense>
+                ),
+            },
 
     ], {
         future: {

@@ -30,14 +30,48 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String birthDate;
+
+    @Column(nullable = false, unique = true)
+    private String nickname;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false, unique = true)
+    private String phone;
+
+    @Column(nullable = false)
+    private String zonecode;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column
+    private String detaileAdd;
+
     @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole userRole = UserRole.ROLE_USER;
 
     @Builder
-    public User(String userId, String password, UserRole userRole) {
+    public User(String userId, String password, String name, String birthDate,
+                String nickname, String email, String phone, String zonecode,
+                String address, String detaileAdd, UserRole userRole) {
         this.userId = userId;
+        this.name = name;
         this.password = password;
+        this.birthDate = birthDate;
+        this.nickname = nickname;
+        this.email = email;
+        this.phone = phone;
+        this.zonecode = zonecode;
+        this.address = address;
+        this.detaileAdd = detaileAdd;
         this.userRole = userRole;
     }
 
