@@ -3,14 +3,14 @@ package com.spot.fun.usr.user.entity;
 import com.spot.fun.usr.user.dto.UserDTO;
 import com.spot.fun.usr.user.dto.UserRole;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -58,6 +58,14 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.ROLE_USER;
 
+    @CreationTimestamp
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
+
+    @UpdateTimestamp
+    @Column(name = "mod_date")
+    private LocalDateTime modDate;
+
     @Builder
     public User(Long idx, String userId, String password, String name, String birthDate,
                 String nickname, String email, String phone, String zonecode,
@@ -76,6 +84,10 @@ public class User implements UserDetails {
         this.userRole = userRole;
     }
 
+    public void updatePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //      return List.of(new SimpleGrantedAuthority("user"));
@@ -89,9 +101,11 @@ public class User implements UserDetails {
 
     public UserDTO toDTO() {
         return UserDTO.builder()
-                    .userId(this.userId)
-                    .password(this.password)
-                    .userRole(this.userRole)
-                    .build();
+                .userId(this.userId)
+                .password(this.password)
+                .userRole(this.userRole)
+                .build();
     }
+
+
 }
