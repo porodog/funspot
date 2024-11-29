@@ -21,6 +21,7 @@ public class UserFeedController {
 
   @GetMapping("")
   public FeedResponseDTO list(FeedRequestDTO feedRequestDTO) {
+    log.info("list page");
     return userFeedService.getList(feedRequestDTO);
   }
 
