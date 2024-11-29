@@ -8,8 +8,11 @@ import com.spot.fun.usr.feed.service.UserFeedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @Log4j2
 @RestController
@@ -21,8 +24,6 @@ public class UserFeedController {
 
   @GetMapping("")
   public FeedResponseDTO list(FeedRequestDTO feedRequestDTO) {
-    log.info("피드 브랜치 테스트입니다");
-    log.info("메인ㅂ ㅡ랜치 로그");
     return userFeedService.getList(feedRequestDTO);
   }
 
@@ -32,8 +33,12 @@ public class UserFeedController {
   }
 
   @PostMapping("")
-  public Long insert(FeedDTO feedDTO) {
-    return userFeedService.postInsert(feedDTO);
+  public ResponseEntity<?> insert(FeedDTO feedDTO) {
+    Long idx = userFeedService.postInsert(feedDTO);
+    if(Objects.isNull(idx)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    return ResponseEntity.status(HttpStatus.CREATED).body(idx);
   }
 
 

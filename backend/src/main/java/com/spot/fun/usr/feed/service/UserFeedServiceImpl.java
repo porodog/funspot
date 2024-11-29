@@ -125,7 +125,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     public Long postInsert(FeedDTO feedDTO) {
 //    String accessToken = JwtTokenUtil.getJwtToken();
 //    Long userIdx = jwtTokenProvider.getUserIdx(accessToken);
-        Long userIdx = 6L;
+        Long userIdx = 1L; // 테스트용 임시값 삭제예정
 
         List<FeedImage> feedImages = new ArrayList<>();
         List<MultipartFile> uploadFiles = feedDTO.getUploadFiles();
