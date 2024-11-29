@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { API_BASE_URL, getFeedListApi } from "../api/FeedApi";
 
-const ListComponent = () => {
+const ListComponent = ({ openDetailModal }) => {
   const [loading, setLoading] = useState(false);
   const [feedList, setFeedList] = useState([]);
   const [lastId, setLastId] = useState(0);
@@ -52,11 +52,11 @@ const ListComponent = () => {
     getList();
 
     window.addEventListener("scroll", botScroll);
-    window.addEventListener("resize", botScroll);
+    // window.addEventListener("resize", botScroll);
 
     return () => {
       window.removeEventListener("scroll", botScroll);
-      window.removeEventListener("resize", botScroll);
+      // window.removeEventListener("resize", botScroll);
     };
   }, []);
 
@@ -68,8 +68,6 @@ const ListComponent = () => {
     }
   }, [isBottom, getList]);
 
-  console.log("mount.." + lastId);
-
   return (
     <div>
       <h1>Feed List</h1>
@@ -78,7 +76,7 @@ const ListComponent = () => {
           feedList.map((feed) => (
             <ul
               key={`feed_${feed.idx}`}
-              style={{ style: "border 1px solid red;" }}
+              style={{ border: "2px solid #A96648" }}
             >
               <li>{feed.idx}</li>
               <li>{feed.content}</li>
@@ -90,7 +88,14 @@ const ListComponent = () => {
                       alt={image.originName}
                       className="m-auto rounded-md w-60"
                       src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
-                      style={{ width: "500px", height: "500px" }}
+                      style={{
+                        width: "500px",
+                        height: "500px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        openDetailModal(feed.idx);
+                      }}
                     />
                   ))
                 ) : (
