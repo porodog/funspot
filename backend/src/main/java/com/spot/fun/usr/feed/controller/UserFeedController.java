@@ -23,6 +23,7 @@ public class UserFeedController {
   public FeedResponseDTO list(FeedRequestDTO feedRequestDTO) {
     log.info("list page");
     log.info("이건 메인꺼임");
+    log.info("메인으로 던져주세요");
     return userFeedService.getList(feedRequestDTO);
   }
 
