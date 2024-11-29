@@ -22,6 +22,7 @@ public class UserFeedController {
   @GetMapping("")
   public FeedResponseDTO list(FeedRequestDTO feedRequestDTO) {
     log.info("list page");
+    log.info("이건 메인꺼임");
     return userFeedService.getList(feedRequestDTO);
   }
 
