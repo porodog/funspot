@@ -21,7 +21,7 @@ public class UserFeedController {
 
   @GetMapping("")
   public FeedResponseDTO list(FeedRequestDTO feedRequestDTO) {
-    log.info("이건 메인꺼임");
+    log.info("메인ㅂ ㅡ랜치 로그");
     return userFeedService.getList(feedRequestDTO);
   }
 
