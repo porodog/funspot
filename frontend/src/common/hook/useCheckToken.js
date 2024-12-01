@@ -16,7 +16,7 @@ const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 export const useCheckToken = () => {
 
   const postAccessTokenApi = async () => {
-    const accessToken = localStorage.getItem("access_token");
+    const accessToken = localStorage.getItem("access_token") || "";
     const config = {
       headers: { Authorization: `Bearer ${accessToken}` },
     };

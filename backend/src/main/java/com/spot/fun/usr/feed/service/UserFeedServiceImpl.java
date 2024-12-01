@@ -1,7 +1,5 @@
 package com.spot.fun.usr.feed.service;
 
-import com.spot.fun.config.jwt.JwtTokenProvider;
-import com.spot.fun.config.jwt.JwtTokenUtil;
 import com.spot.fun.file.FileUploadUtil;
 import com.spot.fun.usr.feed.dto.FeedDTO;
 import com.spot.fun.usr.feed.dto.FeedRequestDTO;
@@ -23,7 +21,6 @@ import com.spot.fun.usr.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,12 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Log4j2
 @Service
@@ -50,15 +44,11 @@ public class UserFeedServiceImpl implements UserFeedService {
 
     private final FileUploadUtil fileUploadUtil;
     private final UserFeedUtil userFeedUtil;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public FeedResponseDTO getList(FeedRequestDTO feedRequestDTO) {
         // 로그인
         Long userIdx = userFeedUtil.getUserIdx();
-
-        // 날짜포멧
-
 
         // 목록 조회
         Pageable pageable = PageRequest.of(0, feedRequestDTO.getPageSize(), Sort.by("idx").descending());
@@ -93,7 +83,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                                                                 .build()
                                                 ).toList()
                                 )
-                                .likedYn(userFeedUtil.isLikedYn(feedIdx, userIdx))
+                                .likedYn(userFeedUtil.isFeedLikedYn(feedIdx, userIdx))
                                 .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
                                 .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(feedIdx))
                                 .feedHashtags(
@@ -159,7 +149,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                                                 .build()
                                 ).toList()
                 )
-                .likedYn(userFeedUtil.isLikedYn(idx, userIdx))
+                .likedYn(userFeedUtil.isFeedLikedYn(idx, userIdx))
                 .likeCount(userFeedLikeRepository.countByFeedIdx(idx))
                 .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(idx))
                 .feedHashtags(
@@ -182,15 +172,13 @@ public class UserFeedServiceImpl implements UserFeedService {
                                                 .regDateStr(userFeedUtil.getDateFormat(comment.getRegDate()))
                                                 .build()
                                 ).toList()
-                )
-                .build();
+                ).build();
     }
 
     @Transactional
     @Override
     public Long postInsert(FeedDTO feedDTO) {
-//    String accessToken = JwtTokenUtil.getJwtToken();
-//    Long userIdx = jwtTokenProvider.getUserIdx(accessToken);
+//        Long userIdx = userFeedUtil.getUserIdx();
         Long userIdx = 6L; // 테스트용 임시값 삭제예정
 
         List<FeedImage> feedImages = new ArrayList<>();

@@ -1,67 +1,140 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
+import {getFeedListApi} from "../api/FeedApi";
 import ListComponent from "../component/ListComponent";
 import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
 import {useCheckToken} from "../../../common/hook/useCheckToken";
 
 const ListPage = () => {
-  const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [feedIdx, setFeedIdx] = useState(0);
 
-    // 로그인
+    // 로그인 상태
     const [isLogin, setIsLogin] = useState(false);
     const {checkToken} = useCheckToken();
     const checkLoginToken = async () => {
         const result = await checkToken();
-        console.log("isLogin >> "+result);
-        setIsLogin(isLogin);
+        //console.log("isLogin result >> "+result);
+        setIsLogin(result);
     };
 
-  // 등록 모달
-  const closeInsertModal = () => {
-    setIsInsertModalOpen(false);
-  };
+    // 모달
+    const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const closeInsertModal = () => {
+        setIsInsertModalOpen(false);
+    };
+    const openDetailModal = () => {
+        setIsDetailModalOpen(true);
+    };
+    const closeDetailModal = () => {
+        setIsDetailModalOpen(false);
+    };
 
-  // 상세 모달
-  const openDetailModal = (idx) => {
-    setFeedIdx(idx);
-    setIsDetailModalOpen(true);
-  };
+    // 스크롤 위치
+    const [isBottom, setIsBottom] = useState(false);
+    const handelScrollEvent = () => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const innerHeight = window.innerHeight;
+        const scrollHeight = document.documentElement.scrollHeight;
 
-  const closeDetailModal = () => {
-    setIsDetailModalOpen(false);
-  };
+        if (scrollTop + innerHeight >= scrollHeight - 1) {
+            setIsBottom(true);
+        } else {
+            setIsBottom(false);
+        }
+    };
 
-  // 모달 외 영역은 스크롤 비활성화
-  useEffect(() => {
-    if (isInsertModalOpen || isDetailModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
+    // 목록 조회
+    const [feedList, setFeedList] = useState([]);
+    const [hasNext, setHasNext] = useState(true);
+    const [lastId, setLastId] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const handleListEvent = () => {
+        if (!hasNext || loading) {
+            return;
+        }
+        setLoading(true);
+        getFeedListApi({lastId: lastId, pageSize: 1})
+            .then((data) => {
+                const {feedDTOS, hasNext} = data;
+                setFeedList((prevList) => [...prevList, ...feedDTOS]);
+                setHasNext(hasNext);
+                if (feedDTOS.length > 0) {
+                    setLastId(parseInt(feedDTOS[feedDTOS.length - 1].idx));
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+    // 상세조회
+    const [selectedFeed, setSelectedFeed] = useState({});
+    const handleSelectedFeed = (idx) => {
+        const feed = feedList.find((item) => item.idx===idx);
+        setSelectedFeed(feed);
+        openDetailModal();
     }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isInsertModalOpen, isDetailModalOpen]);
 
-  return (
-    <div id="feed-list-page" className="bg-amber-200">
-      피드 리스트 페이지
-      <button
-        type="button"
-        className="bg-blue-500 text-white"
-        onClick={() => {
-          setIsInsertModalOpen(true);
-        }}
-      >
-       !!!! 등록 버튼 !!!!
-      </button>
-      <ListComponent openDetailModal={openDetailModal} />
-      {isInsertModalOpen && <InsertModal closeInsertModal={closeInsertModal} />}
-      {isDetailModalOpen && <DetailModal feedIdx={feedIdx} closeDetailModal={closeDetailModal} />}
-    </div>
-  );
+    // 최초 마운트
+    useEffect(() => {
+        checkLoginToken();
+        handleListEvent();
+
+        window.addEventListener("scroll", handelScrollEvent);
+        // window.addEventListener("resize", handelScrollEvent);
+
+        return () => {
+            window.removeEventListener("scroll", handelScrollEvent);
+            // window.removeEventListener("resize", handelScrollEvent);
+        };
+    }, []);
+
+    // 모달상태에서 스크롤 비활성화
+    useEffect(() => {
+        if (isInsertModalOpen || isDetailModalOpen) {
+            document.body.style.overflow = "hidden";
+            checkLoginToken(); // 로그인 상태 확인
+        } else {
+            document.body.style.overflow = "auto";
+        }
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, [isInsertModalOpen, isDetailModalOpen]);
+
+    // 목록 조회
+    useEffect(() => {
+        if (isBottom && hasNext) {
+            checkLoginToken();
+            handleListEvent();
+        }
+    }, [isBottom, isLogin]);
+
+    return (
+        <div className="border border-amber-200 w-1/2">
+            피드 리스트 페이지
+            <button
+                type="button"
+                className="bg-blue-500 text-white border-2 border-black"
+                onClick={() => {
+                    setIsInsertModalOpen(true);
+                }}
+            >
+                !!!! 등록 버튼 (비로그인은 숨겨야함)!!!!
+            </button>
+            <ListComponent handleSelectedFeed={handleSelectedFeed}
+                           isLogin={isLogin}
+                           feedList={feedList}
+            />
+            {isInsertModalOpen && <InsertModal closeInsertModal={closeInsertModal} />}
+            {selectedFeed !== {} && isDetailModalOpen &&
+                <DetailModal feed={selectedFeed} closeDetailModal={closeDetailModal}
+            />}
+        </div>
+    );
 };
 
 export default ListPage;

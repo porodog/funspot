@@ -19,10 +19,20 @@ public class UserFeedUtil {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserFeedLikeRepository userFeedLikeRepository;
 
-    public boolean isLikedYn(Long feedIdx, Long userIdx) {
+    public boolean isFeedLikedYn(Long feedIdx, Long userIdx) {
         boolean likedYn = false;
         if (!Objects.isNull(userIdx)) {
             likedYn = userFeedLikeRepository.existsByFeedIdxAndUserIdx(feedIdx, userIdx);
+        }
+
+        return likedYn;
+    }
+
+    public boolean isFeedCommentLikedYn(Long commentIdx, Long userIdx) {
+        boolean likedYn = false;
+        if (!Objects.isNull(userIdx)) {
+            // 댓글 좋아요기능 사용여부 확인필요
+            //likedYn = userFeedLikeRepository.existsByFeedIdxAndUserIdx(commentIdx, userIdx);
         }
 
         return likedYn;

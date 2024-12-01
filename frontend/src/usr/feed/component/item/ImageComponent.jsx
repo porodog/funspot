@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {API_BASE_URL} from "../../api/FeedApi";
 
-const ImageComponent = ({feedImages, feedIdx, openDetailModal}) => {
+const ImageComponent = ({handleSelectedFeed, feedImages, feedIdx}) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     // 이미지 슬라이드
@@ -19,15 +19,11 @@ const ImageComponent = ({feedImages, feedIdx, openDetailModal}) => {
                 {/* 이미지 슬라이드 */}
                 <div
                     className={`w-full h-full flex transition-transform duration-500 
-                    ${(feedIdx && openDetailModal)?"cursor-pointer":""}`}
+                    ${handleSelectedFeed?"cursor-pointer":""}`}
                     style={{
                         transform: `translateX(-${(currentIndex * 100)}%)`, // 인덱스에 맞게 슬라이드 이동
                     }}
-                    onClick={() => {
-                        if (feedIdx && openDetailModal) {
-                            openDetailModal(feedIdx);
-                        }
-                    }}
+                    onClick={() => handleSelectedFeed && handleSelectedFeed(feedIdx)}
                 >
                     {feedImages.map((image) => (
                         <img

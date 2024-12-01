@@ -1,0 +1,9 @@
+package com.spot.fun.usr.feed.service.comment;
+
+import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
+
+import java.util.List;
+
+public interface UserFeedCommentService {
+    List<FeedCommentDTO> getCommentList(Long idx);
+}

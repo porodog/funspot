@@ -1,42 +1,27 @@
-import React, {useCallback, useEffect, useState} from "react";
-import { getFeedDetailApi } from "../api/FeedApi";
+import {useEffect, useState} from "react";
+import { getFeedCommentListApi } from "../api/FeedApi";
 import ImageComponent from "../component/item/ImageComponent";
 import ProfileComponent from "../component/item/ProfileComponent";
 import ContentComponent from "../component/item/ContentComponent";
 import ButtonComponent from "../component/item/ButtonComponent";
 import ListComponent from "../component/comment/ListComponent";
 import InputComponent from "../component/comment/InputComponent";
-import {useCheckToken} from "../../../common/hook/useCheckToken";
 
-const DetailModal = ({feedIdx, closeDetailModal }) => {
+const DetailModal = ({feed, closeDetailModal }) => {
 
-  const [feedData, setFeedData] = useState({});
-
-  // 로그인
-  const [isLogin, setIsLogin] = useState(false);
-  const {checkToken} = useCheckToken();
-  const checkLoginToken = async () => {
-    const result = await checkToken();
-    console.log("isLogin >> "+result);
-    setIsLogin(isLogin);
-  };
-
-  // 데이터 조회
-  const getDetail = useCallback(() => {
-    getFeedDetailApi(feedIdx)
-        .then((data) => {
-          setFeedData(data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-  },[feedIdx]);
-
-  // 데이터 조회
+  // 댓글목록 조회
+  const [commentList, setCommentList] = useState([]);
   useEffect(() => {
-    checkLoginToken();
-    getDetail();
-  }, [feedIdx]);
+    if(feed) {
+      getFeedCommentListApi(feed.idx)
+          .then((data) => {
+            setCommentList(data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    }
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
@@ -44,19 +29,14 @@ const DetailModal = ({feedIdx, closeDetailModal }) => {
         <div className="w-3/5 relative">
           {/* 왼쪽 영역 */}
           {/* 이미지 */}
-          {/*<ImageComponent feedImages={imageList} />*/}
-          {(feedData.feedImages ?? []).length > 0 && (
-              <ImageComponent feedImages={feedData.feedImages} />
-          )}
+          {(feed.feedImages ?? []).length > 0 && <ImageComponent feedImages={feed.feedImages} />}
         </div>
 
         <div className="w-2/5 pl-3 h-full flex flex-col justify-center">
           {/* 오른쪽 영역 */}
           <div className="flex justify-between mb-4 items-start">
             {/* 프로필 */}
-            {feedData.user && (
-                <ProfileComponent user={feedData.user} />
-            )}
+            {feed.user && <ProfileComponent user={feed.user} />}
 
             {/* 상단 툴바 X 버튼 */}
             <button
@@ -81,23 +61,15 @@ const DetailModal = ({feedIdx, closeDetailModal }) => {
           </div>
 
           {/* 컨텐츠 + 해시태그 */}
-          {feedData !== {} && (
-              <ContentComponent feed={feedData} />
-          )}
+          {feed !== {} && <ContentComponent feed={feed} />}
 
 
           {/* 버튼 + 등록일시 */}
-          <ButtonComponent feed={feedData}/>
+          <ButtonComponent feed={feed}/>
 
           <div className="border border-gray-200 overflow-y-auto p-4 space-y-4 h-full">
             {/* 댓글 목록 + 등록인풋 */}
-            {(feedData.feedComments ?? []).length > 0 ?
-                <ListComponent feedComments={feedData.feedComments}/>
-             :
-                <div className="flex space-x-3 my-1">
-                  댓글이 없습니다
-                </div>
-            }
+             <ListComponent commentList={commentList}/>
           </div>
 
           <div className="flex space-x-3 border border-gray-200 justify-end w-full">

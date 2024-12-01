@@ -20,9 +20,10 @@ public class FeedCommentDTO {
   private LocalDateTime regDate;
 
   private FeedDTO feedDTO;
-  private UserDTO userDTO;
+  private UserDTO user;
   private String regDateStr;
   private Long userIdx;
+  private Boolean likedYn;
 
   public FeedComment toEntity() {
     return FeedComment.builder()
