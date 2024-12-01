@@ -6,7 +6,7 @@ export const getFeedListApi = async (param) => {
   const accessToken = localStorage.getItem("access_token") || "";
   const config = {
     headers: {
-      // Authorization: `Bearer ${accessToken}`
+      Authorization: `Bearer ${accessToken}`
     },
     params: param
   };
