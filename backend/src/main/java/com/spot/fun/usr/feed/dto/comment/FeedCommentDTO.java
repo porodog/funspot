@@ -1,6 +1,7 @@
-package com.spot.fun.usr.feed.dto;
+package com.spot.fun.usr.feed.dto.comment;
 
-import com.spot.fun.usr.feed.entity.FeedComment;
+import com.spot.fun.usr.feed.dto.FeedDTO;
+import com.spot.fun.usr.feed.entity.comment.FeedComment;
 import com.spot.fun.usr.user.dto.UserDTO;
 import lombok.*;
 
@@ -20,6 +21,8 @@ public class FeedCommentDTO {
 
   private FeedDTO feedDTO;
   private UserDTO userDTO;
+  private String regDateStr;
+  private Long userIdx;
 
   public FeedComment toEntity() {
     return FeedComment.builder()

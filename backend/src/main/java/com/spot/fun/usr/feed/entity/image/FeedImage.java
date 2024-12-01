@@ -1,5 +1,6 @@
-package com.spot.fun.usr.feed.entity;
+package com.spot.fun.usr.feed.entity.image;
 
+import com.spot.fun.usr.feed.entity.Feed;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

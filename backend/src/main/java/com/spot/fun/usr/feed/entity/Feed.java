@@ -1,12 +1,12 @@
 package com.spot.fun.usr.feed.entity;
 
+import com.spot.fun.usr.feed.entity.image.FeedImage;
 import com.spot.fun.usr.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

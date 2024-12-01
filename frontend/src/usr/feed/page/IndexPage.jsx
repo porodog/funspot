@@ -7,7 +7,7 @@ const IndexPage = () => {
     <BasicLayout>
       <div id="feed-index-page" style={{ border: "1px solid black" }}>
         피드 인덱스 페이지
-        <div className="flex flex-wrap w-full ">
+        <div className="flex flex-wrap">
           <Outlet />
         </div>
       </div>

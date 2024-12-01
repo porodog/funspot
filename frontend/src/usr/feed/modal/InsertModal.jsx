@@ -97,7 +97,7 @@ const InsertModal = ({ closeInsertModal }) => {
         {/* 상단영역: 프로필 정보 */}
         <div className="flex items-center space-x-4">
           <img
-            src="https://via.placeholder.com/1200x800/FF6347/FFFFFF?text=Image+1"
+            src={initImageSrc}
             alt="프로필"
             className="w-12 h-12 rounded-full"
           />
@@ -111,8 +111,9 @@ const InsertModal = ({ closeInsertModal }) => {
         <div className="mt-4">
           <textarea
             className="w-full p-3 border border-gray-300 rounded-md"
-            placeholder="내용을 입력하세요..."
+            placeholder="내용을 입력해주세요..(최대 80자)"
             rows="5"
+            maxLength="80"
             value={feedContent}
             onChange={(e) => setFeedContent(e.target.value)}
           />

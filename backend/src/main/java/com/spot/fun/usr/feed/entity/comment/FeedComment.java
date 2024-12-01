@@ -1,5 +1,6 @@
-package com.spot.fun.usr.feed.entity;
+package com.spot.fun.usr.feed.entity.comment;
 
+import com.spot.fun.usr.feed.entity.Feed;
 import com.spot.fun.usr.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

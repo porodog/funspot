@@ -1,80 +1,70 @@
-import { useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
+import { getFeedDetailApi } from "../api/FeedApi";
+import ImageComponent from "../component/item/ImageComponent";
+import ProfileComponent from "../component/item/ProfileComponent";
+import ContentComponent from "../component/item/ContentComponent";
+import ButtonComponent from "../component/item/ButtonComponent";
+import ListComponent from "../component/comment/ListComponent";
+import InputComponent from "../component/comment/InputComponent";
+import {useCheckToken} from "../../../common/hook/useCheckToken";
 
-const DetailModal = ({ feedIdx, closeDetailModal }) => {
-  console.log(feedIdx);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const DetailModal = ({feedIdx, closeDetailModal }) => {
 
-  // 이미지 배열
-  const images = [
-    "https://watermark.lovepik.com/photo/20211122/large/lovepik-big-supermarket-picture_500757753.jpg",
-    "https://via.placeholder.com/1200x800/4682B4/FFFFFF?text=Image+2",
-    "https://via.placeholder.com/1200x800/32CD32/FFFFFF?text=Image+3",
-  ];
+  const [feedData, setFeedData] = useState({});
 
-  // 이전 이미지로 이동
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    );
+  // 로그인
+  const [isLogin, setIsLogin] = useState(false);
+  const {checkToken} = useCheckToken();
+  const checkLoginToken = async () => {
+    const result = await checkToken();
+    console.log("isLogin >> "+result);
+    setIsLogin(isLogin);
   };
 
-  // 다음 이미지로 이동
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    );
-  };
+  // 데이터 조회
+  const getDetail = useCallback(() => {
+    getFeedDetailApi(feedIdx)
+        .then((data) => {
+          setFeedData(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  },[feedIdx]);
+
+  // 데이터 조회
+  useEffect(() => {
+    checkLoginToken();
+    getDetail();
+  }, [feedIdx]);
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg w-9/12 h-5/6 p-6 flex">
-        <div className="w-3/5 pr-3 relative">
-          {/* 왼쪽 영역: 게시글 정보 */}
-          <div className="w-full h-full mx-auto">
-            <img
-              src={images[0]}
-              alt="게시물 이미지"
-              className="rounded-md w-full h-full object-contain px-4"
-            />
-          </div>
-
-          {/* 슬라이드 버튼 */}
-          <div className="absolute top-1/2 left-5 transform -translate-y-1/2">
-            <button
-              onClick={prevImage}
-              className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
-            >
-              &lt;
-            </button>
-          </div>
-          <div className="absolute top-1/2 right-10 transform -translate-y-1/2">
-            <button
-              onClick={nextImage}
-              className="bg-gray-800 text-white p-2 rounded-full hover:bg-gray-600"
-            >
-              &gt;
-            </button>
-          </div>
+        <div className="w-3/5 relative">
+          {/* 왼쪽 영역 */}
+          {/* 이미지 */}
+          {/*<ImageComponent feedImages={imageList} />*/}
+          {(feedData.feedImages ?? []).length > 0 && (
+              <ImageComponent feedImages={feedData.feedImages} />
+          )}
         </div>
 
-        <div className="w-2/5 pl-3">
-          {/* 오른쪾 영역: 댓글 정보*/}
-          {/* 상단 툴바 X 버튼 */}
+        <div className="w-2/5 pl-3 h-full flex flex-col justify-center">
+          {/* 오른쪽 영역 */}
           <div className="flex justify-between mb-4 items-start">
-            <div className="text-lg font-semibold flex items-center">
-              <img
-                src="https://via.placeholder.com/50"
-                alt="프로필 이미지"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <p className="font-semibold text-gray-800 ml-1">아이디</p>
-            </div>
+            {/* 프로필 */}
+            {feedData.user && (
+                <ProfileComponent user={feedData.user} />
+            )}
+
+            {/* 상단 툴바 X 버튼 */}
             <button
-              onClick={closeDetailModal}
-              className="text-gray-500 hover:text-gray-800"
+                onClick={closeDetailModal}
+                className="text-gray-500 hover:text-gray-800"
             >
               <svg
-                xmlns="http://www.w3.org/2000/svg"
+                  xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -89,10 +79,31 @@ const DetailModal = ({ feedIdx, closeDetailModal }) => {
               </svg>
             </button>
           </div>
-          <div>
-            <div>{/* 컨텐츠 내용 */}</div>
-            <div>{/* 댓글 목록 + 등록인풋 */}</div>
-            <div>{/* 좋아요 수 */}</div>
+
+          {/* 컨텐츠 + 해시태그 */}
+          {feedData !== {} && (
+              <ContentComponent feed={feedData} />
+          )}
+
+
+          {/* 버튼 + 등록일시 */}
+          <ButtonComponent feed={feedData}/>
+
+          <div className="border border-gray-200 overflow-y-auto p-4 space-y-4 h-full">
+            {/* 댓글 목록 + 등록인풋 */}
+            {(feedData.feedComments ?? []).length > 0 ?
+                <ListComponent feedComments={feedData.feedComments}/>
+             :
+                <div className="flex space-x-3 my-1">
+                  댓글이 없습니다
+                </div>
+            }
+          </div>
+
+          <div className="flex space-x-3 border border-gray-200 justify-end w-full">
+            {/*댓글 입력 + 등록*/}
+            {/*{isLogin && <InputComponent />}*/}
+            <InputComponent />
           </div>
         </div>
       </div>
@@ -101,41 +112,3 @@ const DetailModal = ({ feedIdx, closeDetailModal }) => {
 };
 
 export default DetailModal;
-
-// <div className="w-1/3">
-//               {/* 댓글 목록 */}
-//               <div className="h-96 overflow-y-auto p-4 space-y-4">
-//                 <div className="flex space-x-3">
-//                   <img
-//                     src="https://via.placeholder.com/50"
-//                     alt="프로필 이미지"
-//                     className="w-10 h-10 rounded-full object-cover"
-//                   />
-//                   <div>
-//                     <p className="font-semibold text-gray-800">사용자 1</p>
-//                     <p className="text-sm text-gray-600">댓글 내용이 여기에 들어갑니다.</p>
-//                   </div>
-//                 </div>
-//                 <div className="flex space-x-3">
-//                   <img
-//                     src="https://via.placeholder.com/50"
-//                     alt="프로필 이미지"
-//                     className="w-10 h-10 rounded-full object-cover"
-//                   />
-//                   <div>
-//                     <p className="font-semibold text-gray-800">사용자 2</p>
-//                     <p className="text-sm text-gray-600">다른 댓글 내용입니다.</p>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* 댓글 입력란 */}
-//               <div className="mt-4 flex items-center space-x-3">
-//                 <input
-//                   type="text"
-//                   className="flex-1 p-2 border rounded-md text-sm"
-//                   placeholder="댓글을 작성하세요..."
-//                 />
-//                 <button className="text-blue-500">게시</button>
-//               </div>
-//             </div>

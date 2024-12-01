@@ -41,7 +41,6 @@ public class UserFeedController {
     return ResponseEntity.status(HttpStatus.CREATED).body(idx);
   }
 
-
   @GetMapping("/image/{fileName}")
   public ResponseEntity<Resource> getImage(@PathVariable("fileName") String fileName) {
     String menuType = "feed";

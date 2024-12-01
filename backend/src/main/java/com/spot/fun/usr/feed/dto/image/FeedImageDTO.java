@@ -1,6 +1,7 @@
-package com.spot.fun.usr.feed.dto;
+package com.spot.fun.usr.feed.dto.image;
 
-import com.spot.fun.usr.feed.entity.FeedImage;
+import com.spot.fun.usr.feed.dto.FeedDTO;
+import com.spot.fun.usr.feed.entity.image.FeedImage;
 import lombok.*;
 
 //@Data
