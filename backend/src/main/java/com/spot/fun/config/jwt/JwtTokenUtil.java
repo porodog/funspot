@@ -17,7 +17,8 @@ public class JwtTokenUtil {
         if (attributes != null) {
             String bearerToken = attributes.getRequest().getHeader(HEADER_AUTHORIZATION);
             if (!StringUtils.isBlank(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
-                return bearerToken.substring(TOKEN_PREFIX.length());
+                bearerToken = bearerToken.substring(TOKEN_PREFIX.length());
+                return !StringUtils.isBlank(bearerToken)?bearerToken:null;
             }
         }
         return null;

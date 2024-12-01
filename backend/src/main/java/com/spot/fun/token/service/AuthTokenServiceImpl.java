@@ -37,8 +37,9 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
         if(StringUtils.isBlank(refreshToken) || !jwtTokenProvider.validToken(refreshToken)) {
             // 쿠키에서 리프레시 토큰조회 + 사용가능여부 체크
-            throw new RuntimeException("refresh token is empty or validate failed");
-            //return AuthTokenDTO.builder().build();
+            //throw new RuntimeException("refresh token is empty or validate failed");
+            // 에러콘솔 거슬려서.. 일단 빈객체로 리턴처리
+            return new AuthTokenDTO(null, null);
         }
 
         // 엑세스 토큰 재발급
