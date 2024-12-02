@@ -32,7 +32,7 @@ public class FeedComment {
   @Column(name = "reg_date")
   private LocalDateTime regDate;
 
-  @UpdateTimestamp
+  //@UpdateTimestamp
   @Column(name = "mod_date")
   private LocalDateTime modDate;
 
@@ -45,9 +45,23 @@ public class FeedComment {
   private Feed feed;
 
   @Builder
-  public FeedComment(String content, boolean delYn, LocalDateTime regDate) {
+  public FeedComment(String content, Feed feed, User user) {
     this.content = content;
-    this.delYn = delYn;
-    this.regDate = regDate;
+    this.feed = feed;
+    this.user = user;
+  }
+
+  @PrePersist
+  public void prePersist() {
+    if (modDate == null) {
+      modDate = null;
+    }
+  }
+
+  @PreUpdate
+  public void preUpdate() {
+    if (modDate == null) {
+      modDate = LocalDateTime.now();
+    }
   }
 }

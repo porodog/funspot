@@ -3,6 +3,7 @@ package com.spot.fun.usr.feed.entity.like;
 import com.spot.fun.usr.feed.entity.Feed;
 import com.spot.fun.usr.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 public class FeedLike {
+    // 복합키 지정해야하는데.. 일단 보류
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx", unique = true, updatable = false)
@@ -23,4 +26,10 @@ public class FeedLike {
     @ManyToOne
     @JoinColumn(name = "user_idx")
     private User user;
+
+    @Builder
+    public FeedLike(Feed feed, User user) {
+        this.feed = feed;
+        this.user = user;
+    }
 }

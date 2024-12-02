@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface UserFeedCommentService {
     List<FeedCommentDTO> getCommentList(Long idx);
+    FeedCommentDTO insert(FeedCommentDTO feedCommentDTO);
 }

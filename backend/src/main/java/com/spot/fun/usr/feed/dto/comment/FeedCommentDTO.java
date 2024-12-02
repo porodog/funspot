@@ -24,12 +24,6 @@ public class FeedCommentDTO {
   private String regDateStr;
   private Long userIdx;
   private Boolean likedYn;
+  private Long feedIdx;
 
-  public FeedComment toEntity() {
-    return FeedComment.builder()
-            .content(this.content)
-            .delYn(this.delYn)
-            .regDate(this.regDate)
-            .build();
-  }
 }

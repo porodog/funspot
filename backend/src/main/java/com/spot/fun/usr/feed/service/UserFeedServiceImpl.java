@@ -178,8 +178,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     @Transactional
     @Override
     public Long postInsert(FeedDTO feedDTO) {
-//        Long userIdx = userFeedUtil.getUserIdx();
-        Long userIdx = 6L; // 테스트용 임시값 삭제예정
+        Long userIdx = userFeedUtil.getUserIdx();
 
         List<FeedImage> feedImages = new ArrayList<>();
         List<MultipartFile> uploadFiles = feedDTO.getUploadFiles();

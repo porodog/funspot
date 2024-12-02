@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import { getFeedCommentListApi } from "../api/FeedApi";
+import { useEffect, useState, useCallback } from "react";
+import { getFeedCommentListApi, postCommentApi } from "../api/FeedApi";
 import ImageComponent from "../component/item/ImageComponent";
 import ProfileComponent from "../component/item/ProfileComponent";
 import ContentComponent from "../component/item/ContentComponent";
@@ -7,20 +7,37 @@ import ButtonComponent from "../component/item/ButtonComponent";
 import ListComponent from "../component/comment/ListComponent";
 import InputComponent from "../component/comment/InputComponent";
 
-const DetailModal = ({feed, closeDetailModal }) => {
-
+const DetailModal = ({ feed, closeDetailModal, handleLikesEvent }) => {
   // 댓글목록 조회
   const [commentList, setCommentList] = useState([]);
   useEffect(() => {
-    if(feed) {
+    if (feed) {
       getFeedCommentListApi(feed.idx)
-          .then((data) => {
-            setCommentList(data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        .then((data) => {
+          setCommentList(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
+  }, []);
+
+  const handleCommentEvent = useCallback((targetContent) => {
+    const param = {
+      idx: feed.idx,
+      content: targetContent,
+    };
+
+    postCommentApi(param)
+      .then((data) => {
+        console.log(data);
+        if (data) {
+          setCommentList((prevCommentList) => [...prevCommentList, data]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   return (
@@ -29,7 +46,9 @@ const DetailModal = ({feed, closeDetailModal }) => {
         <div className="w-3/5 relative">
           {/* 왼쪽 영역 */}
           {/* 이미지 */}
-          {(feed.feedImages ?? []).length > 0 && <ImageComponent feedImages={feed.feedImages} />}
+          {(feed.feedImages ?? []).length > 0 && (
+            <ImageComponent feedImages={feed.feedImages} />
+          )}
         </div>
 
         <div className="w-2/5 pl-3 h-full flex flex-col justify-center">
@@ -40,11 +59,11 @@ const DetailModal = ({feed, closeDetailModal }) => {
 
             {/* 상단 툴바 X 버튼 */}
             <button
-                onClick={closeDetailModal}
-                className="text-gray-500 hover:text-gray-800"
+              onClick={closeDetailModal}
+              className="text-gray-500 hover:text-gray-800"
             >
               <svg
-                  xmlns="http://www.w3.org/2000/svg"
+                xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -61,21 +80,20 @@ const DetailModal = ({feed, closeDetailModal }) => {
           </div>
 
           {/* 컨텐츠 + 해시태그 */}
-          {feed !== {} && <ContentComponent feed={feed} />}
-
+          <ContentComponent feed={feed} />
 
           {/* 버튼 + 등록일시 */}
-          <ButtonComponent feed={feed}/>
+          <ButtonComponent feed={feed} handleLikesEvent={handleLikesEvent} />
 
           <div className="border border-gray-200 overflow-y-auto p-4 space-y-4 h-full">
             {/* 댓글 목록 + 등록인풋 */}
-             <ListComponent commentList={commentList}/>
+            <ListComponent commentList={commentList} />
           </div>
 
           <div className="flex space-x-3 border border-gray-200 justify-end w-full">
             {/*댓글 입력 + 등록*/}
             {/*{isLogin && <InputComponent />}*/}
-            <InputComponent />
+            <InputComponent handleCommentEvent={handleCommentEvent} />
           </div>
         </div>
       </div>

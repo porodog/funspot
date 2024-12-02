@@ -45,7 +45,8 @@ public class UserFeedUtil {
             userIdx = jwtTokenProvider.getUserIdx(accessToken);
         }
 
-        return userIdx;
+        //return userIdx;
+        return 1L; // 임시값
     }
 
     public String getDateFormat(LocalDateTime localDateTime) {
