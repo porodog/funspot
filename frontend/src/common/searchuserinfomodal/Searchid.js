@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   sendEmailVerificationApi,
   searchIdApi,
-} from "../../usr/searchuserinfo/api/searchuser";
+} from "../../usr/searchuserinfo/api/SearchUser";
 
 const Searchid = ({ onClose, focusIdField }) => {
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 상태

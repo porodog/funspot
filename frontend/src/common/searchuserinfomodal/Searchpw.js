@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   sendEmailVerificationApi,
   updatePasswordApi,
-} from "../../usr/searchuserinfo/api/searchuser";
+} from "../../usr/searchuserinfo/api/SearchUser";
 
 const Searchpw = ({ onClose }) => {
   const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 상태
