@@ -26,11 +26,14 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
     private final CustomUserDetailsService customUserDetailsService;
 
+    @Value("${jwt.access.token.min}")
+    private int ACCESS_TOKEN_MIN;
+
     @Value("${jwt.refresh.token.hour}")
     private int REFRESH_TOKEN_HOUR;
 
     public String generateAccessToken(User user) {
-        return generateToken(user, Duration.ofMinutes(5));
+        return generateToken(user, Duration.ofMinutes(ACCESS_TOKEN_MIN));
     }
 
     public String generateRefreshToken(User user) {
@@ -51,6 +54,7 @@ public class JwtTokenProvider {
                     .setExpiration(expiry)
                     .setSubject(user.getUserId())
                     .claim("idx", user.getIdx())
+                    .claim("nickname", user.getNickname())
                     .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                     .compact();
     }
@@ -92,5 +96,10 @@ public class JwtTokenProvider {
     public Long getUserIdx(String token) {
         Claims claims = getClaims(token);
         return claims.get("idx", Long.class);
+    }
+
+    public String getUserNickname(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("nickname", String.class);
     }
 }

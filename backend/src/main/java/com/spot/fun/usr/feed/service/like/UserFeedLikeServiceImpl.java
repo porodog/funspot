@@ -25,9 +25,7 @@ public class UserFeedLikeServiceImpl implements UserFeedLikeService{
 
   @Transactional
   @Override
-  public boolean insert(Long idx) {
-    Long userIdx = userFeedUtil.getUserIdx();
-
+  public boolean insert(Long idx, Long userIdx) {
     try {
       Feed feed = userFeedRepository.findByIdxAndDelYnFalse(idx)
               .orElseThrow(IllegalArgumentException::new);
@@ -47,9 +45,7 @@ public class UserFeedLikeServiceImpl implements UserFeedLikeService{
 
   @Transactional
   @Override
-  public boolean delete(Long idx) {
-    Long userIdx = userFeedUtil.getUserIdx();
-
+  public boolean delete(Long idx, Long userIdx) {
     try {
       userFeedLikeRepository.deleteByFeedIdxAndUserIdx(idx, userIdx);
       return true;

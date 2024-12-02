@@ -103,7 +103,7 @@ const ListPage = () => {
 
   // 최초 마운트
   useEffect(() => {
-    checkLoginToken();
+    //checkLoginToken();
     handleListEvent();
 
     window.addEventListener("scroll", handelScrollEvent);
@@ -119,7 +119,7 @@ const ListPage = () => {
   useEffect(() => {
     if (isInsertModalOpen || isDetailModalOpen) {
       document.body.style.overflow = "hidden";
-      checkLoginToken(); // 로그인 상태 확인
+      //checkLoginToken(); // 로그인 상태 확인
     } else {
       document.body.style.overflow = "auto";
     }
@@ -131,7 +131,7 @@ const ListPage = () => {
   // 목록 조회
   useEffect(() => {
     if (isBottom && hasNext) {
-      checkLoginToken();
+      //checkLoginToken();
       handleListEvent();
     }
   }, [isBottom, isLogin]);

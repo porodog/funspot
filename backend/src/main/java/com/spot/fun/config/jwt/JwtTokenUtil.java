@@ -9,18 +9,20 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenUtil {
-    private final static String HEADER_AUTHORIZATION = "Authorization";
-    private final static String TOKEN_PREFIX = "Bearer";
+    private final JwtTokenProvider jwtTokenProvider;
 
     public static String getJwtToken() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (attributes != null) {
-            String bearerToken = attributes.getRequest().getHeader(HEADER_AUTHORIZATION);
-            if (!StringUtils.isBlank(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
-                bearerToken = bearerToken.substring(TOKEN_PREFIX.length());
-                return !StringUtils.isBlank(bearerToken)?bearerToken:null;
-            }
-        }
+//        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        if (attributes != null) {
+//            String bearerToken = attributes.getRequest().getHeader(HEADER_AUTHORIZATION);
+//            if (!StringUtils.isBlank(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
+//                bearerToken = bearerToken.substring(TOKEN_PREFIX.length());
+//                return !StringUtils.isBlank(bearerToken)?bearerToken:null;
+//            }
+//        }
         return null;
     }
+
+
+
 }

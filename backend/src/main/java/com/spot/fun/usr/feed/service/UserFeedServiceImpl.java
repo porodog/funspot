@@ -28,9 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -48,7 +46,10 @@ public class UserFeedServiceImpl implements UserFeedService {
     @Override
     public FeedResponseDTO getList(FeedRequestDTO feedRequestDTO) {
         // 로그인
-        Long userIdx = userFeedUtil.getUserIdx();
+        Long loginUserIdx = Optional.ofNullable(feedRequestDTO.getLoginUserDTO())
+                                    .map(UserDTO::getIdx)
+                                    .orElse(null);
+
 
         // 목록 조회
         Pageable pageable = PageRequest.of(0, feedRequestDTO.getPageSize(), Sort.by("idx").descending());
@@ -57,6 +58,7 @@ public class UserFeedServiceImpl implements UserFeedService {
         List<FeedDTO> dtos = list.stream()
                 .map((feed) -> {
                     Long feedIdx = feed.getIdx();
+                    boolean likedYn = !Objects.isNull(loginUserIdx) && userFeedUtil.isFeedLikedYn(feedIdx, loginUserIdx);
 
                         return FeedDTO.builder()
                                 .idx(feedIdx)
@@ -83,7 +85,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                                                                 .build()
                                                 ).toList()
                                 )
-                                .likedYn(userFeedUtil.isFeedLikedYn(feedIdx, userIdx))
+                                .likedYn(likedYn)
                                 .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
                                 .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(feedIdx))
                                 .feedHashtags(

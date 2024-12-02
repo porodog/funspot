@@ -11,8 +11,13 @@ public interface AuthTokenRepository extends JpaRepository<AuthToken, Long> {
     Optional<AuthToken> findByUserIdx(Long userIdx);
     Optional<AuthToken> findByRefreshToken(String refreshToken);
     boolean existsByUserIdx(Long userIdx);
+    boolean existsByRefreshToken(String refreshToken);
 
     @Modifying
     @Transactional
     void deleteByUserIdx(Long userIdx);
+
+    @Modifying
+    @Transactional
+    void deleteByRefreshToken(String refreshToken);
 }
