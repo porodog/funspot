@@ -14,61 +14,57 @@ import axios from "axios";
 const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
 export const useCheckToken = () => {
-
   const postAccessTokenApi = async () => {
     const accessToken = localStorage.getItem("access_token") || "";
-    const config = {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    };
+    if (!accessToken) {
+      console.warn("엑세스 토큰이 존재하지 않습니다.");
+      return false;
+    }
 
     try {
+      const config = { headers: { Authorization: `Bearer ${accessToken}` } };
       const response = await axios.post(`${API_BASE_URL}/api/token/access`, null, config);
-      if (response.status === 200 && response.data.result) {
-        console.log("엑세스 토큰 인증 성공");
-        return true;
-      }
 
-      console.log("엑세스 토큰 인증 실패");
+      if (response.status === 200 && response.data.result) {
+        return true; // 인증 성공
+      }
+      console.warn("엑세스 토큰 인증 실패");
       return false;
     } catch (err) {
-      console.error("엑세스 토큰 실패:", err);
+      console.error("엑세스 토큰 인증 중 오류:", err);
       return false;
     }
   };
 
   const postRefreshTokenApi = async () => {
-    const config = {
-      withCredentials: true,
-    };
-
     try {
+      const config = { withCredentials: true };
       const response = await axios.post(`${API_BASE_URL}/api/token/refresh`, null, config);
 
       if (response.status === 200 && response.data.accessToken) {
-        // 새로운 엑세스 토큰을 로컬 스토리지에 저장
-        localStorage.setItem("access_token", response.data.accessToken);
-        console.log("토큰 재발급 성공");
+        localStorage.setItem("access_token", response.data.accessToken); // 갱신 성공
         return true;
       }
 
-      console.log("토큰 재발급 실패");
+      console.warn("리프레시 토큰 갱신 실패");
       return false;
     } catch (err) {
-      console.error("리프레시 토큰 실패:", err);
+      console.error("리프레시 토큰 갱신 중 오류:", err);
       return false;
     }
   };
 
   const checkToken = async () => {
-    if(await postAccessTokenApi()) {
-       return true;
+    if (await postAccessTokenApi()) {
+      return true; // 엑세스 토큰 인증 성공
     }
 
-    if(await postRefreshTokenApi()) {
-      return true;
+    if (await postRefreshTokenApi()) {
+      return true; // 리프레시 토큰 갱신 성공
     }
 
-    localStorage.removeItem("access_token");
+    console.warn("인증 실패: 토큰 삭제");
+    localStorage.removeItem("access_token"); // 인증 실패 시 토큰 제거
     return false;
   };
 
