@@ -24,6 +24,12 @@ public class UserDTO {
     private String detaileAdd;     // 상세 주소
     private UserRole userRole;
 
+    public static UserDTO fromEntity(User user) {
+        return UserDTO.builder()
+                .idx(user.getIdx())
+                .nickname(user.getNickname())
+                .build();
+    }
 
     public User toEntity() {
         return User.builder()

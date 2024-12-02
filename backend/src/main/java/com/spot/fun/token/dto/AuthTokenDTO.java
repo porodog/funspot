@@ -8,13 +8,17 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+//@AllArgsConstructor
 public class AuthTokenDTO {
     private String accessToken;
     private String refreshToken;
+    private String nickname;
 
     @Builder
-    public AuthTokenDTO(AuthToken authToken) {
-        this.refreshToken = authToken.getRefreshToken();
+    public AuthTokenDTO(String accessToken, String refreshToken, String nickname) {
+//        this.refreshToken = authToken.getRefreshToken();
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.nickname = nickname;
     }
 }

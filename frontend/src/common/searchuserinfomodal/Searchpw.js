@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   sendEmailVerificationApi,
   updatePasswordApi,
@@ -9,6 +9,8 @@ const Searchpw = ({ onClose }) => {
   const [verificationCode, setVerificationCode] = useState(""); // 사용자 입력 인증 코드
   const [serverCode, setServerCode] = useState(null); // 서버 생성 인증 코드
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // 비밀번호 변경 모달 상태
+  const [errors, setErrors] = useState({});
+  const [isTouched, setIsTouched] = useState({});
 
   const [passwords, setPasswords] = useState({
     newPassword: "",
@@ -25,12 +27,61 @@ const Searchpw = ({ onClose }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setIsTouched((prevState) => ({ ...prevState, [name]: true }));
   };
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswords({ ...passwords, [name]: value });
+    setIsTouched((prevState) => ({ ...prevState, [name]: true }));
   };
+
+  useEffect(() => {
+    const newErrors = {};
+
+    if (isTouched.name && !formData.name.match(/^[a-zA-Z가-힣]+$/)) {
+      newErrors.name = "이름을 입력해주세요.";
+    }
+
+    if (isTouched.userId && !formData.userId.match(/^[a-zA-Z0-9]{4,12}$/)) {
+      newErrors.userId = "아이디를 입력해주세요.";
+    }
+
+    if (
+      isTouched.email &&
+      !formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+    ) {
+      newErrors.email = "유효한 이메일 형식이 아닙니다.";
+    }
+
+    if (isTouched.birthDate && !formData.birthDate) {
+      newErrors.birthDate = "생년월일을 입력해주세요.";
+    }
+
+    setErrors(newErrors);
+  }, [formData, isTouched]);
+
+  useEffect(() => {
+    const newErrors = {};
+
+    if (
+      isTouched.newPassword &&
+      !passwords.newPassword.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,16}$/
+      )
+    ) {
+      newErrors.password = "비밀번호를 입력해주세요.";
+    }
+
+    if (
+      isTouched.confirmPassword &&
+      passwords.newPassword !== passwords.confirmPassword
+    ) {
+      newErrors.confirmPassword = "비밀번호가 일치하지 않습니다.";
+    }
+
+    setErrors(newErrors);
+  }, [passwords, isTouched]);
 
   const handleSendEmailVerification = async () => {
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -63,6 +114,30 @@ const Searchpw = ({ onClose }) => {
   };
 
   const handleSubmit = () => {
+    const newErrors = {};
+    if (!formData.name.match(/^[a-zA-Z가-힣]+$/)) {
+      newErrors.name = "이름을 입력해주세요.";
+    }
+
+    if (!formData.userId.match(/^[a-zA-Z0-9]{4,12}$/)) {
+      newErrors.userId = "아이디를 입력해주세요.";
+    }
+
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      newErrors.email = "유효한 이메일 형식이 아닙니다.";
+    }
+
+    if (!formData.birthDate) {
+      newErrors.birthDate = "생년월일을 입력해주세요.";
+    }
+
+    // 에러가 있을 경우 처리
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors); // 에러 메시지 상태 업데이트
+      alert("입력되지 않은 항목이 있습니다. 다시 확인해주세요."); // 경고창 띄움
+      return;
+    }
+
     if (!isEmailVerified) {
       alert("이메일 인증을 완료해주세요.");
       return;
@@ -102,77 +177,109 @@ const Searchpw = ({ onClose }) => {
       {!isPasswordModalOpen ? (
         <>
           <h2>비밀번호 찾기</h2>
-          <input
-            type="text"
-            name="name"
-            placeholder="이름"
-            onChange={handleInputChange}
-          />
-          <br />
-          <input
-            type="date"
-            name="birthDate"
-            placeholder="생년월일"
-            onChange={handleInputChange}
-          />
-          <br />
-          <input
-            type="text"
-            name="userId"
-            placeholder="아이디"
-            onChange={handleInputChange}
-          />
-          <br />
-          <input
-            type="email"
-            name="email"
-            placeholder="이메일"
-            onChange={handleInputChange}
-            disabled={isEmailVerified}
-          />
-          <button
-            type="button"
-            onClick={handleSendEmailVerification}
-            disabled={isEmailVerified}
-          >
-            인증 메일 보내기
-          </button>
-          <br />
-          <input
-            type="text"
-            name="verificationCode"
-            placeholder="인증 코드 입력"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-            disabled={isEmailVerified}
-          />
-          <button
-            type="button"
-            onClick={handleVerifyCode}
-            disabled={isEmailVerified}
-          >
-            인증 확인
-          </button>
-          <br />
+          <div>
+            <label>아이디: </label>
+            <input
+              type="text"
+              name="userId"
+              placeholder="영문, 숫자 포함 4~12자"
+              onChange={handleInputChange}
+            />
+            {errors.userId && <p style={{ color: "red" }}>{errors.userId}</p>}
+          </div>
+          <div>
+            <label>이름: </label>
+            <input
+              type="text"
+              name="name"
+              placeholder="한글 또는 영문"
+              onChange={handleInputChange}
+            />
+            {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
+          </div>
+          <div>
+            <label>생년월일: </label>
+            <input type="date" name="birthDate" onChange={handleInputChange} />
+            {errors.birthDate && (
+              <p style={{ color: "red" }}>{errors.birthDate}</p>
+            )}
+          </div>
+          <div>
+            <label>이메일: </label>
+            <input
+              type="email"
+              name="email"
+              onChange={handleInputChange}
+              disabled={isEmailVerified}
+            />
+            <button
+              type="button"
+              onClick={handleSendEmailVerification}
+              disabled={isEmailVerified}
+            >
+              인증 메일 보내기
+            </button>
+            {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
+          </div>
+          <div>
+            <label>인증 코드: </label>
+            <input
+              type="text"
+              name="verificationCode"
+              placeholder="인증 코드 입력"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              disabled={isEmailVerified}
+            />
+            <button
+              type="button"
+              onClick={handleVerifyCode}
+              disabled={isEmailVerified}
+            >
+              인증 확인
+            </button>
+          </div>
           <button onClick={handleSubmit}>비밀번호 찾기</button>
         </>
       ) : (
         <div>
           <h2>새 비밀번호 설정</h2>
-          <input
-            type="password"
-            name="newPassword"
-            placeholder="새 비밀번호"
-            onChange={handlePasswordChange}
-          />
-          <br />
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="새 비밀번호 확인"
-            onChange={handlePasswordChange}
-          />
-          <br />
+          <div>
+            <label>새 비밀번호: </label>
+            <input
+              type="password"
+              name="newPassword"
+              placeholder="영문, 숫자, 특수문자 포함 8~16자"
+              onChange={handlePasswordChange}
+              onBlur={() =>
+                setIsTouched((prevState) => ({
+                  ...prevState,
+                  newPassword: true,
+                }))
+              }
+            />
+            {errors.password && (
+              <p style={{ color: "red" }}>{errors.password}</p>
+            )}
+          </div>
+          <div>
+            <label>새 비밀번호 확인: </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="새 비밀번호 확인"
+              onChange={handlePasswordChange}
+              onBlur={() =>
+                setIsTouched((prevState) => ({
+                  ...prevState,
+                  confirmPassword: true,
+                }))
+              }
+            />
+            {errors.confirmPassword && (
+              <p style={{ color: "red" }}>{errors.confirmPassword}</p>
+            )}
+          </div>
           <button onClick={handlePasswordSubmit}>비밀번호 변경</button>
         </div>
       )}

@@ -46,6 +46,9 @@ dependencies {
 //  이메일 서비스
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+// OAuth (외부로그인)
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {

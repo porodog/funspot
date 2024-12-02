@@ -44,14 +44,18 @@ public class UserLoginServiceImpl implements UserLoginService {
             authTokenRepository.deleteByUserIdx(userIdx);
         }
 
-        authTokenRepository.save(
+        AuthToken authToken = authTokenRepository.save(
                 AuthToken.builder()
                         .refreshToken(refreshToken)
                         .userIdx(userIdx)
                         .build()
         );
 
-        return new AuthTokenDTO(accessToken, refreshToken);
+        return AuthTokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .nickname(user.getNickname())
+                .build();
     }
 
 }

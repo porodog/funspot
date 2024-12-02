@@ -39,7 +39,11 @@ public class AuthTokenServiceImpl implements AuthTokenService {
             // 쿠키에서 리프레시 토큰조회 + 사용가능여부 체크
             //throw new RuntimeException("refresh token is empty or validate failed");
             // 에러콘솔 거슬려서.. 일단 빈객체로 리턴처리
-            return new AuthTokenDTO(null, null);
+            return AuthTokenDTO.builder()
+                    .accessToken(null)
+                    .refreshToken(null)
+                    .nickname(null)
+                    .build();
         }
 
         // 엑세스 토큰 재발급
@@ -49,7 +53,11 @@ public class AuthTokenServiceImpl implements AuthTokenService {
                 .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 사용자"));
         String accessToken = jwtTokenProvider.generateAccessToken(user);
 
-        return new AuthTokenDTO(accessToken, null);
+        return AuthTokenDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(null) // 리프레시 토큰은 클라이언트에 반환하지 않음
+                .nickname(user.getNickname())
+                .build();
     }
 
 
