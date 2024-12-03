@@ -26,8 +26,7 @@ public class UserFeedLikeController {
   public ResponseEntity<?> insert(HttpServletRequest request, HttpServletResponse response, @PathVariable("idx") Long idx) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) {
-      // 로그인상태가 아님!!
+    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
 
@@ -42,8 +41,7 @@ public class UserFeedLikeController {
   public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response, @PathVariable("idx") Long idx) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) {
-      // 로그인상태가 아님!!
+    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
 

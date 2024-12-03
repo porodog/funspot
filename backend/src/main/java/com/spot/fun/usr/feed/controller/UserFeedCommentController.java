@@ -1,7 +1,11 @@
 package com.spot.fun.usr.feed.controller;
 
+import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import com.spot.fun.usr.feed.service.comment.UserFeedCommentService;
+import com.spot.fun.usr.user.dto.UserDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
@@ -10,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 @RestController
@@ -18,14 +23,26 @@ import java.util.List;
 public class UserFeedCommentController {
 
   private final UserFeedCommentService userFeedCommentService;
+  private final AuthTokenUtil authTokenUtil;
 
   @GetMapping("/{idx}")
-  public List<FeedCommentDTO> commentList(@PathVariable("idx") Long idx) {
-    return userFeedCommentService.getCommentList(idx);
+  public List<FeedCommentDTO> commentList(HttpServletRequest request, HttpServletResponse response, @PathVariable("idx") Long idx) {
+    UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
+    Long loginUserIdx = loginUserDTO.getIdx();
+
+    return userFeedCommentService.getCommentList(idx, loginUserIdx);
   }
 
   @PostMapping("/{idx}")
-  public ResponseEntity<?> insert(@PathVariable("idx") Long idx, FeedCommentDTO feedCommentDTO) {
+  public ResponseEntity<?> insert(HttpServletRequest request, HttpServletResponse response,
+                                  @PathVariable("idx") Long idx, FeedCommentDTO feedCommentDTO) {
+    UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
+    Long loginUserIdx = loginUserDTO.getIdx();
+    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+    }
+    feedCommentDTO.setUser(loginUserDTO);
+
     feedCommentDTO.setFeedIdx(idx);
     FeedCommentDTO result = userFeedCommentService.insert(feedCommentDTO);
     if(ObjectUtils.isEmpty(result)) {

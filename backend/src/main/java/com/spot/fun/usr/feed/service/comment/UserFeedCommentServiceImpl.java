@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 @Service
@@ -28,30 +29,30 @@ public class UserFeedCommentServiceImpl implements UserFeedCommentService {
   private final UserFeedUtil userFeedUtil;
 
   @Override
-  public List<FeedCommentDTO> getCommentList(Long idx) {
-    Long userIdx = userFeedUtil.getUserIdx();
-
+  public List<FeedCommentDTO> getCommentList(Long idx, Long userIdx) {
     return userFeedCommentRepository.findByFeedIdxAndDelYnFalse(idx).stream()
-            .map((comment) ->
-                    FeedCommentDTO.builder()
-                            .idx(comment.getIdx())
-                            .content(comment.getContent())
-                            .regDateStr(userFeedUtil.getDateFormat(comment.getRegDate()))
-                            .likedYn(userFeedUtil.isFeedCommentLikedYn(comment.getIdx(), userIdx))
-                            .user(UserDTO.builder()
-                                    .idx(comment.getUser().getIdx())
-                                    .userId(comment.getUser().getUserId())
-                                    //.name(comment.getUser().getName())
-                                    .nickname(comment.getUser().getNickname())
-                                    .build())
-                            .build()
+            .map((comment) -> {
+                      boolean likedYn = !Objects.isNull(userIdx) && userFeedUtil.isFeedCommentLikedYn(comment.getIdx(), userIdx);
+                      return FeedCommentDTO.builder()
+                              .idx(comment.getIdx())
+                              .content(comment.getContent())
+                              .regDateStr(userFeedUtil.getDateFormat(comment.getRegDate()))
+                              .likedYn(likedYn)
+                              .user(UserDTO.builder()
+                                      .idx(comment.getUser().getIdx())
+                                      .userId(comment.getUser().getUserId())
+                                      //.name(comment.getUser().getName())
+                                      .nickname(comment.getUser().getNickname())
+                                      .build())
+                              .build();
+                    }
             ).toList();
   }
 
   @Transactional
   @Override
   public FeedCommentDTO insert(FeedCommentDTO feedCommentDTO) {
-    Long userIdx = userFeedUtil.getUserIdx();
+    Long userIdx = feedCommentDTO.getUser().getIdx();
 
     try {
       Feed feed = userFeedRepository.findByIdxAndDelYnFalse(feedCommentDTO.getIdx())

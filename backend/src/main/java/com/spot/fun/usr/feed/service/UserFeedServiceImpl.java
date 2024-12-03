@@ -8,7 +8,6 @@ import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import com.spot.fun.usr.feed.dto.hashtag.FeedHashtagDTO;
 import com.spot.fun.usr.feed.dto.image.FeedImageDTO;
 import com.spot.fun.usr.feed.entity.Feed;
-import com.spot.fun.usr.feed.entity.comment.FeedComment;
 import com.spot.fun.usr.feed.entity.image.FeedImage;
 import com.spot.fun.usr.feed.repository.UserFeedRepository;
 import com.spot.fun.usr.feed.repository.comment.UserFeedCommentRepository;
@@ -28,7 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Log4j2
 @Service
@@ -46,9 +48,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     @Override
     public FeedResponseDTO getList(FeedRequestDTO feedRequestDTO) {
         // 로그인
-        Long loginUserIdx = Optional.ofNullable(feedRequestDTO.getLoginUserDTO())
-                                    .map(UserDTO::getIdx)
-                                    .orElse(null);
+        Long loginUserIdx = userFeedUtil.getLoginUserIdx(feedRequestDTO.getLoginUserDTO());
 
 
         // 목록 조회
@@ -109,13 +109,12 @@ public class UserFeedServiceImpl implements UserFeedService {
     }
 
     @Override
-    public FeedDTO getDetail(Long idx) {
-        Long userIdx = userFeedUtil.getUserIdx();
-
+    public FeedDTO getDetail(Long idx, Long userIdx) {
         Feed feed = userFeedRepository.findByIdxAndDelYnFalse(idx)
                 .orElseThrow(IllegalArgumentException::new);
+      boolean likedYn = !Objects.isNull(userIdx) && userFeedUtil.isFeedLikedYn(idx, userIdx);
 
-        List<FeedComment> feedComments = userFeedCommentRepository.findByFeedIdxAndDelYnFalse(idx);
+        //List<FeedComment> feedComments = userFeedCommentRepository.findByFeedIdxAndDelYnFalse(idx);
 
         return FeedDTO.builder()
                 .idx(feed.getIdx())
@@ -129,16 +128,16 @@ public class UserFeedServiceImpl implements UserFeedService {
                                 .nickname(feed.getUser().getNickname())
                                 .build()
                 )
-                .feedComments(
-                        feedComments.stream()
-                                .map((item) ->
-                                        FeedCommentDTO.builder()
-                                                .idx(item.getIdx())
-                                                .content(item.getContent())
-                                                .regDate(item.getRegDate())
-                                                .build()
-                                ).toList()
-                )
+//                .feedComments(
+//                        feedComments.stream()
+//                                .map((item) ->
+//                                        FeedCommentDTO.builder()
+//                                                .idx(item.getIdx())
+//                                                .content(item.getContent())
+//                                                .regDate(item.getRegDate())
+//                                                .build()
+//                                ).toList()
+//                )
                 .feedImages(
                         feed.getFeedImages().stream()
                                 .filter((item) -> !item.isDelYn())
@@ -151,7 +150,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                                                 .build()
                                 ).toList()
                 )
-                .likedYn(userFeedUtil.isFeedLikedYn(idx, userIdx))
+                .likedYn(likedYn)
                 .likeCount(userFeedLikeRepository.countByFeedIdx(idx))
                 .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(idx))
                 .feedHashtags(
@@ -180,7 +179,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     @Transactional
     @Override
     public Long postInsert(FeedDTO feedDTO) {
-        Long userIdx = userFeedUtil.getUserIdx();
+        Long userIdx = feedDTO.getUser().getIdx();
 
         List<FeedImage> feedImages = new ArrayList<>();
         List<MultipartFile> uploadFiles = feedDTO.getUploadFiles();

@@ -38,14 +38,25 @@ public class UserFeedController {
   }
 
   @GetMapping("/{idx}")
-  public FeedDTO detail(@PathVariable("idx") Long idx) {
-    return userFeedService.getDetail(idx);
+  public FeedDTO detail(HttpServletRequest request, HttpServletResponse response, @PathVariable("idx") Long idx) {
+    UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
+    Long loginUserIdx = loginUserDTO.getIdx();
+
+    return userFeedService.getDetail(idx, loginUserIdx);
   }
 
   @PostMapping("")
-  public ResponseEntity<?> insert(FeedDTO feedDTO) {
+  public ResponseEntity<?> insert(HttpServletRequest request, HttpServletResponse response, FeedDTO feedDTO) {
+    UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
+    if(!Objects.isNull(loginUserDTO.getIdx())) {
+      feedDTO.setUser(loginUserDTO);
+    } else { // 비로그인 상태는 접근불가
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+    }
+
+    // 등록
     Long idx = userFeedService.postInsert(feedDTO);
-    if(Objects.isNull(idx)) {
+    if(Objects.isNull(idx)) { // 실패
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
     return ResponseEntity.status(HttpStatus.CREATED).body(idx);

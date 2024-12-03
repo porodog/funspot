@@ -5,6 +5,6 @@ import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import java.util.List;
 
 public interface UserFeedCommentService {
-    List<FeedCommentDTO> getCommentList(Long idx);
+    List<FeedCommentDTO> getCommentList(Long idx, Long userIdx);
     FeedCommentDTO insert(FeedCommentDTO feedCommentDTO);
 }
