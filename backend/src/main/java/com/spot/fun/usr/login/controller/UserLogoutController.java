@@ -50,16 +50,16 @@ public class UserLogoutController {
     return ResponseEntity.noContent().build(); // 상태 코드 204 반환
   }
 
-  private String extractRefreshTokenFromCookies(HttpServletRequest request) {
-    if (request.getCookies() == null) {
-      return null; // 쿠키가 없는 경우 null 반환
-    }
-
-    // 쿠키 배열에서 리프레시 토큰 검색
-    return Arrays.stream(request.getCookies())
-            .filter(cookie -> "refresh_token".equals(cookie.getName()))
-            .map(Cookie::getValue)
-            .findFirst()
-            .orElse(null);
-  }
+//  private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+//    if (request.getCookies() == null) {
+//      return null; // 쿠키가 없는 경우 null 반환
+//    }
+//
+//    // 쿠키 배열에서 리프레시 토큰 검색
+//    return Arrays.stream(request.getCookies())
+//            .filter(cookie -> "refresh_token".equals(cookie.getName()))
+//            .map(Cookie::getValue)
+//            .findFirst()
+//            .orElse(null);
+//  }
 }
