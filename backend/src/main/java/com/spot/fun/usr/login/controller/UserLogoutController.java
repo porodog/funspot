@@ -1,13 +1,12 @@
 package com.spot.fun.usr.login.controller;
 
 import com.spot.fun.token.repository.AuthTokenRepository;
+import com.spot.fun.token.util.AuthTokenUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,27 +21,32 @@ import java.util.Arrays;
 public class UserLogoutController {
 
   private final AuthTokenRepository authTokenRepository;
+  private final AuthTokenUtil authTokenUtil;
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
     // 쿠키에서 리프레시 토큰 추출
-    String refreshToken = extractRefreshTokenFromCookies(request);
+//    String refreshToken = extractRefreshTokenFromCookies(request);
+//
+//    if (refreshToken != null) {
+//      // 리프레시 토큰이 데이터베이스에 존재하면 삭제
+//      authTokenRepository.findByRefreshToken(refreshToken)
+//              .ifPresent(authTokenRepository::delete);
+//    }
+//
+//    // 리프레시 토큰 쿠키 삭제 처리
+//    ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", "")
+//            .httpOnly(true)
+//            .path("/") // 전역 경로
+//            .maxAge(0) // 즉시 만료
+//            .build();
+//    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+//
+//    log.info("사용자가 로그아웃했습니다. 리프레시 토큰이 삭제되었습니다.");
 
-    if (refreshToken != null) {
-      // 리프레시 토큰이 데이터베이스에 존재하면 삭제
-      authTokenRepository.findByRefreshToken(refreshToken)
-              .ifPresent(authTokenRepository::delete);
-    }
 
-    // 리프레시 토큰 쿠키 삭제 처리
-    ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", "")
-            .httpOnly(true)
-            .path("/") // 전역 경로
-            .maxAge(0) // 즉시 만료
-            .build();
-    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    boolean result = authTokenUtil.removeTokenAndLogout(request, response);
 
-    log.info("사용자가 로그아웃했습니다. 리프레시 토큰이 삭제되었습니다.");
     return ResponseEntity.noContent().build(); // 상태 코드 204 반환
   }
 

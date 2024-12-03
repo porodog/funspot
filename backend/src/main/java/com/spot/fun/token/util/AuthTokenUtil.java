@@ -53,6 +53,26 @@ public class AuthTokenUtil {
         makeCookie(response, "refresh_token", cookieValue, Duration.ofHours(REFRESH_TOKEN_HOUR));
     }
 
+    public boolean deleteAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            makeCookie(response, "access_token", null, Duration.ZERO);
+            return true;
+        } catch (Exception e) {
+            log.error("deleteAccessToken fail .. {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteRefreshToken(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            makeCookie(response, "refresh_token", null, Duration.ZERO);
+            return true;
+        } catch (Exception e) {
+            log.error("deleteRefreshToken fail .. {}", e.getMessage());
+            return false;
+        }
+    }
+
     public String getTokenValue(HttpServletRequest request, String cookieName) {
         Cookie[] cookies = request.getCookies();
         String resultStr = null;
@@ -105,6 +125,8 @@ public class AuthTokenUtil {
     }
 
 
+
+
     /**
      * 엑세스 토큰 검증 + 리프레시 토큰 검증 + 엑세스 토큰 재발급
      * >> 성공 :: userDTO 반환 (fromEntity)
@@ -133,5 +155,33 @@ public class AuthTokenUtil {
         }
 
         return new UserDTO();
+    }
+
+    /***
+     * 엑세스 토큰 삭제 + 리프레시 토큰 삭제 + 데이터베이스에 저장 된 리프레시토큰 정보 삭제
+     * >> 성공 : true 반환
+     * >> 실패 : false 반환
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    public boolean removeTokenAndLogout(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String accessToken = getAccessToken(request);
+            if(!StringUtils.isBlank(accessToken)) { // 엑세스 토큰 삭제
+                deleteAccessToken(request, response);
+            }
+
+            String refreshToken = getRefreshToken(request);
+            if(!StringUtils.isBlank(refreshToken)) { // 리프레시 토큰 삭제
+                authTokenRepository.deleteByRefreshToken(refreshToken);
+                deleteRefreshToken(request, response);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("removeTokenAndLogout fail .. {}", e.getMessage());
+            return false;
+        }
     }
 }
