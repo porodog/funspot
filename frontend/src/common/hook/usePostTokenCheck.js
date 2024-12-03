@@ -8,7 +8,9 @@ axios.defaults.withCredentials = true; // 쿠키사용여부 설정
 
 // 커스텀 훅: usePostTokenCheck
 const usePostTokenCheck = () => {
-  const { setUserIdx } = useBasic(); // Context에서 setUserIdx를 가져옴
+  // const context = useBasic();
+  console.log("useBasic() context:"); // 디버깅: useBasic의 반환값 확인
+  const { setUserInfo } = useBasic(); // Context에서 setUserIdx를 가져옴
 
   useEffect(() => {
     // postTokenCheck 함수 호출
@@ -16,14 +18,26 @@ const usePostTokenCheck = () => {
       try {
         const res = await axios.post("/api/usr/login/token/check");
         console.log("postTokenCheck userIdx >> " + res.data);
-        setUserIdx(res.data); // userIdx 상태 업데이트
+        // setUserInfo(res.data); // 상태 업데이트
+        // setNickname(res.data.nickname); // 닉네임 업데이트
+        if (res.status === 200 && res.data) {
+          setUserInfo(res.data); // 토큰이 유효한 경우 사용자 정보 설정
+        } else {
+          setUserInfo(null); // 토큰이 없거나 유효하지 않은 경우 초기화
+        }
       } catch (err) {
-        console.error("Error during token check:", err);
+        if (err.response?.status === 401) {
+          console.warn("Unauthorized: Token is invalid or expired.");
+          setUserInfo(null); // 401 응답 시 상태 초기화
+        } else {
+          console.error("Error during token check:", err);
+          setUserInfo(null); // 다른 에러 발생 시도 초기화
+        }
       }
     };
 
     postTokenCheck();
-  }, [setUserIdx]); // 의존성 배열에 setUserIdx를 넣어주어 업데이트가 필요할 때만 호출
+  }, [setUserInfo]); // 의존성 배열에 setUserIdx를 넣어주어 업데이트가 필요할 때만 호출
 };
 
 export default usePostTokenCheck;

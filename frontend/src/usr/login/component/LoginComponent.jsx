@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Searchid from "../../../common/searchuserinfomodal/Searchid";
 import Searchpw from "../../../common/searchuserinfomodal/Searchpw";
 import SearchModal from "../../../common/searchuserinfomodal/SearchModal";
-import { useCheckToken } from "../../../common/hook/useCheckToken";
+import { useBasic } from "../../../common/context/BasicContext";
 
 const LoginComponent = () => {
   const [userId, setUserId] = useState("");
@@ -13,27 +13,14 @@ const LoginComponent = () => {
   const [errors, setErrors] = useState({});
   const [isIdModalOpen, setIsIdModalOpen] = useState(false);
   const [isPwModalOpen, setIsPwModalOpen] = useState(false);
-  const [nickname, setNickname] = useState(null);
+  // const [nickname, setNickname] = useState(null);
   const [isTouched, setIsTouched] = useState({});
+  const { setUserInfo } = useBasic();
 
   const idInputRef = useRef(null);
   const passwordInputRef = useRef(null);
 
   const navigate = useNavigate();
-  const { checkToken } = useCheckToken();
-
-  //   useEffect(() => {
-  //     const verifyLogin = async () => {
-  //       const isAuthenticated = await checkToken();
-  //       if (isAuthenticated) {
-  //         const storedNickname = localStorage.getItem("nickname");
-  //         if (storedNickname) setNickname(storedNickname);
-  //       } else {
-  //         setNickname(null);
-  //       }
-  //     };
-  //     verifyLogin();
-  //   }, [checkToken]);
 
   const validateInputs = () => {
     const newErrors = {};
@@ -66,14 +53,12 @@ const LoginComponent = () => {
     try {
       const result = await postLoginApi(formData);
       if (result.status === 200 && result.data) {
-        //         const { nickname, accessToken } = result.data;
-        //         setNickname(nickname);
-        //         localStorage.setItem("access_token", accessToken);
-        //         localStorage.setItem("nickname", nickname);
         alert(`${result.data}님, 환영합니다!`);
-        console.log("Before setNickname:", result.data); // 디버깅
-        setNickname(result.data); // 닉네임 업데이트
-        console.log("After setNickname:", nickname); // 디버깅
+        // console.log("Before setNickname:", result.data); // 디버깅
+        setUserInfo(result.data.userId); // userIdx 업데이트
+        setUserInfo(result.data.nickname); // 닉네임 업데이트
+        navigate("/");
+        // console.log("After setNickname:", nickname); // 디버깅
       } else {
         alert("로그인 실패. 아이디와 비밀번호를 확인해주세요.");
       }
@@ -82,22 +67,20 @@ const LoginComponent = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      const result = await postLogoutApi();
-      if (result.status >= 200 && result.status < 300) {
-        setNickname(null);
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("nickname");
-        alert("로그아웃 되었습니다.");
-        navigate("/");
-      } else {
-        alert("로그아웃 중 문제가 발생했습니다. 다시 시도해주세요.");
-      }
-    } catch (error) {
-      alert("로그아웃 요청 실패");
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     const result = await postLogoutApi();
+  //     if (result.status >= 200 && result.status < 300) {
+  //       setNickname(null);
+  //       alert("로그아웃 되었습니다.");
+  //       navigate("/");
+  //     } else {
+  //       alert("로그아웃 중 문제가 발생했습니다. 다시 시도해주세요.");
+  //     }
+  //   } catch (error) {
+  //     alert("로그아웃 요청 실패");
+  //   }
+  // };
 
   const handleCancle = () => {
     navigate("/");
@@ -105,59 +88,50 @@ const LoginComponent = () => {
 
   return (
     <div>
-      {nickname ? (
+      <form id="login-form">
         <div>
-          <span>{nickname}님 | </span>
-          <button onClick={handleLogout}>로그아웃</button>
+          <label>아이디</label>
+          <input
+            type="text"
+            name="userId"
+            ref={idInputRef}
+            value={userId}
+            placeholder="ID"
+            onChange={(e) => {
+              setUserId(e.target.value);
+              setIsTouched((prev) => ({ ...prev, userId: true }));
+            }}
+            onBlur={() => setIsTouched((prev) => ({ ...prev, userId: true }))}
+          />
+          {isTouched.userId && errors.userId && (
+            <p style={{ color: "red" }}>{errors.userId}</p>
+          )}
         </div>
-      ) : (
-        <form id="login-form">
-          <div>
-            <label>아이디</label>
-            <input
-              type="text"
-              name="userId"
-              ref={idInputRef}
-              value={userId}
-              placeholder="ID"
-              onChange={(e) => {
-                setUserId(e.target.value);
-                setIsTouched((prev) => ({ ...prev, userId: true }));
-              }}
-              onBlur={() => setIsTouched((prev) => ({ ...prev, userId: true }))}
-            />
-            {isTouched.userId && errors.userId && (
-              <p style={{ color: "red" }}>{errors.userId}</p>
-            )}
-          </div>
-          <div>
-            <label>비밀번호</label>
-            <input
-              type="password"
-              name="password"
-              ref={passwordInputRef}
-              value={password}
-              placeholder="Password"
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setIsTouched((prev) => ({ ...prev, password: true }));
-              }}
-              onBlur={() =>
-                setIsTouched((prev) => ({ ...prev, password: true }))
-              }
-            />
-            {isTouched.password && errors.password && (
-              <p style={{ color: "red" }}>{errors.password}</p>
-            )}
-          </div>
-          <button type="button" onClick={doLogin}>
-            로그인
-          </button>
-          <button type="button" onClick={handleCancle}>
-            취소
-          </button>
-        </form>
-      )}
+        <div>
+          <label>비밀번호</label>
+          <input
+            type="password"
+            name="password"
+            ref={passwordInputRef}
+            value={password}
+            placeholder="Password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setIsTouched((prev) => ({ ...prev, password: true }));
+            }}
+            onBlur={() => setIsTouched((prev) => ({ ...prev, password: true }))}
+          />
+          {isTouched.password && errors.password && (
+            <p style={{ color: "red" }}>{errors.password}</p>
+          )}
+        </div>
+        <button type="button" onClick={doLogin}>
+          로그인
+        </button>
+        <button type="button" onClick={handleCancle}>
+          취소
+        </button>
+      </form>
       <div id="search-user-info">
         <div>
           <b

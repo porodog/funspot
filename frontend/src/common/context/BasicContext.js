@@ -12,10 +12,10 @@ export const useBasic = () => {
 
 // UserProvider 컴포넌트 - 하위 컴포넌트들에 Context 값 제공
 export const UserProvider = ({ children }) => {
-  const [userIdx, setUserIdx] = useState(null); // userIdx 상태 관리
+  const [userInfo, setUserInfo] = useState(null); // 상태 관리
 
   return (
-    <BasicContext.Provider value={{ userIdx, setUserIdx }}>
+    <BasicContext.Provider value={{ userInfo, setUserInfo }}>
       {children}
     </BasicContext.Provider>
   );

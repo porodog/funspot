@@ -25,41 +25,16 @@ public class UserLogoutController {
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
-    // 쿠키에서 리프레시 토큰 추출
-//    String refreshToken = extractRefreshTokenFromCookies(request);
-//
-//    if (refreshToken != null) {
-//      // 리프레시 토큰이 데이터베이스에 존재하면 삭제
-//      authTokenRepository.findByRefreshToken(refreshToken)
-//              .ifPresent(authTokenRepository::delete);
-//    }
-//
-//    // 리프레시 토큰 쿠키 삭제 처리
-//    ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", "")
-//            .httpOnly(true)
-//            .path("/") // 전역 경로
-//            .maxAge(0) // 즉시 만료
-//            .build();
-//    response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-//
-//    log.info("사용자가 로그아웃했습니다. 리프레시 토큰이 삭제되었습니다.");
-
 
     boolean result = authTokenUtil.removeTokenAndLogout(request, response);
 
-    return ResponseEntity.noContent().build(); // 상태 코드 204 반환
+    if (result) {
+      log.info("Logout successful.");
+      return ResponseEntity.ok().build(); // 상태 코드 200 반환: 로그아웃 성공
+    } else {
+      log.warn("Logout failed: Invalid or missing token.");
+      return ResponseEntity.status(401).build(); // 상태 코드 401 반환: 토큰이 유효하지 않음
+    }
+//    return ResponseEntity.noContent().build(); // 상태 코드 204 반환
   }
-
-//  private String extractRefreshTokenFromCookies(HttpServletRequest request) {
-//    if (request.getCookies() == null) {
-//      return null; // 쿠키가 없는 경우 null 반환
-//    }
-//
-//    // 쿠키 배열에서 리프레시 토큰 검색
-//    return Arrays.stream(request.getCookies())
-//            .filter(cookie -> "refresh_token".equals(cookie.getName()))
-//            .map(Cookie::getValue)
-//            .findFirst()
-//            .orElse(null);
-//  }
 }

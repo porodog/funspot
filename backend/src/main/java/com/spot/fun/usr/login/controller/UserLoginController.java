@@ -4,7 +4,6 @@ import com.spot.fun.token.dto.AuthTokenDTO;
 import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.login.service.UserLoginService;
 import com.spot.fun.usr.user.dto.UserDTO;
-import com.spot.fun.usr.user.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Log4j2
@@ -48,10 +49,20 @@ public class UserLoginController {
     try {
       UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
 
-      Long userIdx = Optional.ofNullable(loginUserDTO)
-              .map(UserDTO::getIdx)
-              .orElse(null);
-      return ResponseEntity.status(HttpStatus.OK).body(userIdx);
+//      Long userIdx = Optional.ofNullable(loginUserDTO)
+//              .map(UserDTO::getIdx)
+//              .orElse(null);
+      if (loginUserDTO == null || loginUserDTO.getIdx() == null) {
+        log.warn("Invalid or missing token.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+      }
+
+      // userIdx와 nickname을 포함한 Map 반환
+      Map<String, Object> responseBody = new HashMap<>();
+      responseBody.put("userIdx", loginUserDTO.getIdx());
+      responseBody.put("nickname", loginUserDTO.getNickname());
+
+      return ResponseEntity.ok(responseBody);
     } catch (Exception e) {
       log.error("tokenCheck Error: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
