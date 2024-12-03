@@ -6,8 +6,12 @@ import ContentComponent from "../component/item/ContentComponent";
 import ButtonComponent from "../component/item/ButtonComponent";
 import ListComponent from "../component/comment/ListComponent";
 import InputComponent from "../component/comment/InputComponent";
+import { useBasic } from "../../../common/context/BasicContext";
 
 const DetailModal = ({ feed, closeDetailModal, handleLikesEvent }) => {
+  const { userIdx, setUserIdx } = useBasic();
+  console.log("modal.. " + userIdx);
+
   // 댓글목록 조회
   const [commentList, setCommentList] = useState([]);
   useEffect(() => {

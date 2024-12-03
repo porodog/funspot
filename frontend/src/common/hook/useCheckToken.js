@@ -23,7 +23,11 @@ export const useCheckToken = () => {
 
     try {
       const config = { headers: { Authorization: `Bearer ${accessToken}` } };
-      const response = await axios.post(`${API_BASE_URL}/api/token/access`, null, config);
+      const response = await axios.post(
+        `${API_BASE_URL}/api/token/access`,
+        null,
+        config
+      );
 
       if (response.status === 200 && response.data.result) {
         return true; // 인증 성공
@@ -39,7 +43,11 @@ export const useCheckToken = () => {
   const postRefreshTokenApi = async () => {
     try {
       const config = { withCredentials: true };
-      const response = await axios.post(`${API_BASE_URL}/api/token/refresh`, null, config);
+      const response = await axios.post(
+        `${API_BASE_URL}/api/token/refresh`,
+        null,
+        config
+      );
 
       if (response.status === 200 && response.data.accessToken) {
         localStorage.setItem("access_token", response.data.accessToken); // 갱신 성공
