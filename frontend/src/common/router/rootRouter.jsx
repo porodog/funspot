@@ -59,9 +59,11 @@ const rootRouter = createBrowserRouter(
     {
       path: "datecourses",
       element: (
+
         <Suspense fallback={Loading}>
           <CoursePage />
         </Suspense>
+
       ),
     },
     // {
@@ -73,15 +75,15 @@ const rootRouter = createBrowserRouter(
     //   ),
     // },
   ],
-  {
-    future: {
-      v7_fetcherPersist: true,
-      v7_normalizeFormMethod: true,
-      v7_partialHydration: true,
-      v7_skipActionErrorRevalidation: true,
-      v7_relativeSplatPath: true,
-    },
-  }
+  // {
+  //   future: {
+  //     v7_fetcherPersist: true,
+  //     v7_normalizeFormMethod: true,
+  //     v7_partialHydration: true,
+  //     v7_skipActionErrorRevalidation: true,
+  //     v7_relativeSplatPath: true,
+  //   },
+  // }
 );
 
 export default rootRouter;
