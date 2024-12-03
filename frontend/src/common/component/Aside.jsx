@@ -52,6 +52,9 @@ const Aside = () => {
         <li>
           <Link to={"/feed"}>피드</Link>
         </li>
+        <li>
+                  <Link to={"/board"}>게시판</Link>
+                </li>
       </ul>
     </aside>
   );
