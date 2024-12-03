@@ -3,17 +3,15 @@ import { feedLikeApi, getFeedListApi } from "../api/FeedApi";
 import ListComponent from "../component/ListComponent";
 import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
-import { useCheckToken } from "../../../common/hook/useCheckToken";
 
 const ListPage = () => {
   // 로그인 상태
   const [isLogin, setIsLogin] = useState(false);
-  const { checkToken } = useCheckToken();
-  const checkLoginToken = async () => {
-    const result = await checkToken();
-    //console.log("isLogin result >> "+result);
-    setIsLogin(result);
-  };
+  // const checkLoginToken = async () => {
+  //   const result = await checkToken();
+  //   //console.log("isLogin result >> "+result);
+  //   setIsLogin(result);
+  // };
 
   // 모달
   const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
