@@ -67,7 +67,7 @@ const rootRouter = createBrowserRouter(
       ),
     },
     {
-        path: "boardindex",
+        path: "board",
           element: (
             <Suspense fallback={Loading}>
               <BoardIndexPage />
