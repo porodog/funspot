@@ -47,11 +47,11 @@ public class ChatRoomService implements ChatService{
                 .collect(Collectors.toList());
     }
 
-    // 채팅방 개설(사용자가 메시지를 보내거나 받으면 user chatroom, other chatroom 생성)
-    public List<ChatRoom> createChatRoom(ChatRoomRequestDTO chatRoomRequestDTO) {
-
-
-    }
+//    // 채팅방 개설(사용자가 메시지를 보내거나 받으면 user chatroom, other chatroom 생성)
+//    public List<ChatRoom> createChatRoom(ChatRoomRequestDTO chatRoomRequestDTO) {
+//
+//
+//    }
 
 
 

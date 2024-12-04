@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
 import feedRouter from "../../usr/feed/router/feedRouter";
+import boardRouter from "../../usr/board/router/boardRouter";
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -11,6 +12,7 @@ const MyPage = lazy(() => import("../../usr/mypage/page/MyPage"));
 const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
 const CoursePage = lazy(() => import("../../usr/course/page/CourseListPage"));
+const BoardIndexPage = lazy(() => import("../../usr/board/page/BoardIndexPage"));
 // const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
 
 const rootRouter = createBrowserRouter(
@@ -64,6 +66,15 @@ const rootRouter = createBrowserRouter(
         </Suspense>
       ),
     },
+    {
+        path: "boardindex",
+          element: (
+            <Suspense fallback={Loading}>
+              <BoardIndexPage />
+            </Suspense>
+          ),
+          children: boardRouter(),
+        },
     // {
     //   path: "addDate",
     //   element: (
