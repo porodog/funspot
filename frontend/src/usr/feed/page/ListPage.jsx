@@ -3,7 +3,6 @@ import { feedLikeApi, getFeedDetailApi, getFeedListApi } from "../api/FeedApi";
 import ListComponent from "../component/ListComponent";
 import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
-import { useCheckToken } from "../../../common/hook/useCheckToken";
 
 const ListPage = () => {
   // 모달

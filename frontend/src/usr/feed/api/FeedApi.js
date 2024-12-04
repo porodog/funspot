@@ -26,13 +26,13 @@ export const postFeedInsertApi = async (form) => {
       "Content-Type": "multipart/form-data",
     },
   };
-  const res = await axios.post(`${API_BASE_URL}/api/usr/feed`, form, header);
+  const res = await axios.post(`/api/usr/feed`, form, header);
   return res.data;
 };
 
 // 댓글목록 조회
 export const getFeedCommentListApi = async (idx) => {
-  const res = await axios.get(`${API_BASE_URL}/api/usr/feed/comment/${idx}`);
+  const res = await axios.get(`/api/usr/feed/comment/${idx}`);
   return res.data;
 };
 
