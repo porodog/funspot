@@ -3,12 +3,7 @@ import ImageComponent from "./item/ImageComponent";
 import ButtonComponent from "./item/ButtonComponent";
 import ContentComponent from "./item/ContentComponent";
 
-const ListComponent = ({
-  isLogin,
-  feedList,
-  handleSelectedFeed,
-  handleLikesEvent,
-}) => {
+const ListComponent = ({ feedList, handleSelectedFeed, handleLikesEvent }) => {
   return (
     <div className="border-2 border-green-200 w-full">
       <h1>Feed List Component</h1>
@@ -39,7 +34,11 @@ const ListComponent = ({
               handleSelectedFeed={handleSelectedFeed}
               handleLikesEvent={handleLikesEvent}
             />
-            <ContentComponent feed={feed} />
+            <ContentComponent
+              feed={feed}
+              handleSelectedFeed={handleSelectedFeed}
+              feedIdx={feed.idx}
+            />
           </div>
         ))
       ) : (
