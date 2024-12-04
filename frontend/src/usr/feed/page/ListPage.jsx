@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
-import { feedLikeApi, getFeedDetailApi, getFeedListApi } from "../api/FeedApi";
+import { feedLikeApi, getFeedListApi } from "../api/FeedApi";
 import ListComponent from "../component/ListComponent";
 import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
-import { useCheckToken } from "../../../common/hook/useCheckToken";
 
 const ListPage = () => {
+  // 로그인 상태
+  const [isLogin, setIsLogin] = useState(false);
+  // const checkLoginToken = async () => {
+  //   const result = await checkToken();
+  //   //console.log("isLogin result >> "+result);
+  //   setIsLogin(result);
+  // };
+
   // 모달
   const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const closeInsertModal = (newIdx) => {
+  const closeInsertModal = () => {
     setIsInsertModalOpen(false);
-    newIdx && handleDetailEvent(newIdx); // 목록 재조회
   };
   const openDetailModal = () => {
     setIsDetailModalOpen(true);
@@ -22,7 +28,7 @@ const ListPage = () => {
 
   // 스크롤 위치
   const [isBottom, setIsBottom] = useState(false);
-  const handleScrollEvent = () => {
+  const handelScrollEvent = () => {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const innerHeight = window.innerHeight;
     const scrollHeight = document.documentElement.scrollHeight;
@@ -61,19 +67,7 @@ const ListPage = () => {
       });
   };
 
-  // 상세정보 조회
-  const handleDetailEvent = (idx) => {
-    getFeedDetailApi(idx)
-      .then((data) => {
-        console.log(data);
-        setFeedList((prevList) => [data, ...prevList]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  // 상세모달 조회
+  // 상세조회
   const [selectedFeed, setSelectedFeed] = useState({});
   const handleSelectedFeed = (idx) => {
     const feed = feedList.find((item) => item.idx === idx);
@@ -85,6 +79,7 @@ const ListPage = () => {
   const handleLikesEvent = (targetIdx, likedYn, likeCount) => {
     feedLikeApi({ idx: targetIdx, likedYn })
       .then((data) => {
+        console.log(data);
         const newLikeCount = likeCount > 99 ? "99+" : likeCount;
         setFeedList((prevFeedList) =>
           prevFeedList.map((feed) =>
@@ -104,35 +99,17 @@ const ListPage = () => {
       });
   };
 
-  // 댓글 수
-  const handleCommentCountEvent = (targetIdx, type) => {
-    setFeedList((prevFeedList) =>
-      prevFeedList.map((feed) => {
-        if (feed.idx === targetIdx) {
-          const commentCount =
-            type === "new" ? feed.commentCount + 1 : feed.commentCount - 1;
-          const newCommentCount = commentCount > 99 ? "99+" : commentCount;
-
-          setSelectedFeed((prevFeed) => ({
-            ...prevFeed,
-            commentCount: newCommentCount,
-          }));
-
-          return { ...feed, commentCount: newCommentCount };
-        }
-        return feed;
-      })
-    );
-  };
-
   // 최초 마운트
   useEffect(() => {
+    //checkLoginToken();
     handleListEvent();
-    window.addEventListener("scroll", handleScrollEvent);
-    // window.addEventListener("resize", handleScrollEvent);
+
+    window.addEventListener("scroll", handelScrollEvent);
+    // window.addEventListener("resize", handelScrollEvent);
+
     return () => {
-      window.removeEventListener("scroll", handleScrollEvent);
-      // window.removeEventListener("resize", handleScrollEvent);
+      window.removeEventListener("scroll", handelScrollEvent);
+      // window.removeEventListener("resize", handelScrollEvent);
     };
   }, []);
 
@@ -140,6 +117,7 @@ const ListPage = () => {
   useEffect(() => {
     if (isInsertModalOpen || isDetailModalOpen) {
       document.body.style.overflow = "hidden";
+      //checkLoginToken(); // 로그인 상태 확인
     } else {
       document.body.style.overflow = "auto";
     }
@@ -151,9 +129,10 @@ const ListPage = () => {
   // 목록 조회
   useEffect(() => {
     if (isBottom && hasNext) {
+      //checkLoginToken();
       handleListEvent();
     }
-  }, [isBottom]);
+  }, [isBottom, isLogin]);
 
   return (
     <div className="border border-amber-200 w-1/2">
@@ -168,6 +147,7 @@ const ListPage = () => {
         !!!! 등록 버튼 (비로그인은 숨겨야함)!!!!
       </button>
       <ListComponent
+        isLogin={isLogin}
         feedList={feedList}
         handleSelectedFeed={handleSelectedFeed}
         handleLikesEvent={handleLikesEvent}
@@ -178,7 +158,6 @@ const ListPage = () => {
           feed={selectedFeed}
           closeDetailModal={closeDetailModal}
           handleLikesEvent={handleLikesEvent}
-          handleCommentCountEvent={handleCommentCountEvent}
         />
       )}
     </div>
