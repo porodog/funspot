@@ -15,7 +15,7 @@ const categories = [
   { name: '펀추천코스', img: <LikeSpot />, path: '/recommended-courses' },
   { name: '코스만들기', img: <MakeCourse />, path: '/create-course' },
   { name: '피드', img: <Feed />, path: '/feed' },
-  //   { name: '투어', icon: '🚶' },
+  { name: '게시판', img: <FoodFork />, path: '/board' },
   //   { name: '축제', icon: '🎉' },
 ];
 
