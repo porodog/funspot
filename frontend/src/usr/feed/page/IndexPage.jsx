@@ -1,15 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
 import BasicLayout from "../../../common/layout/BasicLayout";
 import { Outlet } from "react-router-dom";
-import { useBasic } from "../../../common/context/BasicContext";
-import usePostTokenCheck from "../../../common/hook/usePostTokenCheck";
 
 const IndexPage = () => {
-  const { userIdx } = useBasic();
-  usePostTokenCheck();
-
-  console.log(">>>>>> " + userIdx);
-
   return (
     <BasicLayout>
       <div className="border border-gray-200 w-full">
