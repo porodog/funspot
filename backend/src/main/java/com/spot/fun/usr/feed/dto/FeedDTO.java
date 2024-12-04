@@ -34,6 +34,8 @@ public class FeedDTO {
   private Boolean likedYn;
   private String regDateStr;
 
+  private List<Long> hashtagIdx;
+
   public Feed toEntity() {
     return Feed.builder()
             .content(this.content)
