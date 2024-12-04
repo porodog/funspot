@@ -20,9 +20,12 @@ const rootRouter = createBrowserRouter(
     {
       path: "",
       element: (
-        <Suspense fallback={Loading}>
-          <MainPage />
-        </Suspense>
+        // BasicLayout이 Suspense의 영향을 받아 무시되므로 Mainpage만 BasicLayout으로 적용
+        <BasicLayout>
+          <Suspense fallback={Loading}>
+            <MainPage />
+          </Suspense>
+        </BasicLayout>
       ),
     },
     {
@@ -61,9 +64,11 @@ const rootRouter = createBrowserRouter(
     {
       path: "datecourses",
       element: (
+
         <Suspense fallback={Loading}>
           <CoursePage />
         </Suspense>
+
       ),
     },
     {

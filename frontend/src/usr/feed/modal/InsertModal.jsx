@@ -5,12 +5,10 @@ import ImageComponent from "../component/insert/ImageComponent";
 import ProfileComponent from "../component/item/ProfileComponent";
 import { useBasic } from "../../../common/context/BasicContext";
 import ContentComponent from "../component/insert/ContentComponent";
-import HashtagComponent from "../component/insert/HashtagComponent";
 
 const InsertModal = ({ closeInsertModal }) => {
   // 전역 값
   const { userInfo } = useBasic();
-  const userIdx = userInfo ?? null;
 
   // 이미지
   const useFileRef = useRef([]);
@@ -18,34 +16,16 @@ const InsertModal = ({ closeInsertModal }) => {
   // 콘텐츠
   const useTextRef = useRef(null);
 
-  // 해시태그 모달
+  // 해시태그
+  const [selectedHashtags, setSelectedHashtags] = useState([]);
   const [isHashtagModalOpen, setIsHashtagModalOpen] = useState(false);
   const closeHashtagModal = () => {
     setIsHashtagModalOpen(false);
   };
 
   // 해시태그 추가
-  const [hashtagList, setHashtagList] = useState([]);
-  const handleSelectHashTagEvent = (tag) => {
-    const tagObj = {
-      hashtagIdx: tag.idx,
-      tagName: tag.tagName,
-    };
-    setHashtagList((prevList) => {
-      if (prevList.find((item) => item.hashtagIdx === tagObj.hashtagIdx)) {
-        return prevList.filter((item) => item.hashtagIdx !== tagObj.hashtagIdx);
-      } else {
-        return [...prevList, tagObj];
-      }
-    });
-  };
-
-  // 해시태그 삭제
-  const handleDeleteHashTagEvent = (tag) => {
-    setHashtagList((prevList) => {
-      console.log(prevList, tag.hashtagIdx);
-      return prevList.filter((item) => item.hashtagIdx !== tag.hashtagIdx);
-    });
+  const addHashtag = (hashtag) => {
+    setSelectedHashtags((prevHashtags) => [...prevHashtags, hashtag]);
   };
 
   // 글 등록
@@ -65,14 +45,6 @@ const InsertModal = ({ closeInsertModal }) => {
       }
     });
     form.append("content", content);
-
-    hashtagList.map((item, index) => {
-      console.log(item);
-      form.append(
-        `feedHashtags[${index}].hashtagIdx`,
-        parseInt(item.hashtagIdx)
-      );
-    });
 
     postFeedInsertApi(form)
       .then((res) => {
@@ -114,7 +86,7 @@ const InsertModal = ({ closeInsertModal }) => {
         </div>
 
         {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent user={{ ...userInfo, idx: userIdx }} />
+        <ProfileComponent user={{ ...userInfo, idx: userInfo.userIdx }} />
 
         {/* 중간영역: 글 내용 및 해시태그 */}
         <div className="mt-4">
@@ -122,22 +94,20 @@ const InsertModal = ({ closeInsertModal }) => {
           <ContentComponent useTextRef={useTextRef} />
 
           {/* 해시태그 */}
-          <div className="mt-2 flex items-center space-x-4">
+          <div className="mt-2 flex items-center space-x-2">
             <button
-              className="text-blue-500 border-2 border-blue-500 rounded-full py-2 px-6 font-semibold text-sm hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
+              className="text-blue-500"
               onClick={() => setIsHashtagModalOpen(true)}
             >
               해시태그 추가
             </button>
-
-            {/* 선택된 해시태그들 */}
-            <div className="flex flex-wrap gap-2">
-              {(hashtagList ?? []).length > 0 && (
-                <HashtagComponent
-                  hashtagList={hashtagList}
-                  handleDeleteHashTagEvent={handleDeleteHashTagEvent}
-                />
-              )}
+            <div className="flex flex-wrap space-x-2">
+              {selectedHashtags.map((hashtag, index) => (
+                <span key={index} className="text-sm text-blue-500">
+                  {" "}
+                  {hashtag}{" "}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -174,8 +144,7 @@ const InsertModal = ({ closeInsertModal }) => {
         {isHashtagModalOpen && (
           <HashTagModal
             closeHashtagModal={closeHashtagModal}
-            hashtagList={hashtagList}
-            handleSelectHashTagEvent={handleSelectHashTagEvent}
+            addHashtag={addHashtag}
           />
         )}
       </div>

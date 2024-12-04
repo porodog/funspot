@@ -11,12 +11,6 @@ const InputComponent = ({ handleCommentEvent }) => {
     setCommentText("");
   };
 
-  const enterEvent = (e) => {
-    if (e.key === "Enter") {
-      submitComment();
-    }
-  };
-
   return (
     <>
       <input
@@ -26,7 +20,6 @@ const InputComponent = ({ handleCommentEvent }) => {
         maxLength="50"
         value={commentText}
         onChange={(e) => setCommentText(e.target.value)}
-        onKeyDown={enterEvent}
       />
       <button
         type="button"
