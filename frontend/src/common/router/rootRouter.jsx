@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import feedRouter from "../../usr/feed/router/feedRouter";
 import boardRouter from "../../usr/board/router/boardRouter";
+import BasicLayout from "../layout/BasicLayout";
 
 const { createBrowserRouter } = require("react-router-dom");
 

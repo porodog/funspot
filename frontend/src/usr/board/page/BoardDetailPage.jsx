@@ -3,23 +3,22 @@ import { useParams } from "react-router-dom";
 
 function BoardDetailPage() {
     const { id } = useParams();
-    const [board, setBoard] = useState(null);
+    const [post, setPost] = useState(null);
 
     useEffect(() => {
-        fetch(`/api/boards/${id}`)
-            .then((response) => response.json())
-            .then((data) => setBoard(data))
-            .catch((error) => console.error("Error fetching board:", error));
+        fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
+            .then(response => response.json())
+            .then(data => setPost(data));
     }, [id]);
 
-    if (!board) {
+    if (!post) {
         return <div>Loading...</div>;
     }
 
     return (
         <div>
-            <h1>{board.title}</h1>
-            <p>{board.content}</p>
+            <h1>{post.title}</h1>
+            <p>{post.body}</p>
         </div>
     );
 }
