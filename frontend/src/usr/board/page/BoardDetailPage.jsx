@@ -17,8 +17,11 @@ function BoardDetailPage() {
 
     return (
         <div>
-            <h1>{post.title}</h1>
-            <p>{post.body}</p>
+            <p>글 번호 : {post.id}</p>
+            <h1>제목 : {post.title}</h1>
+            
+            <p>작성자 : {post.userId}</p>
+            <p>내용 : {post.body}</p>
         </div>
     );
 }

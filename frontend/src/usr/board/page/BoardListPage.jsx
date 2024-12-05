@@ -16,7 +16,7 @@ function BoardListPage() {
             <ul>
                 {posts.map(post => (
                     <li key={post.id}>
-                        <Link to={`/boardindex/board/${post.id}`}>{post.title}</Link>
+                        <Link to={`/board/detail/${post.id}`}>[{post.id}] {post.title} {post.userId} </Link>
                     </li>
                 ))}
             </ul>
@@ -25,9 +25,6 @@ function BoardListPage() {
 }
 
 export default BoardListPage;
-
-
-
 //   const [bbsList, setBbsList] = useState([]);
 //
 //   // 검색용 Hook
