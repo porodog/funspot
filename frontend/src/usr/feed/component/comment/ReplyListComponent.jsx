@@ -46,7 +46,7 @@ const ReplyListComponent = ({
                   {reply.user.nickname}
                 </p>
                 <div className="flex items-center">
-                  {replyList.user.idx === loginUserIdx && (
+                  {reply.user.idx === loginUserIdx && (
                     <>
                       <button
                         className="text-blue-500"

@@ -21,7 +21,7 @@ const DetailModal = ({
   handleCommentCountEvent,
 }) => {
   const { userInfo } = useBasic();
-  //console.log(userInfo);
+  const loginUserIdx = userInfo?.userIdx || "";
 
   // 댓글목록 조회
   const [commentList, setCommentList] = useState([]);
@@ -193,7 +193,9 @@ const DetailModal = ({
           {/* 오른쪽 영역 */}
           <div className="flex justify-between mb-4 items-start">
             {/* 프로필 */}
-            {feed.user && <ProfileComponent user={feed.user} />}
+            {feed.user && (
+              <ProfileComponent user={feed.user} pageType={"detail"} />
+            )}
 
             {/* 상단 툴바 X 버튼 */}
             <button
@@ -237,7 +239,7 @@ const DetailModal = ({
 
           <div className="flex justify-center w-full">
             {/*댓글 입력 + 등록*/}
-            {userInfo != null && (
+            {loginUserIdx && (
               <InputComponent handleCommentEvent={handleCommentEvent} />
             )}
           </div>

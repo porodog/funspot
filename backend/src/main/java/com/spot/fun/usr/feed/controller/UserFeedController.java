@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,5 +69,21 @@ public class UserFeedController {
     return fileUploadUtil.outputImage(menuType, fileName);
   }
 
+  @DeleteMapping("")
+  public ResponseEntity<?> delete(HttpServletRequest request, HttpServletResponse response,
+                                         FeedDTO feedDTO) {
+    UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
+    Long loginUserIdx = loginUserDTO.getIdx();
+    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+    }
+    feedDTO.setUser(loginUserDTO);
+
+    FeedDTO result = userFeedService.delete(feedDTO);
+    if(ObjectUtils.isEmpty(result)) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    return ResponseEntity.status(HttpStatus.CREATED).body(result);
+  }
 
 }

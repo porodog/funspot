@@ -44,7 +44,7 @@ const CommentProfileComponent = ({
                 >
                   수정
                 </button>
-                <span className="mx-2">|</span>
+                <span className="mx-2 text-gray-500">|</span>
                 <button
                   className="text-red-500"
                   onClick={() => handleCommentDeleteEvent(comment.idx)}

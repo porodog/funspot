@@ -72,4 +72,8 @@ public class Feed {
       modDate = LocalDateTime.now();
     }
   }
+
+  public void changeDelYn(boolean delYn) {
+    this.delYn = delYn;
+  }
 }
