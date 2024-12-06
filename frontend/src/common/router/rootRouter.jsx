@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import feedRouter from "../../usr/feed/router/feedRouter";
 import boardRouter from "../../usr/board/router/boardRouter";
 import BasicLayout from "../layout/BasicLayout";
+import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -22,6 +23,7 @@ const BoardIndexPage = lazy(() =>
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
 );
+const DateCourseListPage = lazy(() => import("../../usr/course/page/DateCourseListpage"));
 // const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
 
 const rootRouter = createBrowserRouter(
@@ -70,7 +72,7 @@ const rootRouter = createBrowserRouter(
       ),
     },
     {
-      path: "Signup",
+      path: "signup",
       element: (
         <Suspense fallback={Loading}>
           <SignupPage />
@@ -87,14 +89,6 @@ const rootRouter = createBrowserRouter(
       children: feedRouter(),
     },
     {
-      path: "datecourses",
-      element: (
-        <Suspense fallback={Loading}>
-          <CoursePage />
-        </Suspense>
-      ),
-    },
-    {
       path: "board",
       element: (
         <Suspense fallback={Loading}>
@@ -102,6 +96,15 @@ const rootRouter = createBrowserRouter(
         </Suspense>
       ),
       children: boardRouter(),
+    },
+    {
+      path: "datecourses", // 데이트 코스 목록 페이지 경로
+      element: (
+        <Suspense fallback={Loading}>
+          <DateCourseListPage />
+        </Suspense>
+      ),
+      children: dateRouter(), // DateRouter 자식 라우터 추가
     },
     // {
     //   path: "addDate",
