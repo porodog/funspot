@@ -30,6 +30,10 @@ const SocialSignupComponent = () => {
     zonecode: "",
   });
 
+  // 오늘 날짜를 "YYYY-MM-DD" 형식으로 계산
+  const today = new Date();
+  const formattedToday = today.toISOString().split("T")[0];
+
   // 세션 데이터 가져오기
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -138,8 +142,9 @@ const SocialSignupComponent = () => {
       if (!value) {
         setAlertModalConfig({
           isOpen: true,
-          message: `${field === "userId" ? "아이디" : "닉네임"
-            }를(을) 입력해주세요.`,
+          message: `${
+            field === "userId" ? "아이디" : "닉네임"
+          }를(을) 입력해주세요.`,
         });
         return;
       }
@@ -148,16 +153,18 @@ const SocialSignupComponent = () => {
       if (response.data.isDuplicate) {
         setAlertModalConfig({
           isOpen: true,
-          message: `${value}은(는) 중복된 ${field === "userId" ? "아이디" : "닉네임"
-            }입니다.`,
+          message: `${value}은(는) 중복된 ${
+            field === "userId" ? "아이디" : "닉네임"
+          }입니다.`,
         });
         if (field === "userId") setIsUserIdChecked(false);
         if (field === "nickname") setIsNicknameChecked(false);
       } else {
         setAlertModalConfig({
           isOpen: true,
-          message: `${value}은(는) 사용 가능한 ${field === "userId" ? "아이디" : "닉네임"
-            }입니다.`,
+          message: `${value}은(는) 사용 가능한 ${
+            field === "userId" ? "아이디" : "닉네임"
+          }입니다.`,
         });
         if (field === "userId") setIsUserIdChecked(true);
         if (field === "nickname") setIsNicknameChecked(true);
@@ -228,8 +235,11 @@ const SocialSignupComponent = () => {
             className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
-          <button type="button" onClick={() => handleDuplicateCheck("userId")}
-            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400">
+          <button
+            type="button"
+            onClick={() => handleDuplicateCheck("userId")}
+            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400"
+          >
             중복 확인
           </button>
           {errors.userId && <p style={{ color: "red" }}>{errors.userId}</p>}
@@ -256,6 +266,7 @@ const SocialSignupComponent = () => {
             name="birthDate"
             value={formData.birthDate}
             onChange={handleChange}
+            max={formattedToday}
             className="mt-2 p-2 mb-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
@@ -323,8 +334,11 @@ const SocialSignupComponent = () => {
               className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
             />
-            <button type="button" onClick={() => setAddressModalOpen(true)}
-              className="border bg-custom-cyan rounded-3xl mt-2 ml-2 p-2 w-32 hover:bg-emerald-400">
+            <button
+              type="button"
+              onClick={() => setAddressModalOpen(true)}
+              className="border bg-custom-cyan rounded-3xl mt-2 ml-2 p-2 w-32 hover:bg-emerald-400"
+            >
               주소 찾기
             </button>
           </div>
@@ -333,9 +347,14 @@ const SocialSignupComponent = () => {
 
         <div>
           <p className="font-bold">주소</p>
-          <input type="text" name="address" value={formData.address} readOnly
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            readOnly
             className="mt-2 p-2 mb-2 w-80 rounded-3xl border 
-          focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200" />
+          focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
+          />
           {errors.address && <p style={{ color: "red" }}>{errors.address}</p>}
         </div>
 
@@ -352,13 +371,20 @@ const SocialSignupComponent = () => {
           />
         </div>
 
-        <button type="submit"
-          className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400">가입하기</button>
-        <button type="button"
-          className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer" onClick={handleCancel}>
+        <button
+          type="submit"
+          className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400"
+        >
+          가입하기
+        </button>
+        <button
+          type="button"
+          className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer"
+          onClick={handleCancel}
+        >
           취소
         </button>
-      </form >
+      </form>
 
       <AddressModal
         isOpen={addressModalOpen}
@@ -387,7 +413,7 @@ const SocialSignupComponent = () => {
           }
         }}
       />
-    </div >
+    </div>
   );
 };
 

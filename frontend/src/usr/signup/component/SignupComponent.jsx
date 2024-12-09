@@ -7,6 +7,8 @@ import {
 } from "../api/SignupApi";
 import AddressModal from "../../../common/signupmodal/AddressModal";
 import AlertModal from "../../../common/signupmodal/AlertModal";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const SignupComponent = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +25,10 @@ const SignupComponent = () => {
     zonecode: "",
   });
 
+  // 오늘 날짜를 "YYYY-MM-DD" 형식으로 계산
+  const today = new Date();
+  const formattedToday = today.toISOString().split("T")[0];
+
   const [errors, setErrors] = useState({});
   const [isTouched, setIsTouched] = useState({});
   const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -37,6 +43,8 @@ const SignupComponent = () => {
   const [verificationCode, setVerificationCode] = useState(""); // 사용자 입력 인증 코드
   const [serverCode, setServerCode] = useState(null); // 서버 생성 인증 코드
   const [callback, setCallback] = useState(null);
+  const [showPassword, setShowPassword] = useState(false); // 비밀번호 표시 상태
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // 비밀번호 확인 표시 상태
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -176,8 +184,9 @@ const SignupComponent = () => {
       if (!value) {
         setAlertModalConfig({
           isOpen: true,
-          message: `${field === "userId" ? "아이디" : "닉네임"
-            }를(을) 입력해주세요.`,
+          message: `${
+            field === "userId" ? "아이디" : "닉네임"
+          }를(을) 입력해주세요.`,
         });
         return;
       }
@@ -186,16 +195,18 @@ const SignupComponent = () => {
       if (response.data.isDuplicate) {
         setAlertModalConfig({
           isOpen: true,
-          message: `${value}은(는) 중복된 ${field === "userId" ? "아이디" : "닉네임"
-            }입니다.`,
+          message: `${value}은(는) 중복된 ${
+            field === "userId" ? "아이디" : "닉네임"
+          }입니다.`,
         });
         if (field === "userId") setIsUserIdChecked(false);
         if (field === "nickname") setIsNicknameChecked(false);
       } else {
         setAlertModalConfig({
           isOpen: true,
-          message: `${value}은(는) 사용 가능한 ${field === "userId" ? "아이디" : "닉네임"
-            }입니다.`,
+          message: `${value}은(는) 사용 가능한 ${
+            field === "userId" ? "아이디" : "닉네임"
+          }입니다.`,
         });
         if (field === "userId") setIsUserIdChecked(true);
         if (field === "nickname") setIsNicknameChecked(true);
@@ -298,7 +309,9 @@ const SignupComponent = () => {
             className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
-          <button type="button" onClick={() => handleDuplicateCheck("userId")}
+          <button
+            type="button"
+            onClick={() => handleDuplicateCheck("userId")}
             className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32 hover:bg-emerald-400"
           >
             중복 확인
@@ -306,31 +319,57 @@ const SignupComponent = () => {
           {errors.userId && <p style={{ color: "red" }}>{errors.userId}</p>}
         </div>
 
-        <div className="mt-2 mb-2">
+        <div className="mt-2 mb-2 relative w-80">
           <p className="font-bold">비밀번호</p>
-          <input
-            type="password"
-            name="password"
-            placeholder="영문, 숫자, 특수문자 포함 8~16자"
-            value={formData.password}
-            onChange={handleChange}
-            className="mt-2 p-2 w-80 rounded-3xl border 
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="영문, 숫자, 특수문자 포함 8~16자"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
-          />
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)} // 비밀번호 토글 상태 변경
+              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? (
+                <Visibility fontSize="small" /> // 눈 아이콘
+              ) : (
+                <VisibilityOff fontSize="small" /> // 눈 가림 아이콘
+              )}
+            </button>
+          </div>
           {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
         </div>
 
-        <div className="mt-2 mb-2">
+        <div className="mt-2 mb-2 relative w-80">
           <p className="font-bold ">비밀번호 확인</p>
-          <input
-            type="password"
-            name="confirmPassword"
-            placeholder="비밀번호 재입력"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            className="mt-2 p-2 w-80 rounded-3xl border 
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              placeholder="비밀번호 재입력"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
-          />
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)} // 비밀번호 확인 토글 상태 변경
+              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showConfirmPassword ? (
+                <Visibility fontSize="small" /> // 눈 아이콘
+              ) : (
+                <VisibilityOff fontSize="small" /> // 눈 가림 아이콘
+              )}
+            </button>
+          </div>
           {errors.confirmPassword && (
             <p style={{ color: "red" }}>{errors.confirmPassword}</p>
           )}
@@ -361,6 +400,7 @@ const SignupComponent = () => {
             name="birthDate"
             value={formData.birthDate}
             onChange={handleChange}
+            max={formattedToday}
             className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
@@ -468,8 +508,11 @@ const SignupComponent = () => {
               className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
             />
-            <button type="button" onClick={() => setAddressModalOpen(true)}
-              className="border bg-custom-cyan rounded-3xl mt-2 ml-2 p-2 w-32 hover:bg-emerald-400">
+            <button
+              type="button"
+              onClick={() => setAddressModalOpen(true)}
+              className="border bg-custom-cyan rounded-3xl mt-2 ml-2 p-2 w-32 hover:bg-emerald-400"
+            >
               주소 찾기
             </button>
           </div>
@@ -478,9 +521,14 @@ const SignupComponent = () => {
 
         <div className="mt-2 mb-2 ">
           <p className="font-bold">주소</p>
-          <input type="text" name="address" value={formData.address} readOnly
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            readOnly
             className="mt-2 p-2 w-80 rounded-3xl border 
-          focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"/>
+          focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
+          />
           {errors.address && <p style={{ color: "red" }}>{errors.address}</p>}
         </div>
 
@@ -497,10 +545,17 @@ const SignupComponent = () => {
           />
         </div>
         <div>
-          <button type="submit"
-            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400">가입하기</button>
-          <button type="button" onClick={handleCancel}
-            className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer">
+          <button
+            type="submit"
+            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400"
+          >
+            가입하기
+          </button>
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer"
+          >
             취소
           </button>
         </div>
