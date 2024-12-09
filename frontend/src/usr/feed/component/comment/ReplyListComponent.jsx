@@ -25,6 +25,10 @@ const ReplyListComponent = ({
     setActiveComment(null);
   };
 
+  const handleProfileEvent = (userIdx) => {
+    console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + userIdx);
+  };
+
   return (
     <>
       {/* 대댓글 (reply) */}
@@ -38,11 +42,15 @@ const ReplyListComponent = ({
             <img
               src=""
               alt="프로필 이미지"
-              className="w-8 h-8 rounded-full object-cover"
+              className="w-8 h-8 rounded-full object-cover cursor-pointer"
+              onClick={() => handleProfileEvent(reply.user.idx)}
             />
             <div className="flex flex-col w-full">
               <div className="flex justify-between items-center text-xs text-gray-500">
-                <p className="font-semibold text-gray-800">
+                <p
+                  className="font-semibold text-gray-800 cursor-pointer"
+                  onClick={() => handleProfileEvent(reply.user.idx)}
+                >
                   {reply.user.nickname}
                 </p>
                 <div className="flex items-center">
