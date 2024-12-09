@@ -119,7 +119,7 @@ const Searchid = ({ onClose, focusIdField }) => {
   };
 
   return (
-    <div>
+    <div >
       <h2 className="flex flex-col justify-center items-center text-2xl font-bold m-5">아이디 찾기</h2>
       {!searchResult ? (
         <>
@@ -174,7 +174,7 @@ const Searchid = ({ onClose, focusIdField }) => {
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
               disabled={isEmailVerified}
-              className="mt-1 p-2 mb-2 w-50 rounded-3xl border 
+              className="mt-1 p-2 mb-2 w-52 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
             />
             <button
