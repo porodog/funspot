@@ -60,5 +60,51 @@ public class AuthTokenServiceImpl implements AuthTokenService {
                 .build();
     }
 
+    /**
+     * OAuth 로그인 시 Refresh Token 생성 및 저장
+     */
+    public void handleOAuthLogin(User user, String refreshToken) {
+        log.info("Handling OAuth login for user: {}", user.getEmail());
+
+        AuthToken authToken = authTokenRepository.findByUserIdx(user.getIdx())
+                .orElse(AuthToken.builder()
+                        .userIdx(user.getIdx())
+                        .refreshToken(refreshToken)
+                        .build());
+        authToken.update(refreshToken); // Refresh Token 갱신
+        authTokenRepository.save(authToken);
+    }
+
+    // 자체로그인 컨트롤러에서 호출시 에러남
+//    /**
+//     * 자체 로그인 시 Refresh Token 생성 및 저장
+//     */
+//    public void handleLocalLogin(User user, String refreshToken) {
+//        log.info("Handling Local login for user: {}", user.getEmail());
+//
+//        AuthToken authToken = authTokenRepository.findByUserIdx(user.getIdx())
+//                .orElse(AuthToken.builder()
+//                        .userIdx(user.getIdx())
+//                        .refreshToken(refreshToken)
+//                        .build());
+//        authToken.update(refreshToken); // Refresh Token 갱신
+//        authTokenRepository.save(authToken);
+//    }
+
+    /**
+     * Refresh Token을 쿠키에서 추출
+     */
+    private String extractRefreshTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
 
 }

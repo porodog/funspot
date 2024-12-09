@@ -2,10 +2,13 @@ package com.spot.fun.config;
 
 import com.spot.fun.config.jwt.JwtTokenFilter;
 import com.spot.fun.config.jwt.JwtTokenProvider;
+import com.spot.fun.token.entity.AuthToken;
+import com.spot.fun.token.repository.AuthTokenRepository;
 import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.oauthlogin.service.CustomOAuth2UserService;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
+import com.spot.fun.usr.user.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +17,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -31,7 +31,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
@@ -50,9 +49,12 @@ public class WebSecurityConfig {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthTokenUtil authTokenUtil;
+    private final AuthTokenRepository authTokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Value("${security.check.path.none}")
     private String[] PERMITTED_PATHS;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -153,8 +155,24 @@ public class WebSecurityConfig {
                     // 기존 사용자: JWT 생성 후 로그인 성공 페이지로 리다이렉트
                     User user = userOptional.get();
                     String accessToken = jwtTokenProvider.generateAccessToken(user);
-                    String refreshToken = jwtTokenProvider.generateRefreshToken(user);
+                    String refreshToken;
 
+                    // Refresh Token이 이미 존재하면 가져오고, 없으면 생성
+                    Optional<AuthToken> existingToken = authTokenRepository.findByUserIdx(user.getIdx());
+                    if (existingToken.isPresent()) {
+                        refreshToken = existingToken.get().getRefreshToken(); // 기존 토큰 사용
+                        log.info("Using existing refresh token for user: {}", email);
+                    } else {
+                        refreshToken = jwtTokenProvider.generateRefreshToken(user); // 새 토큰 생성
+                        AuthToken authToken = AuthToken.builder()
+                                .userIdx(user.getIdx())
+                                .refreshToken(refreshToken)
+                                .build();
+                        authTokenRepository.save(authToken); // 데이터베이스에 저장
+                        log.info("Created new refresh token for user: {}", email);
+                    }
+
+                    // 쿠키 생성
                     authTokenUtil.makeAccessToken(response, accessToken);
                     authTokenUtil.makeRefreshToken(response, refreshToken);
 
