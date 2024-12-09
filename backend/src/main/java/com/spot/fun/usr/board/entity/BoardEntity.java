@@ -1,69 +1,52 @@
 package com.spot.fun.usr.board.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Comment;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.lang.reflect.Member;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
+@Table(name = "tbl_board")
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class BoardEntity {
 
-  @Id @GeneratedValue
-  @Column(name = "BOARD_ID")
-  private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long idx;
 
   @Column(nullable = false)
   private String title;
 
+  @Column(nullable = false)
   private String content;
 
-  @Column(name = "VIEW_COUNT")
-  private int viewCount;
+  @CreationTimestamp
+  @Column(name = "reg_date", nullable = false, updatable = false)
+  private LocalDateTime regDate;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "MEMBER_ID")
-  public Member member;
+  @UpdateTimestamp
+  @Column(name = "mod_date")
+  private LocalDateTime modDate;
 
-  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @BatchSize(size = 10)
-  public List<Comment> comment = new ArrayList<>();
+  @Column(name = "del_yn", nullable = false)
+  private boolean delYn = false;
 
-  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @BatchSize(size = 10)
-  public List<FileEntity> files = new ArrayList<>();
+  @Column(name = "view_count", nullable = false)
+  private int viewCount = 0;
 
-  @Builder
-  public BoardEntity(Long id, String title, String content, int viewCount, Member member) {
-    this.id = id;
-    this.title = title;
-    this.content = content;
-    this.viewCount = viewCount;
-    this.member = member;
-  }
+  @Column(name = "like_count", nullable = false)
+  private int likeCount = 0;
 
-  //== 조회수 증가 ==//
-  public void upViewCount() {
-    this.viewCount++;
-  }
+  @Column(name = "user_idx", nullable = false)
+  private Long userIdx;
 
-  //== 수정 Dirty Checking ==//
-  public void update(String title, String content) {
-    this.title = title;
-    this.content = content;
-  }
-
-  //== Member & Board 연관관계 편의 메소드 ==//
-  public void setMappingMember(Member member) {
-    this.member = member;
-    member.getBoards().add(this);
-  }
+  @OneToMany(mappedBy = "boardEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<BoardCommentEntity> comments;
 }
-

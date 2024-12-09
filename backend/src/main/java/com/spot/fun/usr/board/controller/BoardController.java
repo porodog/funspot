@@ -1,6 +1,5 @@
 package com.spot.fun.usr.board.controller;
 
-import com.spot.fun.usr.board.entity.Board;
 import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
