@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Log4j2
 @Service
@@ -32,7 +31,9 @@ public class UserFeedCommentServiceImpl implements UserFeedCommentService {
   public List<FeedCommentDTO> getCommentList(Long idx, Long userIdx) {
     return userFeedCommentRepository.findByFeedIdxAndDelYnFalseAndParentIdxIsNull(idx).stream()
             .map((comment) -> {
-              boolean likedYn = !Objects.isNull(userIdx) && userFeedUtil.isFeedCommentLikedYn(comment.getIdx(), userIdx);
+              //boolean likedYn = !Objects.isNull(userIdx) && userFeedUtil.isFeedCommentLikedYn(comment.getIdx(), userIdx);
+              boolean likedYn = false;
+
               return FeedCommentDTO.builder()
                       .idx((comment.getIdx()))
                       .content(comment.getContent())

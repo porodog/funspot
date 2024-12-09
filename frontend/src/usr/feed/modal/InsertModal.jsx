@@ -42,7 +42,6 @@ const InsertModal = ({ closeInsertModal }) => {
   // 해시태그 삭제
   const handleDeleteHashTagEvent = (tag) => {
     setHashtagList((prevList) => {
-      //console.log(prevList, tag.hashtagIdx);
       return prevList.filter((item) => item.hashtagIdx !== tag.hashtagIdx);
     });
   };
@@ -51,7 +50,7 @@ const InsertModal = ({ closeInsertModal }) => {
   const handleFeedSubmit = () => {
     const content = useTextRef.current.value;
     if (content.trim().length < 1) {
-      console.log("내용을 입력해주세요..");
+      console.log("[임시] 컨텐츠 내용을 입력해주세요");
       return false;
     }
 
@@ -65,23 +64,22 @@ const InsertModal = ({ closeInsertModal }) => {
     });
     form.append("content", content);
 
-    hashtagList.map((item, index) => {
-      console.log(item);
+    hashtagList.map((item, index) =>
       form.append(
         `feedHashtags[${index}].hashtagIdx`,
         parseInt(item.hashtagIdx)
-      );
-    });
+      )
+    );
 
     postFeedInsertApi(form)
-      .then((res) => {
-        if (res) {
-          closeInsertModal(res);
+      .then((data) => {
+        if (data) {
+          closeInsertModal(data);
           return;
         }
-        console.log("등록 실패 에러코드 .." + res.status);
       })
       .catch((err) => {
+        console.log("[피드등록] 등록을 실패했습니다");
         console.log(err);
       });
   };

@@ -35,6 +35,7 @@ public class FeedDTO {
   private String regDateStr;
 
   private List<Long> hashtagIdx;
+  private List<Long> deleteFiles;
 
   public Feed toEntity() {
     return Feed.builder()

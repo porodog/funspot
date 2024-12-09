@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class UserFeedLikeServiceImpl implements UserFeedLikeService{
+public class UserFeedLikeServiceImpl implements UserFeedLikeService {
 
   private final UserFeedRepository userFeedRepository;
   private final UserFeedLikeRepository userFeedLikeRepository;
@@ -33,9 +33,9 @@ public class UserFeedLikeServiceImpl implements UserFeedLikeService{
               .orElseThrow(IllegalArgumentException::new);
 
       userFeedLikeRepository.save(FeedLike.builder()
-                                          .feed(feed)
-                                          .user(user)
-                                          .build());
+              .feed(feed)
+              .user(user)
+              .build());
       return true;
     } catch (Exception e) {
       log.info("like insert error .. {}", e.getMessage());

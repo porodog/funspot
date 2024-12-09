@@ -10,7 +10,6 @@ const CommentProfileComponent = ({
 }) => {
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
-  //console.log(loginUserIdx);
 
   const [activeComment, setActiveComment] = useState(null);
   const handleCommentModifyClick = (commentId) => {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserHashtagRepository extends JpaRepository<Hashtag, Long> {
-    Optional<Hashtag> findByIdxAndDelYnFalse(Long idx);
-    List<Hashtag> findByDelYnFalse();
+  Optional<Hashtag> findByIdxAndDelYnFalse(Long idx);
+
+  List<Hashtag> findByDelYnFalse();
 }

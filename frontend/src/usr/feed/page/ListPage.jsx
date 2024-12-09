@@ -13,16 +13,15 @@ import ModifyModal from "../modal/ModifyModal";
 
 const ListPage = () => {
   const { userInfo } = useBasic();
-  //console.log(userInfo);
 
   // 모달
   const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
   const [selectedFeed, setSelectedFeed] = useState({});
-  const closeInsertModal = (newIdx) => {
+  const closeInsertModal = (idx) => {
     setIsInsertModalOpen(false);
-    newIdx && handleDetailEvent(newIdx); // 목록 재조회
+    idx && handleResearchEvent(idx, "new"); // 목록 재조회
   };
   const openDetailModal = (idx) => {
     handleSelectedFeed(idx);
@@ -36,9 +35,10 @@ const ListPage = () => {
     handleSelectedFeed(idx);
     setIsModifyModalOpen(true);
   };
-  const closeModifyModal = () => {
+  const closeModifyModal = (idx) => {
     setIsModifyModalOpen(false);
     setSelectedFeed({});
+    idx && handleResearchEvent(idx, "update"); // 목록 재조회
   };
   const handleSelectedFeed = (idx) => {
     const feed = feedList.find((item) => item.idx === idx);
@@ -79,6 +79,7 @@ const ListPage = () => {
         }
       })
       .catch((error) => {
+        console.log("[피드목록] 조회를 실패했습니다");
         console.log(error);
       })
       .finally(() => {
@@ -97,18 +98,29 @@ const ListPage = () => {
         }
       })
       .catch((err) => {
+        console.log("[피드삭제] 삭제를 실패했습니다");
         console.log(err);
       });
   };
 
-  // 상세정보 조회
-  const handleDetailEvent = (idx) => {
+  // 재조회
+  const handleResearchEvent = (idx, type) => {
     getFeedDetailApi(idx)
       .then((data) => {
-        console.log(data);
-        setFeedList((prevList) => [data, ...prevList]);
+        setFeedList((prevList) => {
+          if (type === "new") {
+            // 신규등록
+            return [data, ...prevList];
+          } else {
+            // 수정등록
+            return prevList.map((item) => {
+              return item.idx === idx ? { ...item, ...data } : { ...item };
+            });
+          }
+        });
       })
       .catch((err) => {
+        console.log("[피드조회] 조회를 실패했습니다");
         console.log(err);
       });
   };
@@ -132,6 +144,7 @@ const ListPage = () => {
         }));
       })
       .catch((err) => {
+        console.log("[좋아요] 등록을 실패했습니다");
         console.log(err);
       });
   };

@@ -13,7 +13,7 @@ const ProfileComponent = ({
   const loginUserIdx = userInfo?.userIdx || "";
 
   const handleProfileEvent = useCallback(() => {
-    console.log("profile idx >> " + idx);
+    console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + idx);
   }, [idx]);
 
   return (

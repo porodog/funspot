@@ -45,7 +45,7 @@ const ButtonComponent = ({ feed, openDetailModal, handleLikesEvent }) => {
                                 ? "hover:bg-red-100 focus:outline-none transition-all duration-200"
                                 : ""
                             }`}
-              onClick={() => openDetailModal && openDetailModal}
+              onClick={openDetailModal}
             >
               <BiMessageRoundedDots size="1.8rem" />
             </button>

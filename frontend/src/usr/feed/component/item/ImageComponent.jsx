@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../../api/FeedApi";
 
+const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+
 const ImageComponent = ({ openDetailModal, feedImages }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -27,14 +29,22 @@ const ImageComponent = ({ openDetailModal, feedImages }) => {
           }}
           onClick={openDetailModal}
         >
-          {feedImages.map((image) => (
+          {feedImages.length > 0 ? (
+            feedImages.map((image) => (
+              <img
+                key={`image-${image.idx}`}
+                src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
+                alt={image.originName}
+                className="w-full h-full object-contain shrink-0"
+              />
+            ))
+          ) : (
             <img
-              key={`image-${image.idx}`}
-              src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
-              alt={image.originName}
+              src={initSrc}
+              alt="업로드 이미지"
               className="w-full h-full object-contain shrink-0"
             />
-          ))}
+          )}
         </div>
       </div>
 

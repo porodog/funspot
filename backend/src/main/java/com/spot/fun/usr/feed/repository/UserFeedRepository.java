@@ -12,11 +12,11 @@ import java.util.Optional;
 
 public interface UserFeedRepository extends JpaRepository<Feed, Long> {
 
-    @Query("SELECT f FROM Feed f WHERE f.delYn = false " +
-            "AND (:#{#feed.lastId}=0 or f.idx < :#{#feed.lastId}) "
+  @Query("SELECT f FROM Feed f WHERE f.delYn = false " +
+          "AND (:#{#feed.lastId}=0 or f.idx < :#{#feed.lastId}) "
 //            "AND (:#{#feed.searchValue} is NULL or :#{#feed.searchValue}='' or f.content LIKE %:#{#feed.searchValue}%)"
-    )
-    List<Feed> findFeedsOrderByIdxDesc(@Param("feed") FeedRequestDTO feedRequestDTO, Pageable pageable);
+  )
+  List<Feed> findFeedsOrderByIdxDesc(@Param("feed") FeedRequestDTO feedRequestDTO, Pageable pageable);
 
-    Optional<Feed> findByIdxAndDelYnFalse(Long idx);
+  Optional<Feed> findByIdxAndDelYnFalse(Long idx);
 }

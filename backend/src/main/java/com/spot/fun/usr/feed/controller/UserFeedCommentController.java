@@ -37,13 +37,13 @@ public class UserFeedCommentController {
   public ResponseEntity<?> insertComment(HttpServletRequest request, HttpServletResponse response, FeedCommentDTO feedCommentDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+    if (Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
     feedCommentDTO.setUser(loginUserDTO);
 
     FeedCommentDTO result = userFeedCommentService.insert(feedCommentDTO);
-    if(ObjectUtils.isEmpty(result)) {
+    if (ObjectUtils.isEmpty(result)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -53,7 +53,7 @@ public class UserFeedCommentController {
   public ResponseEntity<?> insertReply(HttpServletRequest request, HttpServletResponse response, FeedCommentDTO feedCommentDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+    if (Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
     feedCommentDTO.setUser(loginUserDTO);
@@ -67,13 +67,13 @@ public class UserFeedCommentController {
   public ResponseEntity<?> updateComment(HttpServletRequest request, HttpServletResponse response, FeedCommentDTO feedCommentDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+    if (Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
     feedCommentDTO.setUser(loginUserDTO);
 
     FeedCommentDTO result = userFeedCommentService.update(feedCommentDTO);
-    if(ObjectUtils.isEmpty(result)) {
+    if (ObjectUtils.isEmpty(result)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -84,13 +84,13 @@ public class UserFeedCommentController {
                                          FeedCommentDTO feedCommentDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     Long loginUserIdx = loginUserDTO.getIdx();
-    if(Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
+    if (Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
     feedCommentDTO.setUser(loginUserDTO);
 
     FeedCommentDTO result = userFeedCommentService.delete(feedCommentDTO);
-    if(ObjectUtils.isEmpty(result)) {
+    if (ObjectUtils.isEmpty(result)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
     return ResponseEntity.status(HttpStatus.CREATED).body(result);

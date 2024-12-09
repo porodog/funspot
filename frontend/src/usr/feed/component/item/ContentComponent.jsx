@@ -1,5 +1,3 @@
-import React from "react";
-
 const ContentComponent = ({ feed, openDetailModal }) => {
   const { content, feedHashtags } = feed;
   return (
