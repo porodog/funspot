@@ -4,6 +4,8 @@ import com.spot.fun.usr.feed.dto.FeedDTO;
 import com.spot.fun.usr.feed.dto.FeedRequestDTO;
 import com.spot.fun.usr.feed.dto.FeedResponseDTO;
 
+import java.util.List;
+
 public interface UserFeedService {
   FeedResponseDTO getList(FeedRequestDTO feedRequestDTO);
 
@@ -14,4 +16,6 @@ public interface UserFeedService {
   FeedDTO delete(FeedDTO feedDTO);
 
   Long postModify(FeedDTO feedDTO);
+
+  FeedResponseDTO getListByMypage(FeedRequestDTO feedRequestDTO);
 }

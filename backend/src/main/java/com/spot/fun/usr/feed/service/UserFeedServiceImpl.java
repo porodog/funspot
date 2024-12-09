@@ -1,6 +1,5 @@
 package com.spot.fun.usr.feed.service;
 
-import com.spot.fun.file.FileUploadUtil;
 import com.spot.fun.usr.feed.dto.FeedDTO;
 import com.spot.fun.usr.feed.dto.FeedRequestDTO;
 import com.spot.fun.usr.feed.dto.FeedResponseDTO;
@@ -12,7 +11,6 @@ import com.spot.fun.usr.feed.entity.image.FeedImage;
 import com.spot.fun.usr.feed.repository.UserFeedRepository;
 import com.spot.fun.usr.feed.repository.comment.UserFeedCommentRepository;
 import com.spot.fun.usr.feed.repository.hashtag.UserFeedHashtagRepository;
-import com.spot.fun.usr.feed.repository.hashtag.UserHashtagRepository;
 import com.spot.fun.usr.feed.repository.image.UserFeedImageRepository;
 import com.spot.fun.usr.feed.repository.like.UserFeedLikeRepository;
 import com.spot.fun.usr.feed.util.UserFeedUtil;
@@ -39,9 +37,7 @@ public class UserFeedServiceImpl implements UserFeedService {
   private final UserFeedCommentRepository userFeedCommentRepository;
   private final UserFeedLikeRepository userFeedLikeRepository;
   private final UserFeedHashtagRepository userFeedHashtagRepository;
-  private final UserHashtagRepository userHashtagRepository;
 
-  private final FileUploadUtil fileUploadUtil;
   private final UserFeedUtil userFeedUtil;
 
   @Override
@@ -228,6 +224,23 @@ public class UserFeedServiceImpl implements UserFeedService {
     List<FeedHashtag> feedHashtags = userFeedUtil.doSaveHashtags(feedDTO.getFeedHashtags(), feed);
 
     return feed.getIdx();
+  }
+
+  @Override
+  public FeedResponseDTO getListByMypage(FeedRequestDTO feedRequestDTO) {
+    List<FeedDTO> list = userFeedRepository.findByUserIdxAndDelYnFalse(feedRequestDTO.getUserIdx()).stream()
+            .map((feed) -> {
+              Long feedIdx = feed.getIdx();
+              Long loginUserIdx = feedRequestDTO.getLoginUserDTO().getIdx();
+              boolean likedYn = !Objects.isNull(loginUserIdx) && userFeedUtil.isFeedLikedYn(feedIdx, loginUserIdx);
+
+              return FeedDTO.builder().build();
+            })
+            .toList();
+
+    return FeedResponseDTO.builder()
+            .feedDTOS(list)
+            .build();
   }
 
 }

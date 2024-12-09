@@ -15,4 +15,6 @@ import lombok.Setter;
 public class FeedRequestDTO extends ScrollPagingUtil {
   private String searchValue;
   private UserDTO loginUserDTO;
+
+  private Long userIdx;
 }
