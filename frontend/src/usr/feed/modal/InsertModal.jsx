@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import HashTagModal from "./HashTagModal";
 import { postFeedInsertApi } from "../api/FeedApi";
 import ImageComponent from "../component/insert/ImageComponent";
@@ -8,9 +8,8 @@ import ContentComponent from "../component/insert/ContentComponent";
 import HashtagComponent from "../component/insert/HashtagComponent";
 
 const InsertModal = ({ closeInsertModal }) => {
-  // 전역 값 1111
   const { userInfo } = useBasic();
-  const userIdx = userInfo ?? null;
+  const loginUserIdx = userInfo?.userIdx || "";
 
   // 이미지
   const useFileRef = useRef([]);
@@ -43,7 +42,7 @@ const InsertModal = ({ closeInsertModal }) => {
   // 해시태그 삭제
   const handleDeleteHashTagEvent = (tag) => {
     setHashtagList((prevList) => {
-      console.log(prevList, tag.hashtagIdx);
+      //console.log(prevList, tag.hashtagIdx);
       return prevList.filter((item) => item.hashtagIdx !== tag.hashtagIdx);
     });
   };
@@ -114,7 +113,10 @@ const InsertModal = ({ closeInsertModal }) => {
         </div>
 
         {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent user={{ ...userInfo, idx: userIdx }} />
+        <ProfileComponent
+          user={{ ...userInfo, idx: loginUserIdx }}
+          pageType={"insert"}
+        />
 
         {/* 중간영역: 글 내용 및 해시태그 */}
         <div className="mt-4">

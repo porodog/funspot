@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import { feedLikeApi, getFeedDetailApi, getFeedListApi } from "../api/FeedApi";
+import {
+  deleteFeedApi,
+  feedLikeApi,
+  getFeedDetailApi,
+  getFeedListApi,
+} from "../api/FeedApi";
 import ListComponent from "../component/ListComponent";
 import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
 import { useBasic } from "../../../common/context/BasicContext";
+import ModifyModal from "../modal/ModifyModal";
 
 const ListPage = () => {
   const { userInfo } = useBasic();
@@ -12,15 +18,31 @@ const ListPage = () => {
   // 모달
   const [isInsertModalOpen, setIsInsertModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+  const [selectedFeed, setSelectedFeed] = useState({});
   const closeInsertModal = (newIdx) => {
     setIsInsertModalOpen(false);
     newIdx && handleDetailEvent(newIdx); // 목록 재조회
   };
-  const openDetailModal = () => {
+  const openDetailModal = (idx) => {
+    handleSelectedFeed(idx);
     setIsDetailModalOpen(true);
   };
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
+    setSelectedFeed({});
+  };
+  const openModifyModal = (idx) => {
+    handleSelectedFeed(idx);
+    setIsModifyModalOpen(true);
+  };
+  const closeModifyModal = () => {
+    setIsModifyModalOpen(false);
+    setSelectedFeed({});
+  };
+  const handleSelectedFeed = (idx) => {
+    const feed = feedList.find((item) => item.idx === idx);
+    setSelectedFeed(feed);
   };
 
   // 스크롤 위치
@@ -47,7 +69,7 @@ const ListPage = () => {
       return;
     }
     setLoading(true);
-    getFeedListApi({ lastId: lastId, pageSize: 1 })
+    getFeedListApi({ lastId: lastId, pageSize: 6 })
       .then((data) => {
         const { feedDTOS, hasNext } = data;
         setFeedList((prevList) => [...prevList, ...feedDTOS]);
@@ -64,6 +86,21 @@ const ListPage = () => {
       });
   };
 
+  // 피드 삭제
+  const handleListDeleteEvent = (idx) => {
+    deleteFeedApi({ idx: idx })
+      .then((data) => {
+        if (data) {
+          setFeedList((prevlist) =>
+            prevlist.filter((feed) => feed.idx !== data.idx)
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   // 상세정보 조회
   const handleDetailEvent = (idx) => {
     getFeedDetailApi(idx)
@@ -74,14 +111,6 @@ const ListPage = () => {
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  // 상세모달 조회
-  const [selectedFeed, setSelectedFeed] = useState({});
-  const handleSelectedFeed = (idx) => {
-    const feed = feedList.find((item) => item.idx === idx);
-    setSelectedFeed(feed);
-    openDetailModal();
   };
 
   // 좋아요
@@ -174,8 +203,10 @@ const ListPage = () => {
       )}
       <ListComponent
         feedList={feedList}
-        handleSelectedFeed={handleSelectedFeed}
+        openDetailModal={openDetailModal}
         handleLikesEvent={handleLikesEvent}
+        handleListDeleteEvent={handleListDeleteEvent}
+        openModifyModal={openModifyModal}
       />
       {isInsertModalOpen && <InsertModal closeInsertModal={closeInsertModal} />}
       {(selectedFeed.idx ?? null) && isDetailModalOpen && (
@@ -185,6 +216,9 @@ const ListPage = () => {
           handleLikesEvent={handleLikesEvent}
           handleCommentCountEvent={handleCommentCountEvent}
         />
+      )}
+      {(selectedFeed.idx ?? null) && isModifyModalOpen && (
+        <ModifyModal feed={selectedFeed} closeModifyModal={closeModifyModal} />
       )}
     </div>
   );

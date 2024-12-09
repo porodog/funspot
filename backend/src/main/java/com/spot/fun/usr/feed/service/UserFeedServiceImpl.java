@@ -4,9 +4,7 @@ import com.spot.fun.file.FileUploadUtil;
 import com.spot.fun.usr.feed.dto.FeedDTO;
 import com.spot.fun.usr.feed.dto.FeedRequestDTO;
 import com.spot.fun.usr.feed.dto.FeedResponseDTO;
-import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import com.spot.fun.usr.feed.dto.hashtag.FeedHashtagDTO;
-import com.spot.fun.usr.feed.dto.hashtag.HashtagDTO;
 import com.spot.fun.usr.feed.dto.image.FeedImageDTO;
 import com.spot.fun.usr.feed.entity.Feed;
 import com.spot.fun.usr.feed.entity.hashtag.FeedHashtag;
@@ -92,7 +90,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                       )
                       .likedYn(likedYn)
                       .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
-                      .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(feedIdx))
+                      .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(feedIdx))
                       .feedHashtags(
                               userFeedHashtagRepository.findByFeedIdx(feedIdx).stream()
                                       .map((tag) ->
@@ -157,7 +155,7 @@ public class UserFeedServiceImpl implements UserFeedService {
             )
             .likedYn(likedYn)
             .likeCount(userFeedLikeRepository.countByFeedIdx(idx))
-            .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalse(idx))
+            .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(idx))
             .feedHashtags(
                     userFeedHashtagRepository.findByFeedIdx(idx).stream()
                             .map((tag) ->
@@ -241,6 +239,25 @@ public class UserFeedServiceImpl implements UserFeedService {
     }
 
     return feed.getIdx();
+  }
+
+  @Override
+  public FeedDTO delete(FeedDTO feedDTO) {
+    try {
+      Feed feed = userFeedRepository.findByIdxAndDelYnFalse(feedDTO.getIdx())
+              .orElseThrow(IllegalArgumentException::new);
+      feed.changeDelYn(true); // 삭제
+
+      Feed delete = userFeedRepository.save(feed);
+
+      return FeedDTO.builder()
+              .idx(delete.getIdx())
+              .delYn(delete.isDelYn())
+              .build();
+    } catch (Exception e) {
+      log.info("comment delete error .. {}", e.getMessage());
+      return new FeedDTO();
+    }
   }
 
 }

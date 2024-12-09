@@ -46,6 +46,19 @@ public class JwtTokenProvider {
     }
 
     private String makeToken(User user, Date expiry) {
+        if (user == null || user.getUserId() == null || user.getEmail() == null) {
+            log.error("Cannot create token: User or required fields are null. User details: {}", user);
+            throw new IllegalArgumentException("Invalid user data for token generation.");
+        }
+
+        // 자체 로그인일 경우 email이 없어도 토큰 생성 가능
+        if ("LOCAL".equalsIgnoreCase(user.getProvider())) {
+            log.info("LOCAL login detected: userId={}, provider={}", user.getUserId(), user.getProvider());
+        } else if (user.getEmail() == null) {
+            log.error("Cannot create token: Email is null for provider={}", user.getProvider());
+            throw new IllegalArgumentException("Invalid user data for token generation.");
+        }
+
         Date now = new Date();
         return Jwts.builder()
                     .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
@@ -55,18 +68,25 @@ public class JwtTokenProvider {
                     .setSubject(user.getUserId())
                     .claim("idx", user.getIdx())
                     .claim("nickname", user.getNickname())
+                    .claim("email", user.getEmail()) // email은 null이어도 문제 없음
                     .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                     .compact();
     }
 
     public boolean validToken(String token) {
+        if (token == null || token.isEmpty()) {
+            log.info("\n======== validToken method fail ========");
+            log.error("Token validation failed: JWT String argument cannot be null or empty.");
+            return false;
+        }
         try {
             Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token);
+                    .setSigningKey(jwtProperties.getSecretKey())
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             log.info("\n======== validToken method fail ========");
+            log.error("Token validation failed: {}", e.getMessage());
             return false;
         }
     }

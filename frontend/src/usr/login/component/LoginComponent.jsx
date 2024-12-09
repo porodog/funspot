@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { postLoginApi } from "../api/LoginApi";
-import { postLogoutApi } from "../api/LogoutApi";
 import { useNavigate } from "react-router-dom";
 import Searchid from "../../../common/searchuserinfomodal/Searchid";
 import Searchpw from "../../../common/searchuserinfomodal/Searchpw";
 import SearchModal from "../../../common/searchuserinfomodal/SearchModal";
 import { useBasic } from "../../../common/context/BasicContext";
+import { ReactComponent as Google } from "../../../common/img/Google.svg"
+import { ReactComponent as Naver } from "../../../common/img/naver.svg"
+import { ReactComponent as Kakao } from "../../../common/img/kakao.svg"
 
 const LoginComponent = () => {
   const [userId, setUserId] = useState("");
@@ -13,7 +15,6 @@ const LoginComponent = () => {
   const [errors, setErrors] = useState({});
   const [isIdModalOpen, setIsIdModalOpen] = useState(false);
   const [isPwModalOpen, setIsPwModalOpen] = useState(false);
-  // const [nickname, setNickname] = useState(null);
   const [isTouched, setIsTouched] = useState({});
   const { setUserInfo } = useBasic();
 
@@ -49,16 +50,16 @@ const LoginComponent = () => {
     const formData = new FormData();
     formData.append("userId", userId);
     formData.append("password", password);
+    formData.append("provider", "LOCAL");
 
     try {
       const result = await postLoginApi(formData);
       if (result.status === 200 && result.data) {
         alert(`${result.data}님, 환영합니다!`);
-        // console.log("Before setNickname:", result.data); // 디버깅
-        setUserInfo(result.data.userId); // userIdx 업데이트
-        setUserInfo(result.data.nickname); // 닉네임 업데이트
+        setUserInfo(result.data.userId);
+        setUserInfo(result.data.nickname);
+        setUserInfo(result.data);
         navigate("/");
-        // console.log("After setNickname:", nickname); // 디버깅
       } else {
         alert("로그인 실패. 아이디와 비밀번호를 확인해주세요.");
       }
@@ -67,83 +68,84 @@ const LoginComponent = () => {
     }
   };
 
-  // const handleLogout = async () => {
-  //   try {
-  //     const result = await postLogoutApi();
-  //     if (result.status >= 200 && result.status < 300) {
-  //       setNickname(null);
-  //       alert("로그아웃 되었습니다.");
-  //       navigate("/");
-  //     } else {
-  //       alert("로그아웃 중 문제가 발생했습니다. 다시 시도해주세요.");
-  //     }
-  //   } catch (error) {
-  //     alert("로그아웃 요청 실패");
-  //   }
-  // };
-
-  const handleCancle = () => {
+  const handleCancel = () => {
     navigate("/");
   };
 
+  const handleSocialLogin = (provider) => {
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+  };
+
   return (
-    <div>
-      <form id="login-form">
-        <div>
-          <label className="font-bold text-xl">아이디</label>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+      <h1 className="mb-6 text-2xl font-bold">로그인</h1>
+      <form className="flex flex-col items-center" id="login-form">
+        <div className="mb-4">
+          {/* <label className="font-bold text-xl">아이디</label> */}
           <input
             type="text"
             name="userId"
             ref={idInputRef}
             value={userId}
-            placeholder="ID"
+            placeholder="아이디를 입력해주세요"
             onChange={(e) => {
               setUserId(e.target.value);
               setIsTouched((prev) => ({ ...prev, userId: true }));
             }}
             onBlur={() => setIsTouched((prev) => ({ ...prev, userId: true }))}
+            className="mt-2 p-2 w-80 rounded-3xl border 
+            focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
           {isTouched.userId && errors.userId && (
-            <p style={{ color: "red" }}>{errors.userId}</p>
+            <p className="text-red-500">{errors.userId}</p>
           )}
         </div>
-        <div>
-          <label>비밀번호</label>
+        <div className="mb-6">
+          {/* <label className="font-bold text-xl">비밀번호</label> */}
           <input
             type="password"
             name="password"
             ref={passwordInputRef}
             value={password}
-            placeholder="Password"
+            placeholder="비밀번호를 입력해주세요"
             onChange={(e) => {
               setPassword(e.target.value);
               setIsTouched((prev) => ({ ...prev, password: true }));
             }}
             onBlur={() => setIsTouched((prev) => ({ ...prev, password: true }))}
+            className="mt-2 p-2 w-80 rounded-3xl border 
+            focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
           {isTouched.password && errors.password && (
-            <p style={{ color: "red" }}>{errors.password}</p>
+            <p className="text-red-500">{errors.password}</p>
           )}
         </div>
-        <button type="button" onClick={doLogin}>
+        <button
+          type="button"
+          onClick={doLogin}
+          className="mb-2 p-2 w-80 bg-custom-cyan  text-white rounded-3xl cursor-pointer hover:bg-emerald-500"
+        >
           로그인
         </button>
-        <button type="button" onClick={handleCancle}>
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="p-2 w-80 bg-gray-500 text-white rounded-3xl cursor-pointer hover:bg-gray-600"
+        >
           취소
         </button>
       </form>
-      <div id="search-user-info">
+      <div id="search-user-info" className="mt-6 text-center">
         <div>
           <b
-            style={{ marginLeft: "15px", cursor: "pointer" }}
+            className="ml-4 cursor-pointer text-gray-400 hover:text-custom-cyan"
             onClick={() => setIsIdModalOpen(true)}
           >
             아이디 찾기
           </b>
-        </div>
-        <div>
+          <span className="text-gray-300"> | </span>
           <b
-            style={{ cursor: "pointer" }}
+            className="cursor-pointer text-gray-400 hover:text-custom-cyan"
             onClick={() => setIsPwModalOpen(true)}
           >
             비밀번호 찾기
@@ -168,6 +170,39 @@ const LoginComponent = () => {
           <Searchpw onClose={() => setIsPwModalOpen(false)} />
         </SearchModal>
       )}
+
+      <div id="social-login" className="mt-8 text-center">
+        <h2 className="mb-4 text-xl font-bold">SNS 로그인</h2>
+        <div className="flex justify-center space-x-4">
+          <div className="text-center">
+            <button
+              onClick={() => handleSocialLogin("google")}
+              className="bg-custom-cyan text-white rounded-full w-12 h-12 flex items-center justify-center cursor-pointer"
+            >
+              <Google />
+            </button>
+            <div className="mt-2 text-xs">구글</div>
+          </div>
+          <div className="text-center">
+            <button
+              onClick={() => handleSocialLogin("kakao")}
+              className="bg-custom-cyan text-white rounded-full w-12 h-12 flex items-center justify-center cursor-pointer"
+            >
+              <Kakao />
+            </button>
+            <div className="mt-2 text-xs">카카오</div>
+          </div>
+          <div className="text-center">
+            <button
+              onClick={() => handleSocialLogin("naver")}
+              className="bg-custom-cyan text-white rounded-full w-12 h-12 flex items-center justify-center cursor-pointer"
+            >
+              <Naver />
+            </button>
+            <div className="mt-2 text-xs">네이버</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
