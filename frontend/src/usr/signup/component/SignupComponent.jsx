@@ -299,7 +299,7 @@ const SignupComponent = () => {
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
           <button type="button" onClick={() => handleDuplicateCheck("userId")}
-            className="border bg-custom-cyan rounded-3xl mt-2 ml-2 p-2 w-32 hover:bg-emerald-400"
+            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32 hover:bg-emerald-400"
           >
             중복 확인
           </button>
@@ -334,6 +334,10 @@ const SignupComponent = () => {
           {errors.confirmPassword && (
             <p style={{ color: "red" }}>{errors.confirmPassword}</p>
           )}
+        </div>
+        {/* 구분선 */}
+        <div className="flex items-center my-2 text-sm text-gray-600">
+          <div className="flex-grow bg-gray-300 h-px mx-0 mt-2 mb-2" />
         </div>
 
         <div className="mt-2 mb-2 ">
@@ -387,7 +391,7 @@ const SignupComponent = () => {
         </div>
 
         <div className="mt-2 mb-2 ">
-          <p className="font-bold">핸드폰</p>
+          <p className="font-bold">휴대폰 번호</p>
           <input
             type="text"
             name="phone"
@@ -399,6 +403,10 @@ const SignupComponent = () => {
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
           {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
+        </div>
+        {/* 구분선 */}
+        <div className="flex items-center my-2 text-sm text-gray-600">
+          <div className="flex-grow bg-gray-300 h-px mx-0 mt-2 mb-2" />
         </div>
 
         <div className="mt-2 mb-2 ">
@@ -444,6 +452,10 @@ const SignupComponent = () => {
             인증 확인
           </button>
         </div>
+        {/* 구분선 */}
+        <div className="flex items-center my-2 text-sm text-gray-600">
+          <div className="flex-grow bg-gray-300 h-px mx-0 mt-2 mb-2" />
+        </div>
 
         <div className="mt-2 mb-2 ">
           <p className="font-bold">우편번호</p>
@@ -477,20 +489,21 @@ const SignupComponent = () => {
           <input
             type="text"
             name="detaileAdd"
-            placeholder="동/호수"
+            placeholder="동/호수 입력"
             value={formData.detaileAdd}
             onChange={handleChange}
             className="mt-2 p-2 w-80 rounded-3xl border 
             focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
           />
         </div>
-
-        <button type="submit"
-          className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400">가입하기</button>
-        <button type="button" onClick={handleCancel}
-          className="ml-48 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer">
-          취소
-        </button>
+        <div>
+          <button type="submit"
+            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400">가입하기</button>
+          <button type="button" onClick={handleCancel}
+            className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer">
+            취소
+          </button>
+        </div>
       </form>
 
       <AddressModal
