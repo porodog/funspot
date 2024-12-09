@@ -19,4 +19,6 @@ public interface UserFeedRepository extends JpaRepository<Feed, Long> {
   List<Feed> findFeedsOrderByIdxDesc(@Param("feed") FeedRequestDTO feedRequestDTO, Pageable pageable);
 
   Optional<Feed> findByIdxAndDelYnFalse(Long idx);
+
+  List<Feed> findByUserIdxAndDelYnFalse(Long userIdx);
 }
