@@ -13,4 +13,5 @@ import java.util.List;
 public class FeedResponseDTO {
   private List<FeedDTO> feedDTOS;
   private boolean hasNext;
+  private Long feedCount;
 }
