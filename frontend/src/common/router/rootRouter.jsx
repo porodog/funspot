@@ -28,6 +28,9 @@ const DateCourseListPage = lazy(() =>
   import("../../usr/course/page/DateCourseListpage")
 );
 // const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
+const SignupCheckPage = lazy(() =>
+  import("../../usr/signup/page/SignupCheckPage")
+);
 
 const rootRouter = createBrowserRouter(
   [
@@ -74,6 +77,14 @@ const rootRouter = createBrowserRouter(
         </Suspense>
       ),
       children: mypageRouter(),
+    },
+    {
+      path: "signupCheck",
+      element: (
+        <Suspense fallback={Loading}>
+          <SignupCheckPage />
+        </Suspense>
+      ),
     },
     {
       path: "signup",
