@@ -4,6 +4,7 @@ import boardRouter from "../../usr/board/router/boardRouter";
 import BasicLayout from "../layout/BasicLayout";
 import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
+import customRouter from "../../usr/custom/router/customRouter";
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -31,6 +32,7 @@ const AddCoursePage = lazy(() => import("../../usr/course/page/AddCoursePage"));
 const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
+const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
 
 const rootRouter = createBrowserRouter(
   [
@@ -129,6 +131,17 @@ const rootRouter = createBrowserRouter(
         </Suspense>
       ),
     },
+
+    {
+      path: "custom",
+      element: (
+        <Suspense fallback={Loading}>
+          <CustomIndexPage />
+        </Suspense>
+      ),
+      children: customRouter(),
+    },
+
     // {
     //   path: "addDate",
     //   element: (
