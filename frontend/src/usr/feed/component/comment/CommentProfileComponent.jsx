@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useBasic } from "../../../../common/context/BasicContext";
 import InputComponent from "./InputComponent";
+import { useNavigate } from "react-router-dom";
 
 const CommentProfileComponent = ({
   comment,
@@ -8,6 +9,7 @@ const CommentProfileComponent = ({
   handleCommentModifyEvent,
   handleCommentDeleteEvent,
 }) => {
+  const navigate = useNavigate();
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
 
@@ -25,7 +27,10 @@ const CommentProfileComponent = ({
   };
 
   const handleProfileEvent = (userIdx) => {
-    console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + userIdx);
+    //console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + userIdx);
+    if (loginUserIdx !== "" && loginUserIdx !== userIdx) {
+      navigate(`/mypage/feed/${userIdx}`);
+    }
   };
 
   return (
@@ -33,13 +38,25 @@ const CommentProfileComponent = ({
       <img
         src=""
         alt="프로필 이미지"
-        className="w-10 h-10 rounded-full object-cover cursor-pointer"
+        className={`
+          ${
+            loginUserIdx !== "" && loginUserIdx !== comment.user.idx
+              ? "cursor-pointer"
+              : ""
+          }
+          w-10 h-10 rounded-full object-cover`}
         onClick={() => handleProfileEvent(comment.user.idx)}
       />
       <div className="flex flex-col w-full">
         <div className="flex justify-between items-center">
           <p
-            className="font-semibold text-gray-800 cursor-pointer"
+            className={`
+              ${
+                loginUserIdx !== "" && loginUserIdx !== comment.user.idx
+                  ? "cursor-pointer"
+                  : ""
+              }
+              font-semibold text-gray-800`}
             onClick={() => handleProfileEvent(comment.user.idx)}
           >
             {comment.user.nickname}

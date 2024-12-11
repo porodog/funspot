@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useBasic } from "../../../../common/context/BasicContext";
+import { useNavigate } from "react-router-dom";
 
 const ProfileComponent = ({
   user,
@@ -7,13 +8,16 @@ const ProfileComponent = ({
   handleListDeleteEvent,
   openModifyModal,
 }) => {
+  const navigate = useNavigate();
   const { idx, nickname } = user;
 
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
 
   const handleProfileEvent = useCallback(() => {
-    console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + idx);
+    if (loginUserIdx !== "" && loginUserIdx !== idx) {
+      navigate(`/mypage/feed/${idx}`);
+    }
   }, [idx]);
 
   return (
@@ -21,7 +25,13 @@ const ProfileComponent = ({
       <div className="flex items-center justify-between px-3">
         {/* 프로필 정보 왼쪽 */}
         <div
-          className="flex items-center space-x-4 cursor-pointer"
+          className={`
+            ${
+              loginUserIdx !== "" && loginUserIdx !== idx
+                ? "cursor-pointer"
+                : ""
+            }
+            flex items-center space-x-4`}
           onClick={handleProfileEvent}
         >
           <img src="" alt="프로필 이미지" className="w-12 h-12 rounded-full" />
