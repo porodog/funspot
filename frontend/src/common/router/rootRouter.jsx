@@ -27,7 +27,7 @@ const SocialSignupPage = lazy(() =>
 const DateCourseListPage = lazy(() =>
   import("../../usr/course/page/DateCourseListpage")
 );
-// const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
+const AddCoursePage = lazy(() => import("../../usr/course/page/AddCoursePage")); // 수정된 부분
 const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
@@ -120,6 +120,14 @@ const rootRouter = createBrowserRouter(
         </Suspense>
       ),
       children: dateRouter(), // DateRouter 자식 라우터 추가
+    },
+    {
+      path: "addcourse",
+      element: (
+        <Suspense fallback={Loading}>
+          <AddCoursePage />
+        </Suspense>
+      ),
     },
     // {
     //   path: "addDate",
