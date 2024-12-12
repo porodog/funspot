@@ -5,4 +5,8 @@ import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
 
 public interface UserProfileService {
   UserProfileResponseDTO getProfile(UserProfileRequestDTO userProfileRequestDTO);
+
+  UserProfileResponseDTO getDuplicate(UserProfileRequestDTO userProfileRequestDTO);
+
+  UserProfileResponseDTO putProfile(UserProfileRequestDTO userProfileRequestDTO);
 }

@@ -1,6 +1,5 @@
 package com.spot.fun.usr.user.dto.profile;
 
-import com.spot.fun.usr.user.dto.UserDTO;
 import lombok.*;
 
 @Getter
@@ -8,12 +7,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserProfileResponseDTO {
+public class UserProfileDTO {
   private Long userIdx;
   private String uploadName;
   private String originName;
   private String description;
-  private Boolean duplicate;
-
-  private UserDTO user;
 }

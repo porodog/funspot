@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Log4j2
@@ -33,5 +34,17 @@ public class UserProfileController {
   public ResponseEntity<Resource> getImage(@PathVariable("fileName") String fileName) {
     String menuType = "profile";
     return fileUploadUtil.outputImage(menuType, fileName);
+  }
+
+  @GetMapping("/duplicate")
+  public ResponseEntity<?> getDuplicate(UserProfileRequestDTO userProfileRequestDTO) {
+    UserProfileResponseDTO duplicate = userProfileService.getDuplicate(userProfileRequestDTO);
+    return ResponseEntity.status(HttpStatus.OK).body(duplicate);
+  }
+
+  @PutMapping("")
+  public ResponseEntity<?> putProfile(UserProfileRequestDTO userProfileRequestDTO) {
+    UserProfileResponseDTO profile = userProfileService.putProfile(userProfileRequestDTO);
+    return ResponseEntity.status(HttpStatus.OK).body(profile);
   }
 }

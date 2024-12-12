@@ -1,6 +1,7 @@
 package com.spot.fun.usr.user.entity.profile;
 
 import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.dto.profile.UserProfileRequestDTO;
 import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
 import com.spot.fun.usr.user.entity.User;
 import jakarta.persistence.*;
@@ -37,6 +38,15 @@ public class UserProfile {
 
   public void changeUserIdx(Long userIdx) {
     this.userIdx = userIdx;
+  }
+
+  public void changeDescription(String description) {
+    this.description = description;
+  }
+
+  public void changeFile(String uploadName, String originName) {
+    this.uploadName = uploadName;
+    this.originName = originName;
   }
 
   public UserProfileResponseDTO toDTO() {

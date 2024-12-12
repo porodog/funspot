@@ -1,7 +1,11 @@
 import { useParams } from "react-router-dom";
 import { useBasic } from "../../../common/context/BasicContext";
 
-const ButtonComponent = ({ handleFollowClickEvent, followStatus }) => {
+const ButtonComponent = ({
+  openProfileModal,
+  handleFollowClickEvent,
+  followStatus,
+}) => {
   const { userIdx } = useParams();
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
@@ -14,7 +18,7 @@ const ButtonComponent = ({ handleFollowClickEvent, followStatus }) => {
             <>
               <button
                 className="bg-blue-500 text-white py-1 px-4 rounded-full text-sm hover:bg-blue-600"
-                onClick={null}
+                onClick={openProfileModal}
               >
                 프로필 편집
               </button>

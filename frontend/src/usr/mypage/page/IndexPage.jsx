@@ -11,6 +11,7 @@ import {
   getFollowStatusApi,
   getProfileApi,
 } from "../api/MypageApi";
+import ProfileModal from "../modal/ProfileModal";
 
 const menuList = [
   {
@@ -79,6 +80,13 @@ const IndexPage = () => {
 
   // 사용자정보
   const [mypageInfo, setMypageInfo] = useState({});
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const openProfileModal = () => {
+    setIsProfileModalOpen(true);
+  };
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
+  };
 
   useEffect(() => {
     const setNowMenuTab = () => {
@@ -143,6 +151,7 @@ const IndexPage = () => {
 
         {/* 버튼 */}
         <ButtonComponent
+          openProfileModal={openProfileModal}
           handleFollowClickEvent={handleFollowClickEvent}
           followStatus={followStatus}
         />
@@ -170,6 +179,13 @@ const IndexPage = () => {
 
         {/* 목록 */}
         <Outlet context={{ handleFeedCountEvent }} />
+
+        {mypageInfo?.userIdx && isProfileModalOpen && (
+          <ProfileModal
+            mypageInfo={mypageInfo}
+            closeProfileModal={closeProfileModal}
+          />
+        )}
       </div>
     </BasicLayout>
   );

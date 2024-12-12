@@ -107,6 +107,10 @@ public class User implements UserDetails {
         this.password = encodedPassword;
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //      return List.of(new SimpleGrantedAuthority("user"));

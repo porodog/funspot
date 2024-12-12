@@ -80,3 +80,23 @@ export const getProfileApi = async (param) => {
   const res = await axios.get(`/api/usr/profile`, config);
   return res.data;
 };
+
+// 닉네임 중복
+export const getNicknameDuplicateApi = async (param) => {
+  const config = {
+    params: param,
+  };
+  const res = await axios.get(`/api/usr/profile/duplicate`, config);
+  return res.data;
+};
+
+// 프로필 수정등록
+export const putProfileApi = async (form) => {
+  const header = {
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const res = await axios.put(`/api/usr/profile`, form, header);
+  return res.data;
+};

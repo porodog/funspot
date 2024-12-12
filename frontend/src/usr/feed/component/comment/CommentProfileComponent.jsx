@@ -51,7 +51,7 @@ const CommentProfileComponent = ({
               ? "cursor-pointer"
               : ""
           }
-          w-10 h-10 rounded-full object-cover`}
+          w-10 h-10 rounded-full object-contain`}
         onClick={() => handleProfileEvent(comment.user.userIdx)}
       />
       <div className="flex flex-col w-full">

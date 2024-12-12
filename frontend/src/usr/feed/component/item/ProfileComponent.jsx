@@ -44,7 +44,7 @@ const ProfileComponent = ({
                 : initSrc
             }
             alt="프로필 이미지"
-            className="w-12 h-12 rounded-full"
+            className="w-12 h-12 rounded-full object-contain"
           />
           <div>
             <p className="font-semibold text-lg">{user?.nickname}</p>
