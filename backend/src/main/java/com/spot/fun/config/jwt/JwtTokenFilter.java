@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -31,20 +33,27 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String requestUri = request.getRequestURI();
+
         // PERMITTED_PATHS에 포함된 경로는 JWT 토큰 검사 건너뛰기
-        if (isPermittedPath(request.getRequestURI())) {
+        if (isPermittedPath(requestUri)) {
+//            log.info("Skipping JWT validation for permitted path: {}", requestUri);
             filterChain.doFilter(request, response);
             return;
         }
 
-//        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-//        String accessToken = getAccessToken(authorizationHeader);
+        // 토큰 가져오기
         String accessToken = authTokenUtil.getTokenValue(request, "access_token");
 
-        if (jwtTokenProvider.validToken(accessToken)) {
-            Authentication authenciation = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authenciation);
+        // 토큰이 존재하고 유효한 경우 인증 설정
+        if (accessToken != null && jwtTokenProvider.validToken(accessToken)) {
+            log.info("Valid token found for request URI: {}", requestUri);
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            log.warn("Invalid or missing token for request URI: {}", requestUri);
         }
+
         filterChain.doFilter(request, response);
     }
 

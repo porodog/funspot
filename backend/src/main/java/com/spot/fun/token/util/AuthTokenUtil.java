@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 @Component
@@ -204,5 +205,29 @@ public class AuthTokenUtil {
             return false;
         }
     }
+
+    public void saveOrUpdateRefreshToken(Long userIdx, String refreshToken) {
+        Optional<AuthToken> existingToken = authTokenRepository.findByUserIdx(userIdx);
+        if (existingToken.isPresent()) {
+            log.info("Updating existing refresh token for userIdx: {}", userIdx);
+
+            // update 메서드를 호출하여 토큰을 갱신
+            AuthToken token = existingToken.get();
+            token.update(refreshToken);
+
+            authTokenRepository.save(token); // 변경된 객체 저장
+        } else {
+            log.info("Saving new refresh token for userIdx: {}", userIdx);
+
+            // 새 AuthToken 객체 생성 및 저장
+            AuthToken newToken = AuthToken.builder()
+                    .userIdx(userIdx)
+                    .refreshToken(refreshToken)
+                    .build();
+
+            authTokenRepository.save(newToken);
+        }
+    }
+
 
 }
