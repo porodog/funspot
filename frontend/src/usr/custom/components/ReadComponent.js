@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCustomDetail, deleteCustom } from "../api/CustomApi";
-import Button from "react-bootstrap/Button";
 import user from "../img/user.png";
 import vector from "../img/Vector.png";
 
@@ -131,7 +130,7 @@ const ReadComponent = () => {
       <div
         ref={mapElement}
         style={{
-          width: "1135px",
+          width: "1150px",
           height: "440px",
           border: "0",
           borderRadius: "25px",
@@ -145,6 +144,8 @@ const ReadComponent = () => {
             {tag}
           </span>
         ))}
+        <button onClick={() => navigate(`/custom/update/${cno}`)}>수정</button>
+        <button onClick={handleDelete}>삭제</button>
       </div>
       <div className="container mx-auto px-4">
         {/* 카드 그리드 */}
@@ -201,19 +202,6 @@ const ReadComponent = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <Button
-          variant="warning"
-          onClick={() => navigate(`/custom/update/${cno}`)}
-          style={{ marginRight: "10px" }}
-        >
-          수정
-        </Button>
-        <Button variant="danger" onClick={handleDelete}>
-          삭제
-        </Button>
       </div>
     </div>
   );
