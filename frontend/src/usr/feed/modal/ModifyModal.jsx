@@ -139,10 +139,7 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
         </div>
 
         {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent
-          user={{ ...userInfo, idx: loginUserIdx }}
-          pageType={"modify"}
-        />
+        <ProfileComponent feedUserInfo={feed.user} pageType={"modify"} />
 
         {/* 중간영역: 글 내용 및 해시태그 */}
         <div className="mt-4">

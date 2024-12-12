@@ -50,7 +50,7 @@ public class UserFeedController {
   public ResponseEntity<?> insert(HttpServletRequest request, HttpServletResponse response, FeedDTO feedDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     if (!Objects.isNull(loginUserDTO.getIdx())) {
-      feedDTO.setUser(loginUserDTO);
+      feedDTO.setUserIdx(loginUserDTO.getIdx());
     } else { // 비로그인 상태는 접근불가
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
@@ -77,7 +77,7 @@ public class UserFeedController {
     if (Objects.isNull(loginUserIdx)) { // 로그인상태가 아님!!
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
     }
-    feedDTO.setUser(loginUserDTO);
+    feedDTO.setUserIdx(loginUserDTO.getIdx());
 
     FeedDTO result = userFeedService.delete(feedDTO);
     if (ObjectUtils.isEmpty(result)) {
@@ -90,7 +90,7 @@ public class UserFeedController {
   public ResponseEntity<?> modify(HttpServletRequest request, HttpServletResponse response, FeedDTO feedDTO) {
     UserDTO loginUserDTO = authTokenUtil.validateTokenAndGetUserDTO(request, response);
     if (!Objects.isNull(loginUserDTO.getIdx())) {
-      feedDTO.setUser(loginUserDTO);
+      feedDTO.setUserIdx(loginUserDTO.getIdx());
     } else { // 비로그인 상태는 접근불가
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }

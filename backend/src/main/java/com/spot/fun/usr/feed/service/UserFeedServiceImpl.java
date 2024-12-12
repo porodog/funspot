@@ -14,8 +14,9 @@ import com.spot.fun.usr.feed.repository.hashtag.UserFeedHashtagRepository;
 import com.spot.fun.usr.feed.repository.image.UserFeedImageRepository;
 import com.spot.fun.usr.feed.repository.like.UserFeedLikeRepository;
 import com.spot.fun.usr.feed.util.UserFeedUtil;
-import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.dto.profile.UserProfileRequestDTO;
 import com.spot.fun.usr.user.entity.User;
+import com.spot.fun.usr.user.service.profile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
@@ -38,6 +39,8 @@ public class UserFeedServiceImpl implements UserFeedService {
   private final UserFeedLikeRepository userFeedLikeRepository;
   private final UserFeedHashtagRepository userFeedHashtagRepository;
 
+  private final UserProfileService userProfileService;
+
   private final UserFeedUtil userFeedUtil;
 
   @Override
@@ -53,20 +56,14 @@ public class UserFeedServiceImpl implements UserFeedService {
     List<FeedDTO> dtos = list.stream()
             .map((feed) -> {
               Long feedIdx = feed.getIdx();
+              Long userIdx = feed.getUser().getIdx();
               boolean likedYn = !Objects.isNull(loginUserIdx) && userFeedUtil.isFeedLikedYn(feedIdx, loginUserIdx);
 
               return FeedDTO.builder()
                       .idx(feedIdx)
                       .content(feed.getContent())
                       .regDateStr(userFeedUtil.getDateFormat(feed.getRegDate()))
-                      .user(
-                              UserDTO.builder()
-                                      .idx(feed.getUser().getIdx())
-                                      .userId(feed.getUser().getUserId())
-                                      //.name(feed.getUser().getName())
-                                      .nickname(feed.getUser().getNickname())
-                                      .build()
-                      )
+                      .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(userIdx).build()))
                       .feedImages(
                               feed.getFeedImages().stream()
                                       .filter((img) -> !img.isDelYn())
@@ -113,14 +110,7 @@ public class UserFeedServiceImpl implements UserFeedService {
             .idx(feed.getIdx())
             .content(feed.getContent())
             .regDateStr(userFeedUtil.getDateFormat(feed.getRegDate()))
-            .user(
-                    UserDTO.builder()
-                            .idx(feed.getUser().getIdx())
-                            .userId(feed.getUser().getUserId())
-                            .name(feed.getUser().getName())
-                            .nickname(feed.getUser().getNickname())
-                            .build()
-            )
+            .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(userIdx).build()))
             .feedImages(
                     feed.getFeedImages().stream()
                             .filter((item) -> !item.isDelYn())
@@ -153,7 +143,7 @@ public class UserFeedServiceImpl implements UserFeedService {
   @Override
   public Long postInsert(FeedDTO feedDTO) {
     User user = User.builder()
-            .idx(feedDTO.getUser().getIdx())
+            .idx(feedDTO.getUserIdx())
             .build();
 
     Feed feed = userFeedRepository.save(
@@ -203,7 +193,7 @@ public class UserFeedServiceImpl implements UserFeedService {
             .orElseThrow(IllegalArgumentException::new);
     detail.changeContent(feedDTO.getContent());
     detail.changeUser(User.builder()
-            .idx(feedDTO.getUser().getIdx())
+            .idx(feedDTO.getUserIdx())
             .build());
 
     // 삭제 데이터
@@ -236,6 +226,7 @@ public class UserFeedServiceImpl implements UserFeedService {
     List<FeedDTO> list = userFeedRepository.findFeedsByUserIdxOrderByIdxDesc(feedRequestDTO, pageable).stream()
             .map((feed) -> {
               Long feedIdx = feed.getIdx();
+              Long userIdx = feed.getUser().getIdx();
               Long loginUserIdx = feedRequestDTO.getLoginUserDTO().getIdx();
               boolean likedYn = !Objects.isNull(loginUserIdx) && userFeedUtil.isFeedLikedYn(feedIdx, loginUserIdx);
 
@@ -243,14 +234,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                       .idx(feedIdx)
                       .content(feed.getContent())
                       .regDateStr(userFeedUtil.getDateFormat(feed.getRegDate()))
-                      .user(
-                              UserDTO.builder()
-                                      .idx(feed.getUser().getIdx())
-                                      .userId(feed.getUser().getUserId())
-                                      //.name(feed.getUser().getName())
-                                      .nickname(feed.getUser().getNickname())
-                                      .build()
-                      )
+                      .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(userIdx).build()))
                       .feedImages(
                               feed.getFeedImages().stream()
                                       .filter((img) -> !img.isDelYn())

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HashTagModal from "./HashTagModal";
 import { postFeedInsertApi } from "../api/FeedApi";
 import ImageComponent from "../component/insert/ImageComponent";
@@ -6,6 +6,7 @@ import ProfileComponent from "../component/item/ProfileComponent";
 import { useBasic } from "../../../common/context/BasicContext";
 import ContentComponent from "../component/insert/ContentComponent";
 import HashtagComponent from "../component/insert/HashtagComponent";
+import { getProfileApi } from "../../mypage/api/MypageApi";
 
 const InsertModal = ({ closeInsertModal }) => {
   const { userInfo } = useBasic();
@@ -84,6 +85,22 @@ const InsertModal = ({ closeInsertModal }) => {
       });
   };
 
+  // 프로필정보
+  const [feedUserInfo, setFeedUserInfo] = useState({});
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const data = await getProfileApi({ userIdx: loginUserIdx });
+        setFeedUserInfo(data);
+      } catch (err) {
+        console.log("[프로필정보] 조회를 실패했습니다");
+        console.log(err);
+      }
+    };
+    getProfile();
+  }, []);
+
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative">
@@ -111,10 +128,7 @@ const InsertModal = ({ closeInsertModal }) => {
         </div>
 
         {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent
-          user={{ ...userInfo, idx: loginUserIdx }}
-          pageType={"insert"}
-        />
+        <ProfileComponent feedUserInfo={feedUserInfo} pageType={"insert"} />
 
         {/* 중간영역: 글 내용 및 해시태그 */}
         <div className="mt-4">

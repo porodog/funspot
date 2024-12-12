@@ -32,7 +32,7 @@ const ImageComponent = ({ openDetailModal, feedImages }) => {
           {feedImages.length > 0 ? (
             feedImages.map((image) => (
               <img
-                key={`image-${image.idx}`}
+                key={image.idx}
                 src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
                 alt={image.originName}
                 className="w-full h-full object-contain shrink-0"

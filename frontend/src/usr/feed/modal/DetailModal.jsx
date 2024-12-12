@@ -197,7 +197,7 @@ const DetailModal = ({
           <div className="flex justify-between mb-4 items-start">
             {/* 프로필 */}
             {feed.user && (
-              <ProfileComponent user={feed.user} pageType={"detail"} />
+              <ProfileComponent feedUserInfo={feed.user} pageType={"detail"} />
             )}
 
             {/* 상단 툴바 X 버튼 */}

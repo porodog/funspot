@@ -20,7 +20,7 @@ const ListComponent = ({
             className="border border-blue-500 rounded-lg h-1/12 py-4"
           >
             <ProfileComponent
-              user={feed.user}
+              feedUserInfo={feed.user}
               pageType={"list"}
               handleListDeleteEvent={() => handleListDeleteEvent(feed.idx)}
               openModifyModal={() => openModifyModal(feed.idx)}
