@@ -19,7 +19,7 @@ const customRouter = () => {
     },
     {
       path: "",
-      element: <Navigate replace to="custom/list" />,
+      element: <Navigate replace to="list" />,
     },
     {
       path: "add",
