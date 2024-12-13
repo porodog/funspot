@@ -25,7 +25,7 @@ import java.util.Optional;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class AuthTokenUtil {
+public class AuthTokenUtil  {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthTokenRepository authTokenRepository;
     private final UserRepository userRepository;
