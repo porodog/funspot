@@ -5,6 +5,7 @@ const IndexPage = () => {
   return (
     <BasicLayout>
       <div>
+        커스텀 인덱스 페이지
         <div>
           <Outlet />
         </div>
