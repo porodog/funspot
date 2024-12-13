@@ -26,14 +26,17 @@ const TableComponent = ({
     }
   };
 
-  return (
-    <div className="bg-white shadow-md rounded-lg">
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="px-6 py-4 text-left text-gray-800 font-semibold">
-              번호
-            </th>
-            <th className="px-6 py-4 text-left text-gray-800 font-semibold">
-              유형
-            <
+  return;
+  // <div className="bg-white shadow-md rounded-lg">
+  //   <table className="min-w-full table-auto">
+  //     <thead>
+  //       <tr className="bg-gray-100">
+  //         <th className="px-6 py-4 text-left text-gray-800 font-semibold">
+  //           번호
+  //         </th>
+  //         <th className="px-6 py-4 text-left text-gray-800 font-semibold">
+  //           유형
+  //         </th>
+};
+
+export default TableComponent;
