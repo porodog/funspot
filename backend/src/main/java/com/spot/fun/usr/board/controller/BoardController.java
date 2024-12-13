@@ -2,50 +2,45 @@ package com.spot.fun.usr.board.controller;
 
 import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.service.BoardService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/boards")
+@RequiredArgsConstructor
 public class BoardController {
 
-  @Autowired
-  private BoardService boardService;
+  private final BoardService boardService;
 
+  // 모든 게시글 조회
   @GetMapping
   public List<BoardEntity> getAllBoards() {
     return boardService.getAllBoards();
   }
 
+  // 특정 게시글 조회
   @GetMapping("/{id}")
-  public ResponseEntity<BoardEntity> getBoardById(@PathVariable Long id) {
-    BoardEntity board = boardService.getBoardById(id);
-    if (board != null) {
-      return ResponseEntity.ok(board);
-    }
-    return ResponseEntity.notFound().build();
+  public BoardEntity getBoardById(@PathVariable Long id) {
+    return boardService.getBoardById(id);
   }
 
+  // 게시글 작성
   @PostMapping
   public BoardEntity createBoard(@RequestBody BoardEntity board) {
     return boardService.createBoard(board);
   }
 
+  // 게시글 수정
   @PutMapping("/{id}")
-  public ResponseEntity<BoardEntity> updateBoard(@PathVariable Long id, @RequestBody BoardEntity updatedBoard) {
-    BoardEntity board = boardService.updateBoard(id, updatedBoard);
-    if (board != null) {
-      return ResponseEntity.ok(board);
-    }
-    return ResponseEntity.notFound().build();
+  public BoardEntity updateBoard(@PathVariable Long id, @RequestBody BoardEntity updatedBoard) {
+    return boardService.updateBoard(id, updatedBoard);
   }
 
+  // 게시글 삭제 (논리 삭제)
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+  public void deleteBoard(@PathVariable Long id) {
     boardService.deleteBoard(id);
-    return ResponseEntity.noContent().build();
   }
 }

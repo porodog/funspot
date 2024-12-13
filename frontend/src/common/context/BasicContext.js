@@ -14,10 +14,11 @@ export const useBasic = () => {
 export const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null); // 상태 관리
   const [tokenLoading, setTokenLoading] = useState(true); // 상태 조회 로딩
+  const [boards, setBoards] = useState([]); // 게시글 리스트 상태 조회
 
   return (
     <BasicContext.Provider
-      value={{ userInfo, setUserInfo, tokenLoading, setTokenLoading }}
+      value={{ userInfo, setUserInfo, tokenLoading, setTokenLoading, boards, setBoards }}
     >
       {children}
     </BasicContext.Provider>

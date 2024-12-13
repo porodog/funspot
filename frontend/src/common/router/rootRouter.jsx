@@ -21,7 +21,7 @@ const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
 // const CoursePage = lazy(() => import("../../usr/course/page/CourseListpage"));
 const BoardIndexPage = lazy(() =>
-  import("../../usr/board/page/BoardIndexPage")
+  import("../../usr/board/BoardIndex")
 );
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
@@ -41,7 +41,7 @@ const KakaoRedirectHandler = lazy(() =>
   import("../../usr/login/page/KakaoRedirectHandler")
 );
 
-const rootRouter = createBrowserRouter (
+const rootRouter = createBrowserRouter(
   [
     {
       path: "",

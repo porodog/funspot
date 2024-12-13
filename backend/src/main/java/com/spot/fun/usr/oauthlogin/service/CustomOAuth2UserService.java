@@ -139,7 +139,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     return null;
   }
 
-  private String extractNicknameFromProvider(String registrationId, Map<String, Object> attributes)  {
+  private String extractNicknameFromProvider(String registrationId, Map<String, Object> attributes) {
     log.debug("Extracting nickname for registrationId: {}", registrationId);
     if ("google".equals(registrationId)) {
       return (String) attributes.get("name"); // Google에서는 이름이 닉네임 역할을 함

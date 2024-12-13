@@ -28,7 +28,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/auth/kakao")
 @RequiredArgsConstructor
-public class KakaoAuthController  {
+public class KakaoAuthController {
 
   private final WebClient webClient;
   private final JwtTokenProvider jwtTokenProvider;
