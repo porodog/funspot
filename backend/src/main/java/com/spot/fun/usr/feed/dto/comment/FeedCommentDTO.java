@@ -24,9 +24,20 @@ public class FeedCommentDTO {
   private String regDateStr;
   private Long userIdx;
   private Boolean likedYn;
-  private Long feedIdx;
   private Long parentIdx;
+  private Boolean parentDelYn;
+  private Long feedIdx;
+  private Boolean feedDelYn;
   private List<FeedCommentDTO> replyList;
 
   private UserProfileResponseDTO user;
+
+  public FeedCommentDTO(Long idx, String content, Long parentIdx, Boolean parentDelYn, Long feedIdx, Boolean feedDelYn) {
+    this.idx = idx;
+    this.content = content;
+    this.parentIdx = parentIdx;
+    this.parentDelYn = parentDelYn;
+    this.feedIdx = feedIdx;
+    this.feedDelYn = feedDelYn;
+  }
 }

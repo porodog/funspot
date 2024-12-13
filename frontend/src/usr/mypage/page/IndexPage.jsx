@@ -17,14 +17,28 @@ const menuList = [
   {
     id: "feed",
     name: "피드",
+    sub: [],
   },
   {
     id: "like",
     name: "좋아요",
+    sub: [],
   },
   {
     id: "wish",
     name: "위시리스트",
+    sub: [
+      { id: "wish", name: "위시리스트" },
+      { id: "wish", name: "위시리스트" },
+    ],
+  },
+  {
+    id: "comment",
+    name: "댓글",
+    sub: [
+      { id: "feed", name: "피드" },
+      { id: "board", name: "게시판1" },
+    ],
   },
 ];
 const initMenu = menuList[0].id;

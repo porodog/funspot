@@ -77,7 +77,7 @@ const ReplyListComponent = ({
                   {reply.user.user.nickname}
                 </p>
                 <div className="flex items-center">
-                  {reply.user.userIdx === loginUserIdx && (
+                  {!reply.delYn && reply.user.userIdx === loginUserIdx && (
                     <>
                       <button
                         className="text-blue-500"

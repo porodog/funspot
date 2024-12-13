@@ -31,6 +31,14 @@ const mypageRouter = () => {
       ),
     },
     {
+      path: "comment/feed/:userIdx",
+      element: (
+        <Suspense fallback={Loading}>
+          <ValidateComponent />
+        </Suspense>
+      ),
+    },
+    {
       path: "",
       element: <Navigate replace to="/mypage/feed/:userIdx" />,
     },

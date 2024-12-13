@@ -100,3 +100,21 @@ export const putProfileApi = async (form) => {
   const res = await axios.put(`/api/usr/profile`, form, header);
   return res.data;
 };
+
+// 피드댓글 목록
+export const getFeedCommentListApi = async (param) => {
+  const config = {
+    params: param,
+  };
+  const res = await axios.get(`/api/usr/mypage/comment/feed`, config);
+  return res.data;
+};
+
+// 피드댓글 삭제
+export const putFeedCommentDeleteApi = async (param) => {
+  const config = {
+    params: param,
+  };
+  const res = await axios.put(`/api/usr/mypage/comment/feed`, null, config);
+  return res.data;
+};

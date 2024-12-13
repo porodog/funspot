@@ -58,18 +58,14 @@ const CommentProfileComponent = ({
         <div className="flex justify-between items-center">
           <p
             className={`
-              ${
-                loginUserIdx !== "" && loginUserIdx !== comment.user.userIdx
-                  ? "cursor-pointer"
-                  : ""
-              }
+              ${loginUserIdx !== "" ? "cursor-pointer" : ""}
               font-semibold text-gray-800`}
             onClick={() => handleProfileEvent(comment.user.userIdx)}
           >
             {comment.user.user.nickname}
           </p>
           <div className="flex text-xs text-gray-500 items-center">
-            {comment.user.userIdx === loginUserIdx && (
+            {!comment.delYn && comment.user.userIdx === loginUserIdx && (
               <>
                 <button
                   className="text-blue-500"

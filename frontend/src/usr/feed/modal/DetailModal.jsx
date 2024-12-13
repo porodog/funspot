@@ -19,6 +19,7 @@ const DetailModal = ({
   closeDetailModal,
   handleLikesEvent,
   handleCommentCountEvent,
+  handleReplyActiveEvent,
 }) => {
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
@@ -50,7 +51,7 @@ const DetailModal = ({
         .then((data) => {
           if (data) {
             setCommentList((prevCommentList) => [...prevCommentList, data]);
-            handleCommentCountEvent(feed.idx, "new");
+            handleCommentCountEvent({ ...data, feedIdx: feed.idx }, "new");
           }
         })
         .catch((err) => {
@@ -74,6 +75,7 @@ const DetailModal = ({
               return { ...item };
             });
           });
+          handleCommentCountEvent({ ...data, feedIdx: feed.idx }, "update");
         }
       })
       .catch((err) => {
@@ -86,11 +88,17 @@ const DetailModal = ({
   const handleCommentDeleteEvent = (idx) => {
     deleteCommentApi({ idx: idx })
       .then((data) => {
+        console.log(data);
         if (data) {
-          setCommentList((prevList) => {
-            return prevList.filter((item) => item.idx !== data.idx);
-          });
-          handleCommentCountEvent(feed.idx, "delete");
+          setCommentList((prevList) =>
+            prevList.map((item) => {
+              if (item.idx === data.idx) {
+                return { ...item, content: "삭제된 댓글입니다" };
+              }
+              return item;
+            })
+          );
+          handleCommentCountEvent({ ...data, feedIdx: feed.idx }, "delete");
         }
       })
       .catch((err) => {
@@ -104,8 +112,8 @@ const DetailModal = ({
     (obj) => {
       postReplyApi({ ...obj, feedIdx: feed.idx })
         .then((data) => {
-          setCommentList((prevList) => {
-            return prevList.map((item) => {
+          setCommentList((prevList) =>
+            prevList.map((item) => {
               if (item.idx === data.parentIdx) {
                 return {
                   ...item,
@@ -114,8 +122,11 @@ const DetailModal = ({
                 };
               }
               return item;
-            });
-          });
+            })
+          );
+          if (handleReplyActiveEvent) {
+            handleReplyActiveEvent({ ...data, feedIdx: feed.idx }, "new");
+          }
         })
         .catch((err) => {
           console.log("[답글등록] 등록을 실패했습니다");
@@ -147,6 +158,9 @@ const DetailModal = ({
               return { ...comment };
             });
           });
+          if (handleReplyActiveEvent) {
+            handleReplyActiveEvent({ ...data, feedIdx: feed.idx }, "update");
+          }
         }
       })
       .catch((err) => {
@@ -160,19 +174,25 @@ const DetailModal = ({
     deleteCommentApi({ idx: idx })
       .then((data) => {
         if (data) {
-          setCommentList((prevList) => {
-            return prevList.map((comment) => {
+          setCommentList((prevList) =>
+            prevList.map((comment) => {
               if (comment.idx === parentIdx) {
                 return {
                   ...comment,
-                  replyList: comment.replyList.filter(
-                    (reply) => reply.idx !== idx
-                  ),
+                  replyList: comment.replyList.map((reply) => {
+                    if (reply.idx === idx) {
+                      return { ...reply, content: "삭제된 답글입니다" };
+                    }
+                    return { ...reply };
+                  }),
                 };
               }
               return { ...comment };
-            });
-          });
+            })
+          );
+          if (handleReplyActiveEvent) {
+            handleReplyActiveEvent({ ...data, feedIdx: feed.idx }, "delete");
+          }
         }
       })
       .catch((err) => {

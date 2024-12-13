@@ -11,9 +11,10 @@ const ListComponent = ({
   handleReplyModifyEvent,
   handleReplyDeleteEvent,
 }) => {
+  console.log(commentList);
+
   const [activeReplyComment, setActiveReplyComment] = useState(null);
   const handleReplyClick = (commentId) => {
-    // 답글 입력을 토글하는 역할
     setActiveReplyComment((prev) => (prev === commentId ? null : commentId));
   };
 

@@ -6,6 +6,9 @@ import { getExistsUserApi } from "../api/MypageApi";
 const FeedListCompoent = lazy(() => import("../component/feed/ListComponent"));
 const LikeListCompoent = lazy(() => import("../component/like/ListComponent"));
 const WishListCompoent = lazy(() => import("../component/wish/ListComponent"));
+const CommentFeedListCompoent = lazy(() =>
+  import("../component/comment/feed/ListComponent")
+);
 
 const ValidateComponent = () => {
   const navigate = useNavigate();
@@ -35,6 +38,8 @@ const ValidateComponent = () => {
       return <LikeListCompoent />;
     } else if (pathname.includes("wish")) {
       return <WishListCompoent />;
+    } else if (pathname.includes("comment/feed")) {
+      return <CommentFeedListCompoent />;
     }
 
     return <FeedListCompoent />;

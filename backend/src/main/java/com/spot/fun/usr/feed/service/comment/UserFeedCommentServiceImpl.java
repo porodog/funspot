@@ -32,31 +32,26 @@ public class UserFeedCommentServiceImpl implements UserFeedCommentService {
 
   @Override
   public List<FeedCommentDTO> getCommentList(Long idx, Long userIdx) {
-    return userFeedCommentRepository.findByFeedIdxAndDelYnFalseAndParentIdxIsNull(idx).stream()
-            .map((comment) -> {
-              //boolean likedYn = !Objects.isNull(userIdx) && userFeedUtil.isFeedCommentLikedYn(comment.getIdx(), userIdx);
-              boolean likedYn = false;
-
-              return FeedCommentDTO.builder()
-                      .idx((comment.getIdx()))
-                      .content(comment.getContent())
-                      .regDateStr(userFeedUtil.getDateFormat(comment.getRegDate()))
-                      .likedYn(likedYn)
-                      .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(comment.getUser().getIdx()).build()))
-                      .replyList(
-                              userFeedCommentRepository.findByParentIdxAndDelYnFalse(comment.getIdx()).stream()
-                                      .map((reply) ->
-
-                                              FeedCommentDTO.builder()
-                                                      .idx(reply.getIdx())
-                                                      .content(reply.getContent())
-                                                      .regDateStr(userFeedUtil.getDateFormat(reply.getRegDate()))
-                                                      .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(reply.getUser().getIdx()).build()))
-                                                      .build()
-                                      ).toList()
-                      )
-                      .build();
-            }).toList();
+    return userFeedCommentRepository.findByFeedIdxAndParentIdxIsNull(idx).stream()
+            .map((comment) -> FeedCommentDTO.builder()
+                    .idx((comment.getIdx()))
+                    .content(comment.isDelYn() ? "삭제된 댓글입니다" : comment.getContent())
+                    .delYn(comment.isDelYn())
+                    .regDateStr(userFeedUtil.getDateFormat(comment.getRegDate()))
+                    .likedYn(false)
+                    .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(comment.getUser().getIdx()).build()))
+                    .replyList(
+                            userFeedCommentRepository.findByParentIdx(comment.getIdx()).stream()
+                                    .map((reply) -> FeedCommentDTO.builder()
+                                            .idx(reply.getIdx())
+                                            .content(reply.isDelYn() ? "삭제된 답글입니다" : reply.getContent())
+                                            .delYn(reply.isDelYn())
+                                            .regDateStr(userFeedUtil.getDateFormat(reply.getRegDate()))
+                                            .user(userProfileService.getProfile(UserProfileRequestDTO.builder().userIdx(reply.getUser().getIdx()).build()))
+                                            .build()
+                                    ).toList()
+                    )
+                    .build()).toList();
   }
 
   @Transactional
@@ -96,7 +91,7 @@ public class UserFeedCommentServiceImpl implements UserFeedCommentService {
               .orElseThrow(IllegalArgumentException::new);
       User user = userRepository.findByIdx(feedCommentDTO.getUserIdx())
               .orElseThrow(IllegalArgumentException::new);
-      FeedComment feedComment = userFeedCommentRepository.findByIdxAndDelYnFalse(feedCommentDTO.getParentIdx())
+      FeedComment feedComment = userFeedCommentRepository.findByIdx(feedCommentDTO.getParentIdx())
               .orElseThrow(IllegalArgumentException::new);
 
       FeedComment reply = userFeedCommentRepository.save(

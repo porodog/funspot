@@ -79,7 +79,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                       )
                       .likedYn(likedYn)
                       .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
-                      .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(feedIdx))
+                      .commentCount(userFeedCommentRepository.countByFeedIdxAndParentIdxIsNull(feedIdx))
                       .feedHashtags(
                               userFeedHashtagRepository.findByFeedIdx(feedIdx).stream()
                                       .map((tag) ->
@@ -125,7 +125,7 @@ public class UserFeedServiceImpl implements UserFeedService {
             )
             .likedYn(likedYn)
             .likeCount(userFeedLikeRepository.countByFeedIdx(idx))
-            .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(idx))
+            .commentCount(userFeedCommentRepository.countByFeedIdxAndParentIdxIsNull(idx))
             .feedHashtags(
                     userFeedHashtagRepository.findByFeedIdx(idx).stream()
                             .map((tag) ->
@@ -188,7 +188,6 @@ public class UserFeedServiceImpl implements UserFeedService {
   @Transactional
   @Override
   public Long postModify(FeedDTO feedDTO) {
-
     Feed detail = userFeedRepository.findByIdxAndDelYnFalse(feedDTO.getIdx())
             .orElseThrow(IllegalArgumentException::new);
     detail.changeContent(feedDTO.getContent());
@@ -220,7 +219,6 @@ public class UserFeedServiceImpl implements UserFeedService {
   public FeedResponseDTO getFeedListByMypage(FeedRequestDTO feedRequestDTO) {
     Long feedCount = userFeedRepository.countByUserIdxAndDelYnFalse(feedRequestDTO.getUserIdx());
 
-
     // 목록 조회
     Pageable pageable = PageRequest.of(0, feedRequestDTO.getPageSize(), Sort.by("idx").descending());
     List<FeedDTO> list = userFeedRepository.findFeedsByUserIdxOrderByIdxDesc(feedRequestDTO, pageable).stream()
@@ -250,7 +248,7 @@ public class UserFeedServiceImpl implements UserFeedService {
                       )
                       .likedYn(likedYn)
                       .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
-                      .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(feedIdx))
+                      .commentCount(userFeedCommentRepository.countByFeedIdxAndParentIdxIsNull(feedIdx))
                       .feedHashtags(
                               userFeedHashtagRepository.findByFeedIdx(feedIdx).stream()
                                       .map((tag) ->

@@ -150,10 +150,14 @@ const ListPage = () => {
   };
 
   // 댓글 수
-  const handleCommentCountEvent = (targetIdx, type) => {
+  const handleCommentCountEvent = (comment, type) => {
+    if (type !== "new") {
+      return;
+    }
+
     setFeedList((prevFeedList) =>
       prevFeedList.map((feed) => {
-        if (feed.idx === targetIdx) {
+        if (feed.idx === comment.feedIdx) {
           const commentCount =
             type === "new" ? feed.commentCount + 1 : feed.commentCount - 1;
           const newCommentCount = commentCount > 99 ? "99+" : commentCount;
