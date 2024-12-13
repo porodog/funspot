@@ -2,10 +2,8 @@ import { Suspense, lazy } from "react";
 import feedRouter from "../../usr/feed/router/feedRouter";
 import boardRouter from "../../usr/board/router/boardRouter";
 import BasicLayout from "../layout/BasicLayout";
-import chatRouter from "../../usr/chat/router/chatRouter";
 import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
-import customRouter from "../../usr/custom/router/customRouter";
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -21,7 +19,7 @@ const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
 // const CoursePage = lazy(() => import("../../usr/course/page/CourseListpage"));
 const BoardIndexPage = lazy(() =>
-  import("../../usr/board/page/BoardIndexPage")
+  import("../../usr/board/BoardIndex")
 );
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
@@ -30,18 +28,11 @@ const DateCourseListPage = lazy(() =>
   import("../../usr/course/page/DateCourseListpage")
 );
 // const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
-const ChatListPage = lazy(() => import("../../usr/chat/page/ChatListPage"));
-const AddCoursePage = lazy(() => import("../../usr/course/page/AddCoursePage")); // 수정된 부분
 const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
-const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
 
-const KakaoRedirectHandler = lazy(() =>
-  import("../../usr/login/page/KakaoRedirectHandler")
-);
-
-const rootRouter = createBrowserRouter(
+const rootRouter = createBrowserRouter (
   [
     {
       path: "",
@@ -75,14 +66,6 @@ const rootRouter = createBrowserRouter(
       element: (
         <Suspense fallback={Loading}>
           <SocialSignupPage />
-        </Suspense>
-      ),
-    },
-    {
-      path: "kakao/redirect",
-      element: (
-        <Suspense fallback={Loading}>
-          <KakaoRedirectHandler />
         </Suspense>
       ),
     },
@@ -138,25 +121,6 @@ const rootRouter = createBrowserRouter(
       ),
       children: dateRouter(), // DateRouter 자식 라우터 추가
     },
-    {
-      path: "addcourse",
-      element: (
-        <Suspense fallback={Loading}>
-          <AddCoursePage />
-        </Suspense>
-      ),
-    },
-
-    {
-      path: "custom",
-      element: (
-        <Suspense fallback={Loading}>
-          <CustomIndexPage />
-        </Suspense>
-      ),
-      children: customRouter(),
-    },
-
     // {
     //   path: "addDate",
     //   element: (
@@ -165,14 +129,6 @@ const rootRouter = createBrowserRouter(
     //     </Suspense>
     //   ),
     // },
-    {
-      path: "chat/*", // /* 추가하여 중첩 라우팅 허용
-      element: (
-        <Suspense fallback={Loading}>
-          <ChatListPage />
-        </Suspense>
-      ),
-    },
   ],
   {
     future: {

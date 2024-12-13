@@ -1,7 +1,6 @@
 package com.spot.fun.token.entity;
 
-import com.spot.fun.token.repository.AuthTokenRepository;
-import com.spot.fun.usr.user.entity.User;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;

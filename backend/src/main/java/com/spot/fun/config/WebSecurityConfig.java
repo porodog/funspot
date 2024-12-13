@@ -5,9 +5,12 @@ import com.spot.fun.config.jwt.JwtTokenProvider;
 import com.spot.fun.token.entity.AuthToken;
 import com.spot.fun.token.repository.AuthTokenRepository;
 import com.spot.fun.token.util.AuthTokenUtil;
+import com.spot.fun.usr.oauthlogin.converter.CustomOAuth2AccessTokenResponseClient;
+import com.spot.fun.usr.oauthlogin.converter.KakaoRequestEntityConverter;
 import com.spot.fun.usr.oauthlogin.service.CustomOAuth2UserService;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
+import com.spot.fun.usr.user.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +19,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -54,7 +59,7 @@ public class WebSecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception  {
 
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정
@@ -62,19 +67,17 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/").hasAuthority("ADMIN")
-                        .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
                         .requestMatchers("/api/usr/datecourse/public", "api/usr/datecourse/user").permitAll()
-                        // WebSocket 엔드포인트 허용
-                        .requestMatchers("/ws/**").permitAll()
-//                      .requestMatchers("/api/chat/**").permitAll()
-                        .requestMatchers("/api/chat/**").authenticated()  // 명시적으로 인증 필요함을 표시
+                        .requestMatchers("/api/boards/**").permitAll() // 게시판 관련 경로 인증 없이 허용
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors((auth) -> auth
                         .configurationSource(corsConfigurationSource())
                 )
+
                 .csrf((auth) -> auth
                         .disable()
                 )
@@ -82,13 +85,14 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))  // OAuth2 로그인 설정
+                        .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                                .accessTokenResponseClient(customOAuth2AccessTokenResponseClient()) // Kakao 토큰 요청 처리
+                        )
                         .successHandler(oAuth2AuthenticationSuccessHandler())  // 로그인 성공 시 동작
                         .failureHandler(oAuth2AuthenticationFailureHandler()))  // 로그인 실패 시 동작
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-
 
     // CORS 설정
     @Bean
@@ -127,6 +131,18 @@ public class WebSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    // KaKao 전용 토큰 요청 방식
+//    @Bean
+//    public DefaultAuthorizationCodeTokenResponseClient kakaoTokenResponseClient() {
+//        DefaultAuthorizationCodeTokenResponseClient tokenResponseClient = new DefaultAuthorizationCodeTokenResponseClient();
+//        tokenResponseClient.setRequestEntityConverter(new KakaoRequestEntityConverter());
+//        return tokenResponseClient;
+//    }
+
+    @Bean
+    public CustomOAuth2AccessTokenResponseClient customOAuth2AccessTokenResponseClient() {
+        return new CustomOAuth2AccessTokenResponseClient();
+    }
 
     // OAuth2 로그인 실패 핸들러
     @Bean
@@ -144,26 +160,29 @@ public class WebSecurityConfig {
             @Override
             protected void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
                 DefaultOAuth2User oAuth2User = (DefaultOAuth2User) authentication.getPrincipal();
-                log.info("OAuth2 Success Handler - User Attributes: {}", oAuth2User.getAttributes());
                 Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes()); // 수정 가능 Map으로 변환
-                String email = (String) attributes.get("email");
 
-                if (email == null) {
-                    log.error("OAuth2 Success Handler - Email is null, redirecting to error page.");
+                // 이메일 정보 추출
+                String email = (String) attributes.get("email");
+                if (email == null || email.isEmpty()) {
+                    log.error("OAuth2 Success Handler - Email is null or empty, redirecting to error page. Attributes: {}", attributes);
                     response.sendRedirect("http://localhost:3000/login-error");
                     return;
                 }
 
                 log.info("OAuth2 Success Handler - Email: {}", email);
 
+                // 데이터베이스에서 사용자 조회
                 Optional<User> userOptional = userRepository.findByEmail(email);
                 if (userOptional.isPresent()) {
-                    // 기존 사용자: JWT 생성 후 로그인 성공 페이지로 리다이렉트
+                    // 기존 사용자 처리
                     User user = userOptional.get();
+                    log.info("User found in database: {}", user);
+
                     String accessToken = jwtTokenProvider.generateAccessToken(user);
                     String refreshToken;
 
-                    // Refresh Token이 이미 존재하면 가져오고, 없으면 생성
+                    // Refresh Token 처리
                     Optional<AuthToken> existingToken = authTokenRepository.findByUserIdx(user.getIdx());
                     if (existingToken.isPresent()) {
                         refreshToken = existingToken.get().getRefreshToken(); // 기존 토큰 사용
@@ -182,17 +201,14 @@ public class WebSecurityConfig {
                     authTokenUtil.makeAccessToken(response, accessToken);
                     authTokenUtil.makeRefreshToken(response, refreshToken);
 
-                    log.info("프론트엔드의 login-success 페이지로 리다이렉트...");
-                    log.info("Redirecting to login-success");
+                    log.info("Redirecting to login-success page for existing user...");
                     response.sendRedirect("http://localhost:3000/login-success");
                 } else {
-                    // 비회원: 회원가입 페이지로 리다이렉트
-                    log.info("Redirecting to social-signup for new user: {}", email);
+                    // 비회원 처리: 회원가입 페이지로 리다이렉트
+                    log.info("No user found in database. Redirecting to social-signup for email: {}", email);
                     response.sendRedirect("http://localhost:3000/social-signup");
                 }
             }
         };
     }
-
-
 }

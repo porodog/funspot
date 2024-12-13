@@ -1,33 +1,33 @@
 import { lazy, Suspense } from "react";
 
 const Loading = <div>Loading....</div>;
-const BoardListPage = lazy(() => import("../page/BoardListPage"));
-const BoardDetailPage = lazy(() => import("../page/BoardDetailPage"));
-const BoardCreatePage = lazy(() => import("../page/BoardCreatePage"));
+const BoardList = lazy(() => import("../components/BoardList"));
+const BoardDetail = lazy(() => import("../components/BoardDetail"));
+const CreateBoard = lazy(() => import("../components/CreateBoard"));
 
 const boardRouter = () => [
   {
-    path: "list", // 상대 경로로 수정
+    path: "", // 게시판 홈
     element: (
-      <Suspense fallback={Loading}>
-        <BoardListPage />
-      </Suspense>
+        <Suspense fallback={Loading}>
+          <BoardList />
+        </Suspense>
     ),
   },
   {
-    path: "detail/:id", // 상대 경로로 수정
+    path: "detail/:id", // 게시글 상세보기
     element: (
-      <Suspense fallback={Loading}>
-        <BoardDetailPage />
-      </Suspense>
+        <Suspense fallback={Loading}>
+          <BoardDetail />
+        </Suspense>
     ),
   },
   {
-    path: "create", // 상대 경로로 수정
+    path: "create", // 글쓰기 화면
     element: (
-      <Suspense fallback={Loading}>
-        <BoardCreatePage />
-      </Suspense>
+        <Suspense fallback={Loading}>
+          <CreateBoard />
+        </Suspense>
     ),
   },
 ];
