@@ -19,7 +19,7 @@ import java.io.IOException;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class JwtTokenFilter extends OncePerRequestFilter  {
     private final JwtTokenProvider jwtTokenProvider;
 //    private final static String HEADER_AUTHORIZATION = "Authorization";
 //    private final static String TOKEN_PREFIX = "Bearer";
