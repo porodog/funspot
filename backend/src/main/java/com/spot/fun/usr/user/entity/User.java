@@ -18,7 +18,7 @@ import java.util.Collections;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class User implements UserDetails {
+public class User implements UserDetails  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx", unique = true, updatable = false)

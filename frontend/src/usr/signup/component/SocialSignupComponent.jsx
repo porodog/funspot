@@ -36,7 +36,7 @@ const SocialSignupComponent = () => {
 
   // 세션 데이터 가져오기
   useEffect(() => {
-    const fetchSessionData = async () => {
+    const fetchSessionData = async () =>  {
       try {
         const response = await axios.get("/api/usr/oauth/get-oauth-session");
         const data = response.data;

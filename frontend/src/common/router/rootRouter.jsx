@@ -41,7 +41,7 @@ const KakaoRedirectHandler = lazy(() =>
   import("../../usr/login/page/KakaoRedirectHandler")
 );
 
-const rootRouter = createBrowserRouter(
+const rootRouter = createBrowserRouter (
   [
     {
       path: "",

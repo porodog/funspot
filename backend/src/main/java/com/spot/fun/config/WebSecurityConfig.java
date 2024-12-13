@@ -54,7 +54,7 @@ public class WebSecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception  {
 
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정
