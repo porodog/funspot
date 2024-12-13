@@ -13,7 +13,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const CLIENT_ID = process.env.REACT_APP_REST_API_KEY;
 
-const LoginComponent = () =>  {
+const LoginComponent = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
