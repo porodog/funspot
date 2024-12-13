@@ -1,68 +1,82 @@
 package com.spot.fun.usr.course.controller;
 
+import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.course.model.DateCourse;
-import com.spot.fun.usr.course.repository.DateCourseRepository;
 import com.spot.fun.usr.course.service.DateCourseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
+@Log4j2
 @RestController
-@RequestMapping("api/usr/datecourse")
+@RequiredArgsConstructor
+@RequestMapping("/api/usr/course")
 public class DateCourseController {
 
-    @Autowired
-    private DateCourseRepository dateCourseRepository;
+    private final DateCourseService dateCourseService;
+    private final AuthTokenUtil authTokenUtil;
 
-    @Autowired
-    private DateCourseService dateCourseService;
-
-    // 관리자만 고정 코스를 등록
-    @PostMapping
-    public DateCourse createCourse(@RequestBody DateCourse dateCourse) {
-        return dateCourseRepository.save(dateCourse);
-    }
-
-    @PostMapping("/add")
-    public ResponseEntity<String> addCourse(@RequestBody DateCourse dateCourse) {
-        try {
-            dateCourseService.addCourse(dateCourse); // 코스를 서비스에 전달하여 저장
-            return ResponseEntity.ok("Course added successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error adding course");
+    @PostMapping("/addcourse")
+    public ResponseEntity<DateCourse> addCourse(@RequestBody DateCourse dateCourse,
+                                                HttpServletRequest request,
+                                                HttpServletResponse response) {
+        // 토큰 검증
+        if (!authTokenUtil.validateAccessToken(request)) {
+            log.error("Invalid or expired access token.");
+            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
         }
+
+        // 인증된 사용자만 코스를 추가할 수 있도록 처리
+        DateCourse createdCourse = dateCourseService.addCourse(dateCourse);
+        return ResponseEntity.ok(createdCourse);
     }
 
-    // 모든 코스 조회
-    @GetMapping("/all")
-    public ResponseEntity<List<DateCourse>> getAllCourses() {
+    @GetMapping("/{id}")
+    public ResponseEntity<DateCourse> getCourseById(@PathVariable Long id,
+                                                    HttpServletRequest request,
+                                                    HttpServletResponse response) {
+        // 토큰 검증
+        if (!authTokenUtil.validateAccessToken(request)) {
+            log.error("Invalid or expired access token.");
+            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
+        }
+
+        Optional<DateCourse> course = dateCourseService.getCourseById(id);
+        return course.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/datecourses")
+    public ResponseEntity<List<DateCourse>> getAllCourses(HttpServletRequest request,
+                                                          HttpServletResponse response) {
+        log.info("asdakfjhpajfpagpapagnpagnspangnaspgnpasnpgnapsng");
+        // 토큰 검증
+//        if (!authTokenUtil.validateAccessToken(request)) {
+//            log.error("Invalid or expired access token.");
+//            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
+//        }
+
         List<DateCourse> courses = dateCourseService.getAllCourses();
         return ResponseEntity.ok(courses);
     }
 
-    // 특정 코스 조회 (ID로 조회 예시)
-    @GetMapping("/{idx}")
-    public ResponseEntity<DateCourse> getCourseById(@PathVariable Long id) {
-        DateCourse course = dateCourseService.getCourseById(id);
-        if (course != null) {
-            return ResponseEntity.ok(course);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    @GetMapping("/{id}/map")
+    public ResponseEntity<String> getMapRoute(@PathVariable Long id,
+                                              HttpServletRequest request,
+                                              HttpServletResponse response) {
+        // 토큰 검증
+        if (!authTokenUtil.validateAccessToken(request)) {
+            log.error("Invalid or expired access token.");
+            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
         }
-    }
 
-    // 모든 사용자가 코스를 조회할 수 있음
-    @GetMapping("/public")
-    public List<DateCourse> getAllPublicCourses() {
-        return dateCourseRepository.findAll();
-    }
-
-    // 사용자가 추가한 코스를 비회원 및 회원이 볼 수 있음
-    @GetMapping("/user")
-    public List<DateCourse> getUserCourses() {
-        return dateCourseRepository.findAll();
+        String mapRoute = dateCourseService.getMapRoute(id);
+        return ResponseEntity.ok(mapRoute);
     }
 }

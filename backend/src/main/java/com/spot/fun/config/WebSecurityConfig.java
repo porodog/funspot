@@ -64,7 +64,8 @@ public class WebSecurityConfig {
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .requestMatchers("/api/admin/").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
-                        .requestMatchers("/api/usr/datecourse/public", "api/usr/datecourse/user").permitAll()
+                        .requestMatchers("/api/usr/datecourse/").permitAll()
+                                .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         // WebSocket 엔드포인트 허용
                         .requestMatchers("/ws/**").permitAll()

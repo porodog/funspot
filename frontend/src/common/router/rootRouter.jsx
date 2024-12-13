@@ -3,7 +3,7 @@ import feedRouter from "../../usr/feed/router/feedRouter";
 import boardRouter from "../../usr/board/router/boardRouter";
 import BasicLayout from "../layout/BasicLayout";
 import chatRouter from "../../usr/chat/router/chatRouter";
-import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
+// import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
 import customRouter from "../../usr/custom/router/customRouter";
 
@@ -125,7 +125,7 @@ const rootRouter = createBrowserRouter(
           <DateCourseListPage />
         </Suspense>
       ),
-      children: dateRouter(), // DateRouter 자식 라우터 추가
+      // children: dateRouter(), // DateRouter 자식 라우터 추가
     },
     {
       path: "addcourse",

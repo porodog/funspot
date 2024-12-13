@@ -14,10 +14,10 @@ const categories = [
   { name: '관광', img: <HomeState />, path: '/travle' },
   { name: '숙소', img: <Pack />, path: '/accommodation' },
   { name: '펀추천코스', img: <LikeSpot />, path: '/datecourses' },
-  { name: '코스만들기', img: <MakeCourse />, path: '/add-course' },
+  { name: '코스만들기', img: <MakeCourse />, path: '/custom' },
   { name: '피드', img: <Feed />, path: '/feed' },
   { name: '게시판', img: <FoodFork />, path: '/board' },
-//  { name: '마이페이지', img: <FoodFork />, path: '/mypage' },
+  //  { name: '마이페이지', img: <FoodFork />, path: '/mypage' },
 ];
 
 const NavigationMenu = () => {
