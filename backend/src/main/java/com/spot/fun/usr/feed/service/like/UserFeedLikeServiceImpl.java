@@ -137,7 +137,7 @@ public class UserFeedLikeServiceImpl implements UserFeedLikeService {
                       )
                       .likedYn(likedYn)
                       .likeCount(userFeedLikeRepository.countByFeedIdx(feedIdx))
-                      .commentCount(userFeedCommentRepository.countByFeedIdxAndDelYnFalseAndParentIdxIsNull(feedIdx))
+                      .commentCount(userFeedCommentRepository.countByFeedIdxAndParentIdxIsNull(feedIdx))
                       .feedHashtags(
                               userFeedHashtagRepository.findByFeedIdx(feedIdx).stream()
                                       .map((tag) ->

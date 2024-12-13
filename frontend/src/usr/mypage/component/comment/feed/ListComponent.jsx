@@ -34,15 +34,6 @@ const ListComponent = () => {
     }
   };
 
-  // 삭제 갱신
-  const handleDeleteListEvent = (commentIdx) => {
-    setCommentList((prevList) =>
-      prevList.filter(
-        (item) => item.parentIdx !== commentIdx || item.idx !== commentIdx
-      )
-    );
-  };
-
   // 피드정보
   const [selectedFeed, setSelectedFeed] = useState({});
   const handleSelectedFeed = async (idx) => {
@@ -58,9 +49,9 @@ const ListComponent = () => {
 
   // 상세 모달
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const openDetailModal = (idx) => {
+  const openDetailModal = (feedIdx) => {
     setIsDetailModalOpen(true);
-    handleSelectedFeed(idx);
+    handleSelectedFeed(feedIdx);
   };
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
@@ -85,13 +76,21 @@ const ListComponent = () => {
       });
   };
 
+  // 삭제 갱신
+  const handleDeleteListEvent = (commentIdx) => {
+    setCommentList((prevList) =>
+      prevList.filter((item) => item.idx !== commentIdx)
+    );
+  };
+
   // 댓글
   const handleCommentCountEvent = (comment, type) => {
     updateCommentList(comment, type);
 
-    if (type !== "update") {
+    if (type !== "new") {
       return;
     }
+
     const commentCount =
       type === "new"
         ? selectedFeed.commentCount + 1
@@ -117,9 +116,8 @@ const ListComponent = () => {
         {
           idx: item.idx,
           content: item.content,
-          delYn: false,
           feedIdx: item.feedIdx,
-          parentIdx: item.parentIdx,
+          feedDelYn: false,
         },
         ...prevList,
       ]);
@@ -136,7 +134,6 @@ const ListComponent = () => {
       handleDeleteListEvent(item.idx);
     }
   };
-  console.log(commentList);
 
   // 스크롤 위치
   const [isBottom, setIsBottom] = useState(false);

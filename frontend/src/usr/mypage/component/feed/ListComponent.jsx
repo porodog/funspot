@@ -147,20 +147,22 @@ const ListComponent = () => {
 
   // 댓글수정
   const handleCommentCountEvent = (comment, type) => {
-    if (type === "update") {
+    if (type !== "new") {
       return;
     }
 
     setFeedList((prevFeedList) =>
       prevFeedList.map((feed) => {
-        if (feed.idx === comment.idx) {
+        if (feed.idx === comment.feedIdx) {
           const commentCount =
             type === "new" ? feed.commentCount + 1 : feed.commentCount - 1;
           const newCommentCount = commentCount > 99 ? "99+" : commentCount;
+
           setSelectedFeed((prevFeed) => ({
             ...prevFeed,
             commentCount: newCommentCount,
           }));
+
           return { ...feed, commentCount: newCommentCount };
         }
         return feed;

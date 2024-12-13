@@ -19,7 +19,8 @@ public interface UserFeedLikeRepository extends JpaRepository<FeedLike, Long> {
   @Query("SELECT f FROM FeedLike f " +
 //          "INNER JOIN f.feed feed " +
           "WHERE f.user.idx = :#{#feed.userIdx} " +
-          "AND (:#{#feed.lastId}=0 or f.idx < :#{#feed.lastId})")
+          "AND (:#{#feed.lastId}=0 or f.idx < :#{#feed.lastId}) " +
+          "ORDER BY f.idx DESC")
   List<FeedLike> findFeedsByUserIdxOrderByIdxDesc(@Param("feed") FeedRequestDTO feedRequestDTO, Pageable pageable);
 
   @Query("SELECT MIN(tfl.idx) FROM FeedLike tfl WHERE tfl.user.idx = :userIdx")
