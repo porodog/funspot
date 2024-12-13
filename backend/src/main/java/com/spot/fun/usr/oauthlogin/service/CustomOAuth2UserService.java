@@ -46,19 +46,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     // 새로운 Map을 생성하여 attributes 수정 가능하도록 처리
     Map<String, Object> attributes = new HashMap<>(originalAttributes);
 
-    // Kakao 처리
-    if ("kakao".equals(registrationId)) {
-      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-      String email = kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
-      String nickname = kakaoAccount != null ? (String) ((Map<String, Object>) kakaoAccount.get("profile")).get("nickname") : null;
-
-      return new DefaultOAuth2User(
-              Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-              Map.of("email", email, "nickname", nickname),
-              "email"
-      );
-    }
-
     // 사용자 정보 추출
     String email = extractEmailFromProvider(registrationId, attributes);
     String name = extractNameFromProvider(registrationId, attributes);
@@ -109,14 +96,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
 
-
   private String extractEmailFromProvider(String registrationId, Map<String, Object> attributes) {
     log.debug("Extracting email for registrationId: {}", registrationId);
     if ("google".equals(registrationId)) {
       return (String) attributes.get("email");
-    } else if ("kakao".equals(registrationId)) {
-      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-      return kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("email") : null;
@@ -128,10 +111,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     log.debug("Extracting name for registrationId: {}", registrationId);
     if ("google".equals(registrationId)) {
       return (String) attributes.get("name");
-    } else if ("kakao".equals(registrationId)) {
-      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-      Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") : null;
-      return profile != null ? (String) profile.get("nickname") : null;
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("name") : null;
@@ -143,10 +122,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     log.debug("Extracting nickname for registrationId: {}", registrationId);
     if ("google".equals(registrationId)) {
       return (String) attributes.get("name"); // Google에서는 이름이 닉네임 역할을 함
-    } else if ("kakao".equals(registrationId)) {
-      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-      Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") : null;
-      return profile != null ? (String) profile.get("nickname") : null;
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("nickname") : null;

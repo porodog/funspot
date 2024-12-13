@@ -67,10 +67,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private boolean isPermittedPath(String requestURI) {
         // PERMITTED_PATHS 배열을 순회하며, 요청 URI가 허용된 경로인지 확인
         for (String permittedPath : PERMITTED_PATHS) {
+
             if (antPathMatcher.match(permittedPath, requestURI)) {
+
                 return true;
             }
         }
+
         return false;
     }
 }

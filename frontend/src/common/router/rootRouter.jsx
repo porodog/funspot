@@ -37,9 +37,6 @@ const SignupCheckPage = lazy(() =>
 );
 const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
 
-const KakaoRedirectHandler = lazy(() =>
-  import("../../usr/login/page/KakaoRedirectHandler")
-);
 
 const rootRouter = createBrowserRouter(
   [
@@ -75,14 +72,6 @@ const rootRouter = createBrowserRouter(
       element: (
         <Suspense fallback={Loading}>
           <SocialSignupPage />
-        </Suspense>
-      ),
-    },
-    {
-      path: "kakao/redirect",
-      element: (
-        <Suspense fallback={Loading}>
-          <KakaoRedirectHandler />
         </Suspense>
       ),
     },

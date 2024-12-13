@@ -2,6 +2,7 @@ package com.spot.fun.usr.signup.controller;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,9 @@ import java.util.Map;
 public class OAuthSessionController {
   @GetMapping("/get-oauth-session")
   public  ResponseEntity<Map<String, Object>> getOAuthSessionData(HttpServletRequest request) {
+    HttpSession session = request.getSession();
+    log.info("Session Attributes: {}", session.getAttributeNames());
+    log.info("Session OAuth Attributes: {}", session.getAttribute("oauthAttributes"));
     // 세션에서 데이터 가져오기
     Map<String, Object> oauthAttributes = (Map<String, Object>) request.getSession().getAttribute("oauthAttributes");
     String registrationId = (String) request.getSession().getAttribute("registrationId");
@@ -42,5 +46,7 @@ public class OAuthSessionController {
 
     log.info("Session Data Retrieved: {}", response);
     return ResponseEntity.ok(response);
+
   }
 }
+
