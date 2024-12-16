@@ -52,6 +52,19 @@ public class WebSecurityConfig {
     @Value("${security.check.path.none}")
     private String[] PERMITTED_PATHS;
 
+    // 인증이 필요하지 않은 경로
+    public static final String[] allowUrls = {
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+            "/api/v1/posts/**",
+            "/api/v1/replies/**",
+            "/login",
+            "/login/oauth/kakao",
+            "/auth/login/kakao/**",
+            "/auth/redirect/kakao/**"
+    };
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception  {
@@ -61,11 +74,11 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(allowUrls).permitAll()  // 인증 우회 URL 설정
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .requestMatchers("/api/admin/").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
                         .requestMatchers("/api/usr/datecourse/").permitAll()
-                                .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         // WebSocket 엔드포인트 허용
                         .requestMatchers("/ws/**").permitAll()

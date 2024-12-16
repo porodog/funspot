@@ -82,7 +82,7 @@ const LoginComponent = () => {
   };
 
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${"http://localhost:3000/kakao/redirect"}&response_type=code`;
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${"http://localhost:8080/login/oauth2/code/kakao"}&response_type=code`;
     window.location.href = kakaoAuthUrl;
   };
 

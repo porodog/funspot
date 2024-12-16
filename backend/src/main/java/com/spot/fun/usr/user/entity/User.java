@@ -127,5 +127,8 @@ public class User implements UserDetails {
                 .build();
     }
 
+    public boolean isNewUser() {
+        return this.provider == null || this.provider.isEmpty();
+    }
 
 }
