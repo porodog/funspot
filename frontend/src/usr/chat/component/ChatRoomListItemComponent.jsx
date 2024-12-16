@@ -4,14 +4,15 @@ import React, { useEffect, useState } from "react";
 //
 
 const ChatRoomListItemComponent = ({otherIdx, otherNickname, recentMessage, isRecentMessageRead, handleRoomClick}) => {
+    // console.log(otherIdx, otherNickname, recentMessage);
     return(
-        <div onClick={handleRoomClick}>
+        <button onClick={() => handleRoomClick(otherIdx)} className="bg-emerald-300" >
             <div>otherIdx : {otherIdx}</div>
             <div>otherNickname : {otherNickname}</div>
             <div>recentMessage : {recentMessage}</div>
             {/*isRecentMessageRead가 자꾸만 undefined 가 댐... 왜이러냐*/}
             <div>isRecentMessageRead : {isRecentMessageRead}</div>
-        </div>
+        </button>
     )
 }
 export default ChatRoomListItemComponent;

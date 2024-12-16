@@ -82,7 +82,7 @@ import { useBasic } from "../../../common/context/BasicContext";
 import BasicLayout from "../../../common/layout/BasicLayout";
 import ChatRoomListComponent from "../component/ChatRoomListComponent";
 import { chatApi } from "../api/chatApi";
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // currentUser의 채팅방 목록 조회 페이지
 
@@ -99,7 +99,7 @@ const ChatListPage = () => {
     // 객체 { nickname: "유나티비", userIdx: 1 }
     const { userInfo } = useBasic();
     const [error, setError] = useState(null);
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const [chatRoomListResponseDTOList, setChatRoomListResponseDTO] = useState([]);
 
 
@@ -128,19 +128,37 @@ const ChatListPage = () => {
     }
 
     const handleRoomClick = (otherIdx) => {
-        // navigate(`/chat/${otherIdx}`);
+        navigate(`/chat/${otherIdx}`);
     }
 
     return (
-        <BasicLayout>
-            채팅 목록 티비
-            {/*<ChatListItemComponent/>*/}
-            <ChatRoomListComponent
-                chatRoomListResponseDTOList = {chatRoomListResponseDTOList}
-                handleRoomClick={handleRoomClick}
-            />
-        </BasicLayout>
+        <div>
+            {userInfo == null ? (
+                <>비로그인 사용자는 채팅 목록을 열람할 수 없습니다.</>
+            ) : (
+                <>
+                    채팅 목록 티비
+                    <ChatRoomListComponent
+                        chatRoomListResponseDTOList={chatRoomListResponseDTOList}
+                        handleRoomClick={handleRoomClick}
+                    />
+                </>
+            )}
+        </div>
     );
+
+    // return (
+    //
+    //     <BasicLayout>
+    //         {userInfo == null? (<>비로그인 사용자는 채팅 목록을 열람할 수 없습니다.</>) : <>채팅 목록 티비
+    //             {/*<ChatListItemComponent/>*/}
+    //             <ChatRoomListComponent
+    //                 chatRoomListResponseDTOList = {chatRoomListResponseDTOList}
+    //                 handleRoomClick={handleRoomClick}
+    //             /></>}
+    //
+    //     </BasicLayout>
+    // );
 };
 
 export default ChatListPage;

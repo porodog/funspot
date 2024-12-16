@@ -6,6 +6,7 @@ import chatRouter from "../../usr/chat/router/chatRouter";
 // import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
 import customRouter from "../../usr/custom/router/customRouter";
+import {Outlet} from "react-router-dom";
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -154,14 +155,26 @@ const rootRouter = createBrowserRouter(
     //     </Suspense>
     //   ),
     // },
-    {
-      path: "chat/*", // /* 추가하여 중첩 라우팅 허용
-      element: (
-        <Suspense fallback={Loading}>
-          <ChatListPage />
-        </Suspense>
-      ),
-    },
+    // {
+    //   path: "chat", // /* 추가하여 중첩 라우팅 허용
+    //   element: (
+    //     <Suspense fallback={Loading}>
+    //       <ChatListPage />
+    //     </Suspense>
+    //   ),
+    //     children: chatRouter(),
+    // },
+      {
+          path: "chat",
+          element: (
+              <Suspense fallback={Loading}>
+                  <BasicLayout>
+                      <Outlet />
+                  </BasicLayout>
+              </Suspense>
+          ),
+          children: chatRouter()
+      },
   ],
   {
     future: {

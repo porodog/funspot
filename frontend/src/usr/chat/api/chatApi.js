@@ -65,7 +65,10 @@ export const chatApi = {
     //     });
     // },
     getChatRoom: async (otherIdx) => {
-        return await axios.get(`${API_BASE_URL}/api/chat/${otherIdx}`, defaultConfig);
+        const res = await axios.get(`${API_BASE_URL}/api/chat/${otherIdx}`);
+        console.log(res.data);
+        return res.data;
+        // return await axios.get(`${API_BASE_URL}/api/chat/${otherIdx}`, defaultConfig);
     },
 
     // 메시지 전송
