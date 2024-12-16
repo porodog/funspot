@@ -51,7 +51,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     String name = extractNameFromProvider(registrationId, attributes);
     String nickname = extractNicknameFromProvider(registrationId, attributes);
 
-
     log.info("OAuth2 provider: {}", registrationId);
     log.info("OAuth2 attributes: {}", oAuth2User.getAttributes());
 
@@ -97,7 +96,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
 
-
   private String extractEmailFromProvider(String registrationId, Map<String, Object> attributes) {
     log.debug("Extracting email for registrationId: {}", registrationId);
     if ("google".equals(registrationId)) {
@@ -130,6 +128,5 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
     return null;
   }
-
 
 }

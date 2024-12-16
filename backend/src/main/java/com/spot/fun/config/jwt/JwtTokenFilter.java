@@ -35,7 +35,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String requestUri = request.getRequestURI();
 
-
         // PERMITTED_PATHS에 포함된 경로는 JWT 토큰 검사 건너뛰기
         if (isPermittedPath(requestUri)) {
 //            log.info("Skipping JWT validation for permitted path: {}", requestUri);
@@ -68,7 +67,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private boolean isPermittedPath(String requestURI) {
         // PERMITTED_PATHS 배열을 순회하며, 요청 URI가 허용된 경로인지 확인
         for (String permittedPath : PERMITTED_PATHS) {
+
             if (antPathMatcher.match(permittedPath, requestURI)) {
+
                 return true;
             }
         }

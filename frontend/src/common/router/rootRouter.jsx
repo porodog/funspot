@@ -21,7 +21,9 @@ const MyPageIndexPage = lazy(() => import("../../usr/mypage/page/IndexPage"));
 const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
 // const CoursePage = lazy(() => import("../../usr/course/page/CourseListpage"));
-const BoardIndexPage = lazy(() => import("../../usr/board/BoardIndex"));
+const BoardIndexPage = lazy(() =>
+  import("../../usr/board/BoardIndex")
+);
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
 );
@@ -35,6 +37,7 @@ const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
 const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
+
 
 const rootRouter = createBrowserRouter(
   [

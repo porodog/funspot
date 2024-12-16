@@ -73,12 +73,16 @@ const LoginComponent = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate("/");
+  };
+
   const handleSocialLogin = (provider) => {
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
   const handleKakaoLogin = () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${"http://localhost:3000/auth/login/kakao"}&response_type=code`;
+    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${"http://localhost:3000/kakao/redirect"}&response_type=code`;
     window.location.href = kakaoAuthUrl;
   };
 
@@ -149,6 +153,13 @@ const LoginComponent = () => {
         >
           로그인
         </button>
+        {/*<button*/}
+        {/*  type="button"*/}
+        {/*  onClick={handleCancel}*/}
+        {/*  className="p-2 w-80 bg-gray-500 text-white rounded-3xl cursor-pointer hover:bg-gray-600"*/}
+        {/*>*/}
+        {/*  취소*/}
+        {/*</button>*/}
       </form>
 
       <div id="search-user-info" className="mt-6 text-center">
