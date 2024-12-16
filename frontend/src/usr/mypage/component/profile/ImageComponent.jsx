@@ -6,24 +6,26 @@ const ImageComponent = ({
   handleImageChange,
 }) => {
   return (
-    <div className="w-1/3 h-full relative">
-      <div className="w-full h-full rounded-full overflow-hidden border border-emerald-400">
-        <img
-          src={imageSrc}
-          alt="upload"
-          className="rounded-md cursor-pointer w-full h-full object-contain"
-          onClick={() => useFileRef.current.click()}
-        />
-      </div>
+    <div
+      className="w-52 h-52 relative items-center justify-center 
+      rounded-full overflow-hidden border-2 border-emerald-400 group"
+    >
+      <img
+        src={imageSrc}
+        alt="upload"
+        className="w-full h-full object-contain shrink-0 cursor-pointer"
+        onClick={() => useFileRef.current.click()}
+      />
 
-      {/* 삭제 버튼: 이미지가 선택되었을 때만 표시 */}
       {showDeleteButton && (
-        <button
+        <div
+          className="absolute top-0 left-0 w-full h-full 
+          bg-gray-500 bg-opacity-50 flex items-center justify-center 
+          opacity-0 group-hover:opacity-100 cursor-pointer"
           onClick={handleDeleteImage}
-          className="absolute top-3 right-3 text-white bg-red-500 rounded-full px-2 border border-white"
         >
-          X
-        </button>
+          <span className="text-white text-3xl">X</span>
+        </div>
       )}
 
       <input

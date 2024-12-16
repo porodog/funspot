@@ -12,40 +12,42 @@ const ButtonComponent = ({
 
   return (
     <>
-      <div className="mt-4">
-        <div className="mt-2 flex space-x-10 w-full items-center justify-center">
-          {parseInt(userIdx) === parseInt(loginUserIdx) ? (
-            <>
-              <button
-                className="bg-blue-500 text-white py-1 px-4 rounded-full text-sm hover:bg-blue-600"
-                onClick={openProfileModal}
-              >
-                프로필 편집
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                className={`
+      <div className="flex space-x-10 w-full items-center justify-center">
+        {parseInt(userIdx) === parseInt(loginUserIdx) ? (
+          <>
+            <button
+              className="py-3 px-6 border-2 border-emerald-400 bg-emerald-400 text-white rounded-full 
+              text-base font-semibold hover:bg-emerald-500"
+              onClick={openProfileModal}
+            >
+              프로필 편집
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              className={`
                   ${
                     followStatus
-                      ? "bg-blue-500 text-white hover:bg-blue-600 "
-                      : "bg-green-500 text-white hover:bg-green-600 "
+                      ? "border-emerald-400 bg-emerald-400 text-white "
+                      : "border-gray-200 bg-white text-gray-600 hover:border-white hover:text-white"
                   }
-                  py-1 px-4 rounded-full text-sm`}
-                onClick={handleFollowClickEvent}
-              >
-                {followStatus ? "팔로우 중" : "팔로우"}
-              </button>
-              <button
-                className="bg-gray-200 text-gray-800 py-1 px-4 rounded-full text-sm hover:bg-gray-300"
-                onClick={null}
-              >
-                메시지
-              </button>
-            </>
-          )}
-        </div>
+                  py-3 px-6 rounded-full border-2
+                  text-base font-semibold hover:bg-emerald-500`}
+              onClick={handleFollowClickEvent}
+            >
+              {followStatus ? "팔로우 중" : "팔로우"}
+            </button>
+            <button
+              className="border-gray-200 bg-white text-gray-600  
+                  py-3 px-6 rounded-full border-2
+                  text-base font-semibold hover:bg-emerald-500 hover:border-white hover:text-white"
+              onClick={null}
+            >
+              메시지
+            </button>
+          </>
+        )}
       </div>
     </>
   );

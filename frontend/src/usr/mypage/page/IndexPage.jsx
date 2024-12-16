@@ -17,28 +17,18 @@ const menuList = [
   {
     id: "feed",
     name: "피드",
-    sub: [],
   },
   {
     id: "like",
     name: "좋아요",
-    sub: [],
   },
   {
     id: "wish",
     name: "위시리스트",
-    sub: [
-      { id: "wish", name: "위시리스트" },
-      { id: "wish", name: "위시리스트" },
-    ],
   },
   {
     id: "comment",
-    name: "댓글",
-    sub: [
-      { id: "feed", name: "피드" },
-      { id: "board", name: "게시판1" },
-    ],
+    name: "피드댓글",
   },
 ];
 const initMenu = menuList[0].id;
@@ -155,7 +145,7 @@ const IndexPage = () => {
 
   return (
     <BasicLayout>
-      <div className="border border-gray-200 w-full">
+      <div className="border border-gray-200 w-full space-y-4">
         {/* 프로필 정보 */}
         <ProfileComponent
           feedCount={feedCount}
@@ -173,10 +163,12 @@ const IndexPage = () => {
         {/* 메뉴바 */}
         {parseInt(loginUserIdx) === parseInt(userIdx) ? (
           <div
-            className="sticky top-0 bg-white border border-gray-200 rounded-lg 
-          p-4 mt-4 z-10 shadow-lg z-50"
+            className="p-4 sticky top-0 mx-1
+            border-b-2 border-b-gray-200 
+            bg-white
+            z-50"
           >
-            <div className="flex space-x-6">
+            <div className="flex space-x-2">
               {menuList.map((menu) => (
                 <MenuTabComponent
                   key={menu.id}

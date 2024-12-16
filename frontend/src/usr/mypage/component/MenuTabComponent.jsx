@@ -1,14 +1,25 @@
 const MenuBarComponent = ({ menu, activeMenu, handleMenuTabClickEvent }) => {
-  const { id, name, sub } = menu;
+  const { id, name } = menu;
 
-  const handleSubMenuTabClickEvent = (id) => {
-    const subMenuId = id === "comment" ? "comment/feed" : `comment/${id}`;
-    handleMenuTabClickEvent(subMenuId);
-  };
+  //const { id, name, sub } = menu;
+  // const handleSubMenuTabClickEvent = (id) => {
+  //   const subMenuId = id === "comment" ? "comment/feed" : `comment/${id}`;
+  //   handleMenuTabClickEvent(subMenuId);
+  // };
 
   return (
     <>
-      {id === "comment" ? (
+      <div
+        className={`
+          px-6 py-3 rounded-full cursor-pointer
+          text-base font-medium text-gray-600 
+          hover:text-white hover:bg-emerald-500 transition duration-100 ease-in-out 
+        ${activeMenu === id ? "bg-emerald-400 text-white" : ""}`}
+        onClick={() => handleMenuTabClickEvent(id)}
+      >
+        {name}
+      </div>
+      {/* {id === "comment" ? (
         <div className="relative group">
           <div
             className={`tab text-lg font-semibold text-gray-800 hover:text-blue-500 cursor-pointer 
@@ -48,7 +59,7 @@ const MenuBarComponent = ({ menu, activeMenu, handleMenuTabClickEvent }) => {
         >
           {name}
         </div>
-      )}
+      )} */}
     </>
   );
 };

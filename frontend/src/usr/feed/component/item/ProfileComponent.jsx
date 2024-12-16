@@ -2,15 +2,8 @@ import { useCallback } from "react";
 import { useBasic } from "../../../../common/context/BasicContext";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../api/FeedApi";
-import {
-  FaRegEdit,
-  FaRegUserCircle,
-  FaUser,
-  FaUserAlt,
-  FaUserCircle,
-} from "react-icons/fa";
-import { LuUserRound } from "react-icons/lu";
-import { RiDeleteBin6Line, RiUserLine } from "react-icons/ri";
+import { FaRegEdit, FaUser } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const ProfileComponent = ({
   feedUserInfo,

@@ -31,7 +31,7 @@ const mypageRouter = () => {
       ),
     },
     {
-      path: "comment/feed/:userIdx",
+      path: "comment/:userIdx",
       element: (
         <Suspense fallback={Loading}>
           <ValidateComponent />

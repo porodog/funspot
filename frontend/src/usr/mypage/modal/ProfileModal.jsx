@@ -7,8 +7,7 @@ import {
 import ImageComponent from "../component/profile/ImageComponent";
 import NicknameComponent from "../component/profile/NicknameComponent";
 import DescriptionComponent from "../component/profile/DescriptionComponent";
-
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+import initSrc from "../../../common/img/image_upload.jpg";
 
 const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
   const { userIdx, description, uploadName, user } = mypageInfo;
@@ -116,41 +115,41 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative">
+      <div className="bg-white rounded-lg w-3/4 max-w-4xl h-auto p-6 relative">
         {/* 상단 툴바 X 버튼 */}
         <div className="flex justify-end items-center mb-4">
-          <button
-            onClick={() => closeProfileModal()}
-            className="text-gray-500 hover:text-gray-800"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
+          <div className="mt-4 flex justify-end space-x-4">
+            <button
+              onClick={() => closeProfileModal()}
+              className="py-4 px-6 border-2 border-gray-400 bg-white 
+              text-gray-400 font-semibold text-sm rounded-full
+              hover:bg-gray-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              취소
+            </button>
+            <button
+              onClick={handleProfileSubmitEvent}
+              className="py-4 px-6 bg-emerald-400 
+              text-white font-semibold text-sm rounded-full
+              hover:bg-emerald-500"
+            >
+              저장
+            </button>
+          </div>
         </div>
 
-        <div className="px-6 flex justify-center w-full h-60 items-center space-x-6">
-          {/* 프로필 이미지 */}
-          <ImageComponent
-            imageSrc={imageSrc}
-            useFileRef={useFileRef}
-            showDeleteButton={showDeleteButton}
-            handleDeleteImage={handleDeleteImage}
-            handleImageChange={handleImageChange}
-          />
-
-          <div className="w-2/3 h-full space-y-4">
+        <div className="flex justify-start w-full h-auto space-x-10 px-6 pb-10">
+          <div className="w-1/3 h-auto">
+            {/* 프로필 이미지 */}
+            <ImageComponent
+              imageSrc={imageSrc}
+              useFileRef={useFileRef}
+              showDeleteButton={showDeleteButton}
+              handleDeleteImage={handleDeleteImage}
+              handleImageChange={handleImageChange}
+            />
+          </div>
+          <div className="w-2/3 h-auto space-y-4">
             {/* 닉네임 */}
             <NicknameComponent
               useNicknameRef={useNicknameRef}
@@ -164,16 +163,6 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
               userDescription={description}
             />
           </div>
-        </div>
-
-        <div className="mt-4 flex justify-end pr-6">
-          <button
-            type="button"
-            onClick={handleProfileSubmitEvent}
-            className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-56 hover:bg-emerald-400"
-          >
-            수정
-          </button>
         </div>
       </div>
     </div>

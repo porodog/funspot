@@ -13,12 +13,13 @@ const NicknameComponent = ({
   };
 
   return (
-    <div className="mt-2">
+    <div className="space-x-4">
       <p className="font-bold mb-2">닉네임</p>
       <input
         type="text"
-        placeholder="한글, 영문, 숫자 포함 4~12자"
-        className="p-2 w-80 rounded-3xl border focus:outline-none focus:ring-1 focus:border-custom-cyan focus:ring-custom-cyan bg-gray-200"
+        placeholder="한/영/숫자를 포함 4~12자"
+        className="p-2 w-80 border-2 bg-white rounded-3xl 
+        focus:outline-none focus:ring-1 focus:border-emerald-500"
         maxLength="12"
         ref={useNicknameRef}
         value={nickname || ""}
@@ -26,10 +27,12 @@ const NicknameComponent = ({
       />
       <button
         type="button"
-        className="border bg-custom-cyan rounded-3xl ml-2 p-2 w-32 hover:bg-emerald-400"
+        className="px-6 py-3 border bg-emerald-400 
+        text-white
+        rounded-3xl hover:bg-emerald-500"
         onClick={() => handleNicknameDuplicateEvent(nickname)}
       >
-        중복 확인
+        중복확인
       </button>
     </div>
   );

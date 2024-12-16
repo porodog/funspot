@@ -38,7 +38,7 @@ const ValidateComponent = () => {
       return <LikeListCompoent />;
     } else if (pathname.includes("wish")) {
       return <WishListCompoent />;
-    } else if (pathname.includes("comment/feed")) {
+    } else if (pathname.includes("comment")) {
       return <CommentFeedListCompoent />;
     }
 
