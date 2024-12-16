@@ -35,6 +35,7 @@ public class ChatController {
     public Map<String, Object> getChatListOfOtherIdx(@PathVariable("otherIdx") Long otherIdx) {
         // 채팅방 조회 또는 생성 후, 두 개의 roomId 모두 반환
         RoomIdPairDTO roomIds = chatFacadeService.getOrCreateChatRooms(otherIdx);
+        log.info("getChatListOfOtherIdx : " + otherIdx);
 
         return Map.of(
                 "userRoomId", roomIds.getUserRoomId(),      // 내 채팅방 ID

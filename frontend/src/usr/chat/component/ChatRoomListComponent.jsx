@@ -16,6 +16,7 @@ const ChatRoomListComponent = ({chatRoomListResponseDTOList, handleRoomClick}) =
                     handleRoomClick={handleRoomClick}
                 />
             ))}
+            끗
         </div>
     )
 }
