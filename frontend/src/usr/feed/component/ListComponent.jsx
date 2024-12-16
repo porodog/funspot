@@ -2,6 +2,7 @@ import ProfileComponent from "./item/ProfileComponent";
 import ImageComponent from "./item/ImageComponent";
 import ButtonComponent from "./item/ButtonComponent";
 import ContentComponent from "./item/ContentComponent";
+import { BiMessageAltDots } from "react-icons/bi";
 
 const ListComponent = ({
   feedList,
@@ -48,7 +49,10 @@ const ListComponent = ({
           </div>
         ))
       ) : (
-        <div>NO Data</div>
+        <div className="w-full h-full flex flex-col justify-center items-center text-gray-600 space-y-4">
+          <BiMessageAltDots className="text-4xl" />
+          <span className="font-semibold text-xl">피드가 없습니다</span>
+        </div>
       )}
     </div>
   );

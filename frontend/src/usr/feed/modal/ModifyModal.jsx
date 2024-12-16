@@ -3,7 +3,7 @@ import { useBasic } from "../../../common/context/BasicContext";
 import HashTagModal from "./HashTagModal";
 import ProfileComponent from "../component/item/ProfileComponent";
 import ContentComponent from "../component/modify/ContentComponent";
-import HashtagComponent from "../component/modify/HashtagComponent";
+import HashtagComponent from "../component/item/HashtagComponent";
 import ImageComponent from "../component/modify/ImageComponent";
 import { API_BASE_URL, putFeedModifyApi } from "../api/FeedApi";
 
@@ -114,49 +114,49 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative">
-        {/* 상단 툴바 X 버튼 */}
-        <div className="flex justify-end items-center mb-4">
-          <button
-            onClick={() => closeModifyModal(null)}
-            className="text-gray-500 hover:text-gray-800"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
+      <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          {/* 상단영역: 프로필 정보 */}
+          <ProfileComponent feedUserInfo={feed.user} pageType={"modify"} />
+
+          <div className="mt-4 flex justify-end space-x-4">
+            <button
+              onClick={() => closeModifyModal(null)}
+              className="py-4 px-6 border-2 border-gray-400 bg-white 
+              text-gray-400 font-semibold text-sm rounded-full
+              hover:bg-gray-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              취소
+            </button>
+            <button
+              onClick={handleFeedSubmit}
+              className="py-4 px-6 bg-emerald-400 
+              text-white font-semibold text-sm rounded-full
+              hover:bg-emerald-500"
+            >
+              등록
+            </button>
+          </div>
         </div>
 
-        {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent feedUserInfo={feed.user} pageType={"modify"} />
-
         {/* 중간영역: 글 내용 및 해시태그 */}
-        <div className="mt-4">
+        <div className="w-full space-y-4">
           {/* 컨텐츠 */}
           <ContentComponent useTextRef={useTextRef} feed={feed} />
 
           {/* 해시태그 */}
-          <div className="mt-2 flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <button
-              className="text-blue-500 border-2 border-blue-500 rounded-full py-2 px-6 font-semibold text-sm hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
+              className="py-4 px-6 border-2 border-emerald-400 
+              text-emerald-400 font-semibold text-sm rounded-full 
+              hover:bg-emerald-400 hover:text-white transition duration-300 ease-in-out"
               onClick={() => setIsHashtagModalOpen(true)}
             >
               해시태그 추가
             </button>
 
             {/* 선택된 해시태그들 */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap space-x-3">
               {(hashtagList ?? []).length > 0 && (
                 <HashtagComponent
                   hashtagList={hashtagList}
@@ -168,37 +168,25 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
         </div>
 
         {/* 하단영역: 이미지 업로드 */}
-        <div className="mt-4">
-          <div className="flex justify-center">
-            <ImageComponent
-              id={"upload1"}
-              useFileRef={(e) => (useFileRef.current[0] = e)}
-              img={imgList[0]}
-              handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
-            />
-            <ImageComponent
-              id={"upload2"}
-              useFileRef={(e) => (useFileRef.current[1] = e)}
-              img={imgList[1]}
-              handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
-            />
-            <ImageComponent
-              id={"upload3"}
-              useFileRef={(e) => (useFileRef.current[2] = e)}
-              img={imgList[2]}
-              handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
-            />
-          </div>
-        </div>
-
-        {/* 등록 버튼 */}
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={handleFeedSubmit}
-            className="bg-blue-500 text-white py-2 px-6 rounded-md"
-          >
-            수정
-          </button>
+        <div className="flex justify-center space-x-8">
+          <ImageComponent
+            id={"upload1"}
+            useFileRef={(e) => (useFileRef.current[0] = e)}
+            img={imgList[0]}
+            handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
+          />
+          <ImageComponent
+            id={"upload2"}
+            useFileRef={(e) => (useFileRef.current[1] = e)}
+            img={imgList[1]}
+            handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
+          />
+          <ImageComponent
+            id={"upload3"}
+            useFileRef={(e) => (useFileRef.current[2] = e)}
+            img={imgList[2]}
+            handleDeleteOriginImageIdx={handleDeleteOriginImageIdx}
+          />
         </div>
 
         {/* 해시태그 모달 */}

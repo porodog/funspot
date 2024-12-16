@@ -10,9 +10,9 @@ const ContentComponent = ({ useTextRef }) => {
   return (
     <>
       <textarea
-        className="w-full p-3 border border-gray-300 rounded-md"
-        placeholder="내용을 입력해주세요..(최대 100자)"
-        rows="5"
+        className="w-full p-3 border-2 border-gray-200 rounded-xl resize-none"
+        placeholder="내용을 입력해주세요 (최대 100자)"
+        rows="6"
         maxLength="100"
         ref={useTextRef}
         value={feedContent}

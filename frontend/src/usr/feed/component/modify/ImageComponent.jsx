@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../api/FeedApi";
-
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+import initSrc from "../../../../common/img/image_upload.jpg";
 
 const ImageComponent = ({
   id,
@@ -9,8 +7,6 @@ const ImageComponent = ({
   img,
   handleDeleteOriginImageIdx,
 }) => {
-  // 이미지 파일 선택
-  //console.log(img);
   const [imageSrc, setImageSrc] = useState(initSrc);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -50,22 +46,26 @@ const ImageComponent = ({
 
   return (
     <>
-      <div className="w-1/3 h-full relative">
+      <div
+        className="w-1/3 h-56 relative items-center justify-center 
+      rounded-3xl overflow-hidden border-2 border-gray-200 group"
+      >
         <img
           src={imageSrc}
           alt="upload"
-          className="mt-4 border-solid border-2 border-indigo-400 rounded-md cursor-pointer w-full min-h-48 max-h-48 object-contain"
+          className="w-full h-full object-contain shrink-0 cursor-pointer"
           onClick={() => document.querySelector(`#${id}`).click()}
         />
 
-        {/* 삭제 버튼: 이미지가 선택되었을 때만 표시 */}
         {showDeleteButton && (
-          <button
+          <div
+            className="absolute top-0 left-0 w-full h-full 
+          bg-gray-500 bg-opacity-50 flex items-center justify-center 
+          opacity-0 group-hover:opacity-100 cursor-pointer"
             onClick={handleDeleteImage}
-            className="absolute top-6 right-3 text-white bg-red-500 rounded-full px-2 border border-white"
           >
-            X
-          </button>
+            <span className="text-white text-3xl">X</span>
+          </div>
         )}
 
         <input

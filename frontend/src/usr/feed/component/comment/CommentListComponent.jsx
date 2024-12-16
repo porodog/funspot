@@ -2,6 +2,7 @@ import { useState } from "react";
 import ReplyListComponent from "./ReplyListComponent";
 import InputComponent from "./InputComponent";
 import CommentProfileComponent from "./CommentProfileComponent";
+import { BiMessageAltDots } from "react-icons/bi";
 
 const ListComponent = ({
   commentList,
@@ -53,7 +54,10 @@ const ListComponent = ({
           </div>
         ))
       ) : (
-        <div className="flex space-x-3 my-1">댓글이 없습니다</div>
+        <div className="w-full h-full flex flex-col justify-center items-center text-gray-600 space-y-4">
+          <BiMessageAltDots className="text-4xl" />
+          <span className="font-semibold text-xl">댓글이 없습니다</span>
+        </div>
       )}
     </>
   );

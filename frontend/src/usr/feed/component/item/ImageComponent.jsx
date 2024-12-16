@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../../api/FeedApi";
 
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
-
 const ImageComponent = ({ openDetailModal, feedImages }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 

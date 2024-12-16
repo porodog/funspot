@@ -25,15 +25,15 @@ const HashTagModal = ({
       onClick={closeHashtagModal}
     >
       <div
-        className="bg-white rounded-lg w-80 p-6 flex flex-col"
+        className="bg-white rounded-lg w-250 p-6 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 상단 툴바 X 버튼 */}
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">해시태그 선택</h3>
+          <h3 className="text-lg font-semibold text-gray-600">해시태그 추가</h3>
           <button
             onClick={closeHashtagModal}
-            className="text-gray-500 hover:text-gray-800"
+            className="text-gray-600 hover:text-gray-800"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@ const HashTagModal = ({
         </div>
 
         {/* 해시태그 리스트 */}
-        <div className="mt-4 flex flex-wrap gap-3 flex-grow">
+        <div className="mt-4 flex flex-wrap space-x-3 flex-grow">
           {list.length > 0 &&
             list.map((tag) => (
               <button
@@ -61,9 +61,10 @@ const HashTagModal = ({
                 onClick={() => handleSelectHashTagEvent(tag)}
                 className={`${
                   hashtagList.find((item) => item.hashtagIdx === tag.idx)
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-800"
-                } px-4 py-2 rounded-full hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out`}
+                    ? "bg-emerald-400 text-white border-emerald-400 "
+                    : "bg-white text-gray-400 border-gray-200 "
+                } px-4 py-3 border-2 inline-flex items-center rounded-full text-sm font-medium cursor-pointer
+              hover:bg-emerald-500 hover:text-white hover:border-emerald-400`}
               >
                 {tag.tagName}
               </button>

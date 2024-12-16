@@ -5,7 +5,7 @@ import ImageComponent from "../component/insert/ImageComponent";
 import ProfileComponent from "../component/item/ProfileComponent";
 import { useBasic } from "../../../common/context/BasicContext";
 import ContentComponent from "../component/insert/ContentComponent";
-import HashtagComponent from "../component/insert/HashtagComponent";
+import HashtagComponent from "../component/item/HashtagComponent";
 import { getProfileApi } from "../../mypage/api/MypageApi";
 
 const InsertModal = ({ closeInsertModal }) => {
@@ -103,49 +103,49 @@ const InsertModal = ({ closeInsertModal }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative">
-        {/* 상단 툴바 X 버튼 */}
-        <div className="flex justify-end items-center mb-4">
-          <button
-            onClick={() => closeInsertModal(null)}
-            className="text-gray-500 hover:text-gray-800"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
+      <div className="bg-white rounded-lg w-3/4 max-w-4xl p-6 relative space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          {/* 상단영역: 프로필 정보 */}
+          <ProfileComponent feedUserInfo={feedUserInfo} pageType={"insert"} />
+
+          <div className="mt-4 flex justify-end space-x-4">
+            <button
+              onClick={() => closeInsertModal(null)}
+              className="py-4 px-6 border-2 border-gray-400 bg-white 
+              text-gray-400 font-semibold text-sm rounded-full
+              hover:bg-gray-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              취소
+            </button>
+            <button
+              onClick={handleFeedSubmit}
+              className="py-4 px-6 bg-emerald-400 
+              text-white font-semibold text-sm rounded-full
+              hover:bg-emerald-500"
+            >
+              등록
+            </button>
+          </div>
         </div>
 
-        {/* 상단영역: 프로필 정보 */}
-        <ProfileComponent feedUserInfo={feedUserInfo} pageType={"insert"} />
-
         {/* 중간영역: 글 내용 및 해시태그 */}
-        <div className="mt-4">
+        <div className="w-full space-y-4">
           {/* 컨텐츠 */}
           <ContentComponent useTextRef={useTextRef} />
 
           {/* 해시태그 */}
-          <div className="mt-2 flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <button
-              className="text-blue-500 border-2 border-blue-500 rounded-full py-2 px-6 font-semibold text-sm hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
+              className="py-4 px-6 border-2 border-emerald-400 
+              text-emerald-400 font-semibold text-sm rounded-full 
+              hover:bg-emerald-400 hover:text-white transition duration-300 ease-in-out"
               onClick={() => setIsHashtagModalOpen(true)}
             >
               해시태그 추가
             </button>
 
             {/* 선택된 해시태그들 */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap space-x-3">
               {(hashtagList ?? []).length > 0 && (
                 <HashtagComponent
                   hashtagList={hashtagList}
@@ -157,31 +157,19 @@ const InsertModal = ({ closeInsertModal }) => {
         </div>
 
         {/* 하단영역: 이미지 업로드 */}
-        <div className="mt-4">
-          <div className="flex justify-center">
-            <ImageComponent
-              id={"upload1"}
-              useFileRef={(e) => (useFileRef.current[0] = e)}
-            />
-            <ImageComponent
-              id={"upload2"}
-              useFileRef={(e) => (useFileRef.current[1] = e)}
-            />
-            <ImageComponent
-              id={"upload3"}
-              useFileRef={(e) => (useFileRef.current[2] = e)}
-            />
-          </div>
-        </div>
-
-        {/* 등록 버튼 */}
-        <div className="mt-4 flex justify-end">
-          <button
-            onClick={handleFeedSubmit}
-            className="bg-blue-500 text-white py-2 px-6 rounded-md"
-          >
-            등록
-          </button>
+        <div className="flex justify-center space-x-8">
+          <ImageComponent
+            id={"upload1"}
+            useFileRef={(e) => (useFileRef.current[0] = e)}
+          />
+          <ImageComponent
+            id={"upload2"}
+            useFileRef={(e) => (useFileRef.current[1] = e)}
+          />
+          <ImageComponent
+            id={"upload3"}
+            useFileRef={(e) => (useFileRef.current[2] = e)}
+          />
         </div>
 
         {/* 해시태그 모달 */}
