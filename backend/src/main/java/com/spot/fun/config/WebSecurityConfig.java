@@ -49,6 +49,7 @@ public class WebSecurityConfig {
     private final AuthTokenUtil authTokenUtil;
     private final AuthTokenRepository authTokenRepository;
 
+
     @Value("${security.check.path.none}")
     private String[] PERMITTED_PATHS;
 
@@ -65,7 +66,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/admin/").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
                         .requestMatchers("/api/usr/datecourse/").permitAll()
-                                .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         // WebSocket 엔드포인트 허용
                         .requestMatchers("/ws/**").permitAll()
@@ -83,7 +83,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))  // OAuth2 로그인 설정
-                        .successHandler(oAuth2AuthenticationSuccessHandler())  // 로그인 성공 시 동작
+                        .successHandler(oAuth2AuthenticationSuccessHandler()) // 로그인 성공 시 동작
                         .failureHandler(oAuth2AuthenticationFailureHandler()))  // 로그인 실패 시 동작
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -194,6 +194,5 @@ public class WebSecurityConfig {
             }
         };
     }
-
-
+    
 }
