@@ -10,8 +10,7 @@ import {
 } from "../../../feed/api/FeedApi";
 import ModifyModal from "../../../feed/modal/ModifyModal";
 import ButtonComponent from "./ButtonComponent";
-
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+import initSrc from "../../../../common/img/FunSpot.png";
 
 const ListComponent = () => {
   const { handleFeedCountEvent } = useOutletContext();
@@ -202,12 +201,14 @@ const ListComponent = () => {
 
   return (
     <>
-      <div className="mt-8 grid grid-cols-3 gap-4">
+      <div className="w-full grid grid-cols-3 gap-3 mx-auto">
         {/* 게시물 카드 */}
         {feedList.map((feed) => (
           <div
             key={feed.idx}
-            className="relative h-40 w-full group transition-shadow duration-300"
+            className="relative w-full h-48 group 
+            bg-gray-50
+            transition-shadow duration-300"
           >
             <img
               src={
@@ -228,7 +229,11 @@ const ListComponent = () => {
               handleListDeleteEvent={handleListDeleteEvent}
             />
 
-            <div className="absolute inset-0 group-hover:shadow-lg group-hover:shadow-gray-400 transition-shadow duration-300"></div>
+            <div
+              className="absolute inset-0 
+              group-hover:shadow-lg group-hover:shadow-gray-400 
+              transition-shadow duration-300"
+            ></div>
           </div>
         ))}
       </div>

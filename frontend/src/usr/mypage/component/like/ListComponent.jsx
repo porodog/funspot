@@ -5,8 +5,7 @@ import { useBasic } from "../../../../common/context/BasicContext";
 import { FaPlus } from "react-icons/fa";
 import DetailModal from "../../../feed/modal/DetailModal";
 import { feedLikeApi } from "../../../feed/api/FeedApi";
-
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+import initSrc from "../../../../common/img/FunSpot.png";
 
 const ListComponent = () => {
   const { userIdx } = useParams();
@@ -156,17 +155,19 @@ const ListComponent = () => {
 
   return (
     <>
-      <div className="mt-8 grid grid-cols-3 gap-4">
+      <div className="w-full grid grid-cols-3 gap-3 mx-auto">
         {/* 게시물 카드 */}
         {likeList.map((feed) => (
           <div
             key={feed.idx}
-            className="relative h-40 w-full group transition-shadow duration-300"
+            className="relative w-full h-48 group 
+            bg-gray-50
+            transition-shadow duration-300"
           >
             <img
               src={
                 (feed.feedImages ?? []).length > 0
-                  ? `${API_BASE_URL}/api/usr/feed/image/${feed.feedImages[0].uploadName}`
+                  ? `${API_BASE_URL}/api/usr/feed/image/s_${feed.feedImages[0].uploadName}`
                   : initSrc
               }
               alt="업로드 이미지"
@@ -184,7 +185,11 @@ const ListComponent = () => {
               </div>
             </div>
 
-            <div className="absolute inset-0 group-hover:shadow-lg group-hover:shadow-gray-400 transition-shadow duration-300"></div>
+            <div
+              className="absolute inset-0 
+              group-hover:shadow-lg group-hover:shadow-gray-400 
+              transition-shadow duration-300"
+            ></div>
           </div>
         ))}
       </div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../../api/FeedApi";
+import initSrc from "../../../../common/img/FunSpot.png";
 
 const ImageComponent = ({ openDetailModal, feedImages }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,14 +28,22 @@ const ImageComponent = ({ openDetailModal, feedImages }) => {
           }}
           onClick={openDetailModal}
         >
-          {feedImages.map((image) => (
+          {feedImages.length > 0 ? (
+            feedImages.map((image) => (
+              <img
+                key={image.idx}
+                src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
+                alt={image.originName}
+                className="w-full h-full object-contain shrink-0"
+              />
+            ))
+          ) : (
             <img
-              key={image.idx}
-              src={`${API_BASE_URL}/api/usr/feed/image/${image.uploadName}`}
-              alt={image.originName}
+              src={initSrc}
+              alt="펀스팟"
               className="w-full h-full object-contain shrink-0"
             />
-          ))}
+          )}
         </div>
 
         {/* 슬라이드 버튼 */}

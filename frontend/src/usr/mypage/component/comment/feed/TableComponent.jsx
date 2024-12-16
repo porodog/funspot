@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { putFeedCommentDeleteApi } from "../../../api/MypageApi";
 
 const TableComponent = ({
@@ -26,8 +26,8 @@ const TableComponent = ({
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg">
-      <table className="min-w-full table-auto">
+    <div className="w-full h-auto">
+      <table className="w-full table-auto">
         <thead>
           <tr className="bg-gray-100">
             <th className="px-6 py-4 text-left text-gray-800 font-semibold">

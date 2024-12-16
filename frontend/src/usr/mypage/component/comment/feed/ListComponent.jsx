@@ -163,11 +163,7 @@ const ListComponent = () => {
 
   return (
     <>
-      <div className="max-w-4xl mx-auto mt-8">
-        {/* 게시판 타이틀 */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-semibold text-gray-800">피드 댓글</h1>
-        </div>
+      <div className="w-full h-auto mx-auto">
         {commentList && (
           <TableComponent
             commentList={commentList}
