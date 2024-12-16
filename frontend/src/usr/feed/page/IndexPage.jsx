@@ -4,11 +4,8 @@ import { Outlet } from "react-router-dom";
 const IndexPage = () => {
   return (
     <BasicLayout>
-      <div className="border border-gray-200 w-full">
-        피드 인덱스 페이지
-        <div className="border border-red-200 flex w-full">
-          <Outlet />
-        </div>
+      <div className="w-full h-auto">
+        <Outlet />
       </div>
     </BasicLayout>
   );

@@ -11,13 +11,12 @@ const ListComponent = ({
   openModifyModal,
 }) => {
   return (
-    <div className="border-2 border-green-200 w-full">
-      <h1>Feed List Component</h1>
+    <div className="w-full h-auto space-y-20">
       {(feedList ?? []).length > 0 ? (
         feedList.map((feed) => (
           <div
             key={feed.idx}
-            className="border border-blue-500 rounded-lg h-1/12 py-4"
+            className="w-full h-auto p-8 space-y-6 border-b-2 border-gray-100"
           >
             <ProfileComponent
               feedUserInfo={feed.user}
@@ -26,7 +25,7 @@ const ListComponent = ({
               openModifyModal={() => openModifyModal(feed.idx)}
             />
 
-            <div className="flex">
+            <div className="flex max-h-[800px]">
               <div className="w-full relative">
                 {feed.feedImages.length > 0 && (
                   <ImageComponent

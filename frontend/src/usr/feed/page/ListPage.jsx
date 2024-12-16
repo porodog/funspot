@@ -10,6 +10,7 @@ import InsertModal from "../modal/InsertModal";
 import DetailModal from "../modal/DetailModal";
 import { useBasic } from "../../../common/context/BasicContext";
 import ModifyModal from "../modal/ModifyModal";
+import { FiPlusSquare } from "react-icons/fi";
 
 const ListPage = () => {
   const { userInfo } = useBasic();
@@ -205,19 +206,25 @@ const ListPage = () => {
   }, [isBottom]);
 
   return (
-    <div className="border border-amber-200 w-full">
-      피드 리스트 페이지
-      {userInfo != null && (
-        <button
-          type="button"
-          className="bg-blue-500 text-white border-2 border-black"
-          onClick={() => {
-            setIsInsertModalOpen(true);
-          }}
-        >
-          !!!! 등록 버튼 (비로그인은 숨겨야함)!!!!
-        </button>
-      )}
+    <div className="w-full h-auto">
+      <div className="flex justify-end sticky top-0 z-10 bg-white bg-opacity-0">
+        {userInfo != null && (
+          <button
+            type="button"
+            className="flex justify-center align-middle items-center 
+            w-1/6 py-3 mr-2 my-2
+            bg-emerald-400 rounded-3xl 
+            text-white text-sm font-mono font-semibold
+            hover:bg-emerald-500"
+            onClick={() => {
+              setIsInsertModalOpen(true);
+            }}
+          >
+            <FiPlusSquare size="1.4rem" className="mr-2" />
+            만들기
+          </button>
+        )}
+      </div>
       <ListComponent
         feedList={feedList}
         openDetailModal={openDetailModal}

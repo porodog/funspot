@@ -4,7 +4,8 @@ import { BiMessageRoundedDots } from "react-icons/bi";
 import { useBasic } from "../../../../common/context/BasicContext";
 
 const ButtonComponent = ({ feed, openDetailModal, handleLikesEvent }) => {
-  const { userIdx } = useBasic();
+  const { userInfo } = useBasic();
+  const loginUserIdx = userInfo?.userIdx || "";
   const { idx, commentCount, likeCount, likedYn, regDateStr } = feed;
 
   // 좋아요 토클 이벤트
@@ -16,46 +17,51 @@ const ButtonComponent = ({ feed, openDetailModal, handleLikesEvent }) => {
 
   return (
     <>
-      <div className="flex mt-1 py-2 justify-between">
+      <div className="flex justify-between">
         {/* 좋아요 + 댓글 */}
-        <div className="flex justify-start pl-3 space-x-3 w-2/3">
-          <div className="flex items-center">
+        <div className="flex justify-start space-x-10 w-2/3">
+          <div className="flex items-center space-x-1">
             <button
               className={`flex items-center rounded-full p-1 justify-center border border-transparent 
                 ${
-                  userIdx
-                    ? "hover:bg-red-100 focus:outline-none transition-all duration-200"
+                  loginUserIdx
+                    ? "hover:text-emerald-500" //"hover:bg-red-100 focus:outline-none transition-all duration-200"
                     : ""
-                }`}
+                }
+                `}
               onClick={toggleLikes}
             >
               {likedYn ? (
-                <FaHeart size="1.8rem" />
+                <FaHeart size="1.8rem" className="text-emerald-500" />
               ) : (
                 <FaRegHeart size="1.8rem" />
               )}
             </button>
-            <span>{likeCount > 99 ? "99+" : likeCount}</span>
+            <span className="font-semibold">
+              {likeCount > 99 ? "99+" : likeCount}
+            </span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-1">
             <button
               className={`flex items-center rounded-full p-1 justify-center border border-transparent 
                             ${
                               openDetailModal
-                                ? "hover:bg-red-100 focus:outline-none transition-all duration-200"
+                                ? "hover:text-emerald-500" //"hover:bg-red-100 focus:outline-none transition-all duration-200"
                                 : ""
                             }`}
               onClick={openDetailModal}
             >
               <BiMessageRoundedDots size="1.8rem" />
             </button>
-            <span>{commentCount > 99 ? "99+" : commentCount}</span>
+            <span className="font-semibold">
+              {commentCount > 99 ? "99+" : commentCount}
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between pr-3">
+        <div className="flex items-center justify-between">
           {/* 등록일시 */}
-          {regDateStr}
+          <span className="font-semibold text-gray-500">{regDateStr}</span>
         </div>
       </div>
     </>
