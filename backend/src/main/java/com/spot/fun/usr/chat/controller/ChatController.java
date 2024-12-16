@@ -24,10 +24,11 @@ public class ChatController {
     private final ChatFacadeService chatFacadeService;
 
     @GetMapping("/")    //채팅방 리스트
-//    public List<ChatRoomListResponseDTO> getChatRoomList() {
-//        return chatFacadeService.getChatRoomList();y
-    public Map<String, Object> getChatRoomList() {
-        return Map.of("chatRoomList", chatFacadeService.getChatRoomList());
+    public List<ChatRoomListResponseDTO> getChatRoomList() {
+        log.info("getChatRoomList");
+        return chatFacadeService.getChatRoomList();
+//    public Map<String, Object> getChatRoomList() {
+//        return Map.of("chatRoomList", chatFacadeService.getChatRoomList());
     }
 
     @GetMapping("/{otherIdx}")

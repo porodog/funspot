@@ -28,9 +28,10 @@ public class ChatRoomService implements ChatService{
       return chatRoomRepository.findOtherIdByRoomId(roomId);
     }
 
-    public ChatRoomListResponseDTO setChatRoomListResponseDTO(ChatRoomListResponseDTO chatRoomListResponseDTO, UserDTO userDTO) {
+    public ChatRoomListResponseDTO setChatRoomListResponseDTO(ChatRoomListResponseDTO chatRoomListResponseDTO, UserDTO otherDTO) {
       return chatRoomListResponseDTO.toBuilder()
-              .otherNickname(userDTO.getNickname())
+              .otherIdx(otherDTO.getIdx())
+              .otherNickname(otherDTO.getNickname())
               .otherProfileImg("userDTO.getProfileImg")
               .otherPeedUrl("userDTO.getFeedUrl")
               .build();

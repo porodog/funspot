@@ -118,6 +118,8 @@ public class User implements UserDetails {
 
     public UserDTO toDTO() {
         return UserDTO.builder()
+                .idx(idx)
+                .nickname(nickname)
                 .userId(this.userId)
                 .password(this.password)
                 .userRole(this.userRole)

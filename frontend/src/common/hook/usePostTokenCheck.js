@@ -18,6 +18,7 @@ const usePostTokenCheck = () => {
       try {
         const res = await axios.post("/api/usr/login/token/check");
         console.log("postTokenCheck userIdx >> " + res.data?.userIdx);
+        console.log("전체 사용자 정보:", res.data);
         // setUserInfo(res.data); // 상태 업데이트
         // setNickname(res.data.nickname); // 닉네임 업데이트
         if (res.status === 200 && res.data) {

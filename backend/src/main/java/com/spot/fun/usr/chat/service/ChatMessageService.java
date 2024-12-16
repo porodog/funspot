@@ -23,6 +23,7 @@ public class ChatMessageService implements ChatService{
     public ChatRoomListResponseDTO setChatRoomListResponseDTO(Long roomId) {
         ChatMessage recendChatMessage = chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
         return ChatRoomListResponseDTO.builder()
+                .roomId(roomId)
                 .recentMessage(recendChatMessage.getMsg())
                 .recentMessageTimestamp(recendChatMessage.getTimestamp())
                 .isRecentMessageRead(recendChatMessage.isRead())

@@ -3,9 +3,12 @@ package com.spot.fun.usr.chat.service;
 import com.spot.fun.token.service.AuthTokenServiceImpl;
 import com.spot.fun.usr.chat.dto.*;
 import com.spot.fun.usr.chat.entity.ChatMessage;
+import com.spot.fun.usr.chat.entity.ChatRoom;
 import com.spot.fun.usr.user.dto.UserDTO;
 import com.spot.fun.usr.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatFacadeService {
+  private static final Logger log = LoggerFactory.getLogger(ChatFacadeService.class);
   private final ChatRoomService chatRoomService;
   private final ChatMessageService chatMessageService;
   private final UserServiceImpl userService;
@@ -23,12 +27,38 @@ public class ChatFacadeService {
   // 현재 로그인한 유저의 채팅방 리스트 반환
   public List<ChatRoomListResponseDTO> getChatRoomList(){
     Long userIdx = authTokenService.getCurrentUserIdx();
-    return chatRoomService.findAll(userIdx).stream()
-            .map(
-                    chatRoom -> chatRoomService.setChatRoomListResponseDTO(
-                            chatMessageService.setChatRoomListResponseDTO(chatRoom.getRoomId())
-                            ,userService.findByIdx(chatRoomService.getOtherIdx(chatRoom.getRoomId()))
-                    )).collect(Collectors.toList());
+//    log.info(userIdx.toString());
+//    log.info(chatRoomService.findAll(userIdx).stream()
+//            .map(
+//                    chatRoom -> chatRoomService.setChatRoomListResponseDTO(
+//                            chatMessageService.setChatRoomListResponseDTO(chatRoom.getRoomId())
+//                            ,userService.findByIdx(chatRoomService.getOtherIdx(chatRoom.getRoomId()))
+//                    )).toList().toString());
+
+    // 현재 사용자가 userIdx인 Chatroom 추출
+    List<ChatRoom> chatRoomList = chatRoomService.findAll(userIdx);
+    // 이게 빈 배열이다... 응아냐 내가 db에 값을 안넣고 테스트해서 그럼
+//    log.info("chatRoomList.toString() : " + chatRoomList.toString());
+
+    return chatRoomList.stream()
+            .map(chatRoom -> {
+              Long roomId = chatRoom.getRoomId();
+              Long otherIdx = chatRoom.getOther().getIdx();
+              ChatRoomListResponseDTO halfDTO = chatMessageService.setChatRoomListResponseDTO(roomId);
+              log.info("halfDTO: {}", halfDTO);
+              UserDTO otherDTO = userService.findByIdx(otherIdx);
+              log.info("otherDTO: {}", otherDTO);
+
+//              log.info(otherIdx.toString());
+              log.info("return ChatRoomListResponseDTO: {}", chatRoomService.setChatRoomListResponseDTO(halfDTO, otherDTO));
+              return chatRoomService.setChatRoomListResponseDTO(halfDTO, otherDTO);
+            }).collect(Collectors.toList());
+//    return chatRoomService.findAll(userIdx).stream()
+//            .map(
+//                    chatRoom -> chatRoomService.setChatRoomListResponseDTO(
+//                            chatMessageService.setChatRoomListResponseDTO(chatRoom.getRoomId())
+//                            ,userService.findByIdx(chatRoomService.getOtherIdx(chatRoom.getRoomId()))
+//                    )).collect(Collectors.toList());
   }
 
   // 특정 상대방과 나눈 채팅 메시지를 chatId로 오름차순 정렬하여 반환

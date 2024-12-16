@@ -50,7 +50,8 @@ export const chatApi = {
     //     });
     // },
     getChatRoomList: async () => {
-        const res = await axios.get(`${API_BASE_URL}/api/chat/`, defaultConfig);
+        const res = await axios.get(`${API_BASE_URL}/api/chat/`);
+        console.log(res);
         return res.data;
         // return await axios.get(`${API_BASE_URL}/api/chat/`, defaultConfig);
     },
