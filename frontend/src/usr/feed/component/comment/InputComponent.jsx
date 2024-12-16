@@ -27,15 +27,15 @@ const InputComponent = ({ handleCommentEvent, content }) => {
     <div className="mt-2 flex space-x-3 w-full">
       <input
         type="text"
-        className="w-4/5 px-3 py-1 text-sm border border-gray-300 rounded-md"
-        placeholder="댓글을 입력하세요..(최대 50자)"
+        className="w-4/5 px-3 py-1 text-sm border-2 border-gray-200 rounded-2xl"
+        placeholder="댓글을 입력해주세요 (최대 50자)"
         maxLength="50"
         value={commentText}
         onChange={(e) => setCommentText(e.target.value)}
         onKeyDown={handleInputEvent}
       />
       <button
-        className="w-1/5 bg-blue-500 text-white px-2 py-1 rounded-md text-sm"
+        className="w-1/6 bg-emerald-400 text-white px-2 py-1 rounded-2xl text-sm font-semibold"
         onClick={submitComment}
       >
         등록

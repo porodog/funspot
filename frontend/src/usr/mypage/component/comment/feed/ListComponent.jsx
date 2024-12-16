@@ -109,8 +109,6 @@ const ListComponent = () => {
 
   // 댓글,답글 갱신
   const updateCommentList = (item, type) => {
-    console.log(item);
-    //{idx: 156, content: 'ㅅㅅㅅㅅ', delYn: false
     if (type === "new") {
       setCommentList((prevList) => [
         {

@@ -11,8 +11,6 @@ const ListComponent = ({
   handleReplyModifyEvent,
   handleReplyDeleteEvent,
 }) => {
-  console.log(commentList);
-
   const [activeReplyComment, setActiveReplyComment] = useState(null);
   const handleReplyClick = (commentId) => {
     setActiveReplyComment((prev) => (prev === commentId ? null : commentId));

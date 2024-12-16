@@ -4,8 +4,10 @@ import InputComponent from "./InputComponent";
 import { useBasic } from "../../../../common/context/BasicContext";
 import { API_BASE_URL } from "../../api/FeedApi";
 import { useNavigate } from "react-router-dom";
+import { FaRegEdit, FaUser } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+//const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
 
 const ReplyListComponent = ({
   parentIdx,
@@ -31,7 +33,7 @@ const ReplyListComponent = ({
   };
 
   const handleProfileEvent = (userIdx) => {
-    if (loginUserIdx !== "" && loginUserIdx !== userIdx) {
+    if (loginUserIdx !== "") {
       navigate(`/mypage/feed/${userIdx}`);
     }
   };
@@ -41,59 +43,54 @@ const ReplyListComponent = ({
       {/* 대댓글 (reply) */}
       <div className="pl-1 space-y-2">
         {replyList.map((reply) => (
-          <div key={reply.idx} className="flex space-x-3">
+          <div key={reply.idx} className="flex space-x-2">
             <MdSubdirectoryArrowRight
               className="text-gray-500 mt-1"
-              size={16}
+              size="1.6rem"
             />
-            <img
-              src={
-                reply.user.uploadName
-                  ? `${API_BASE_URL}/api/usr/profile/image/${reply.user.uploadName}`
-                  : initSrc
-              }
-              alt="프로필 이미지"
+            <div
               className={`
-                 ${
-                   loginUserIdx !== "" && loginUserIdx !== reply.user.userIdx
-                     ? "cursor-pointer"
-                     : ""
-                 }
-                w-8 h-8 rounded-full object-cover`}
+              ${loginUserIdx !== "" ? "cursor-pointer" : ""}
+              w-10 h-8 rounded-full overflow-hidden border border-emerald-400 
+              flex items-center justify-center`}
               onClick={() => handleProfileEvent(reply.user.userIdx)}
-            />
-            <div className="flex flex-col w-full">
-              <div className="flex justify-between items-center text-xs text-gray-500">
+            >
+              {reply.user.uploadName ? (
+                <img
+                  src={`${API_BASE_URL}/api/usr/profile/image/${reply.user.uploadName}`}
+                  alt="프로필 이미지"
+                  className="w-full h-full object-contain rounded-full"
+                />
+              ) : (
+                <FaUser className="text-base object-contain mx-auto" />
+              )}
+            </div>
+
+            <div className="flex flex-col w-full space-y-1">
+              <div className="flex justify-between items-center">
                 <p
                   className={`
-                    ${
-                      loginUserIdx !== "" && loginUserIdx !== reply.user.userIdx
-                        ? "cursor-pointer"
-                        : ""
-                    }
-                    font-semibold text-gray-800`}
+                    ${loginUserIdx !== "" ? "cursor-pointer" : ""}
+                    font-semibold text-gray-800 text-sm`}
                   onClick={() => handleProfileEvent(reply.user.userIdx)}
                 >
                   {reply.user.user.nickname}
                 </p>
-                <div className="flex items-center">
+                <div className="flex items-center space-x-2">
                   {!reply.delYn && reply.user.userIdx === loginUserIdx && (
                     <>
-                      <button
-                        className="text-blue-500"
+                      <FaRegEdit
                         onClick={() => handleCommentClick(reply.idx)}
-                      >
-                        수정
-                      </button>
-                      <span className="mx-2">|</span>
-                      <button
-                        className="text-red-500"
+                        className="cursor-pointer hover:text-emerald-500"
+                        size="1.2rem"
+                      />
+                      <RiDeleteBin6Line
                         onClick={() =>
                           handleReplyDeleteEvent(reply.idx, parentIdx)
                         }
-                      >
-                        삭제
-                      </button>
+                        className="cursor-pointer hover:text-emerald-500"
+                        size="1.2rem"
+                      />
                     </>
                   )}
                 </div>
@@ -107,9 +104,11 @@ const ReplyListComponent = ({
                   />
                 </div>
               ) : (
-                <p className="text-sm text-gray-600">{reply.content}</p> // 수정 모드가 아닐 때 원래 댓글 내용
+                <p className="text-sm text-gray-800 font-medium">
+                  {reply.content}
+                </p>
               )}
-              <div className="mt-1 flex justify-end text-xs text-gray-500">
+              <div className="mt-1 flex justify-end text-xs font-semibold text-gray-500">
                 <span>{reply.regDateStr}</span>
               </div>
             </div>

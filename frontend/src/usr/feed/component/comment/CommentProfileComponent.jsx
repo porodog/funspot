@@ -3,8 +3,10 @@ import { useBasic } from "../../../../common/context/BasicContext";
 import InputComponent from "./InputComponent";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../../api/FeedApi";
+import { FaRegEdit, FaUser } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
-const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
+//const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
 
 const CommentProfileComponent = ({
   comment,
@@ -30,56 +32,54 @@ const CommentProfileComponent = ({
   };
 
   const handleProfileEvent = (userIdx) => {
-    //console.log("사용자 idx, 마이페이지 이동처리 필요 시 사용 >> " + userIdx);
-    if (loginUserIdx !== "" && loginUserIdx !== userIdx) {
+    if (loginUserIdx !== "") {
       navigate(`/mypage/feed/${userIdx}`);
     }
   };
 
   return (
     <div className="flex space-x-3">
-      <img
-        src={
-          comment.user.uploadName
-            ? `${API_BASE_URL}/api/usr/profile/image/${comment.user.uploadName}`
-            : initSrc
-        }
-        alt="프로필 이미지"
+      <div
         className={`
-          ${
-            loginUserIdx !== "" && loginUserIdx !== comment.user.userIdx
-              ? "cursor-pointer"
-              : ""
-          }
-          w-10 h-10 rounded-full object-contain`}
+        ${loginUserIdx !== "" ? "cursor-pointer" : ""}
+        w-10 h-9 rounded-full overflow-hidden border border-emerald-400 
+        flex items-center justify-center`}
         onClick={() => handleProfileEvent(comment.user.userIdx)}
-      />
-      <div className="flex flex-col w-full">
+      >
+        {comment.user.uploadName ? (
+          <img
+            src={`${API_BASE_URL}/api/usr/profile/image/${comment.user.uploadName}`}
+            alt="프로필 이미지"
+            className="w-full h-full object-contain rounded-full"
+          />
+        ) : (
+          <FaUser className="text-lg object-contain mx-auto" />
+        )}
+      </div>
+
+      <div className="flex flex-col w-full space-y-1">
         <div className="flex justify-between items-center">
           <p
             className={`
               ${loginUserIdx !== "" ? "cursor-pointer" : ""}
-              font-semibold text-gray-800`}
+              font-semibold text-gray-800 text-sm`}
             onClick={() => handleProfileEvent(comment.user.userIdx)}
           >
             {comment.user.user.nickname}
           </p>
-          <div className="flex text-xs text-gray-500 items-center">
+          <div className="flex items-center space-x-4">
             {!comment.delYn && comment.user.userIdx === loginUserIdx && (
               <>
-                <button
-                  className="text-blue-500"
+                <FaRegEdit
                   onClick={() => handleCommentModifyClick(comment.idx)}
-                >
-                  수정
-                </button>
-                <span className="mx-2 text-gray-500">|</span>
-                <button
-                  className="text-red-500"
+                  className="cursor-pointer hover:text-emerald-500"
+                  size="1.2rem"
+                />
+                <RiDeleteBin6Line
                   onClick={() => handleCommentDeleteEvent(comment.idx)}
-                >
-                  삭제
-                </button>
+                  className="cursor-pointer hover:text-emerald-500"
+                  size="1.2rem"
+                />
               </>
             )}
           </div>
@@ -94,10 +94,9 @@ const CommentProfileComponent = ({
             />
           </div>
         ) : (
-          <p className="text-sm text-gray-600">{comment.content}</p> // 수정 모드가 아닐 때 원래 댓글 내용
+          <p className="text-sm text-gray-800 font-medium">{comment.content}</p>
         )}
 
-        {/* <p className="text-sm text-gray-600">{comment.content}</p> */}
         <div
           className={`mt-1 flex text-xs text-gray-500 
           ${loginUserIdx ? "justify-between" : "justify-end"}`}
@@ -105,7 +104,7 @@ const CommentProfileComponent = ({
           {/* 좌측: 답글 달기 버튼 */}
           {loginUserIdx && (
             <button
-              className="text-blue-500"
+              className="font-semibold text-emerald-400 hover:text-emerald-500"
               onClick={() => handleReplyClick(comment.idx)}
             >
               답글달기
@@ -113,7 +112,9 @@ const CommentProfileComponent = ({
           )}
 
           {/* 우측: 등록일 */}
-          <span className="">{comment.regDateStr}</span>
+          <span className="font-semibold text-gray-500">
+            {comment.regDateStr}
+          </span>
         </div>
       </div>
     </div>

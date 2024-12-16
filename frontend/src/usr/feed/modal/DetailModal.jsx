@@ -93,7 +93,8 @@ const DetailModal = ({
           setCommentList((prevList) =>
             prevList.map((item) => {
               if (item.idx === data.idx) {
-                return { ...item, content: "삭제된 댓글입니다" };
+                console.log(item);
+                return { ...item, content: "삭제된 댓글입니다", delYn: true };
               }
               return item;
             })
@@ -181,7 +182,11 @@ const DetailModal = ({
                   ...comment,
                   replyList: comment.replyList.map((reply) => {
                     if (reply.idx === idx) {
-                      return { ...reply, content: "삭제된 답글입니다" };
+                      return {
+                        ...reply,
+                        content: "삭제된 답글입니다",
+                        delYn: true,
+                      };
                     }
                     return { ...reply };
                   }),
@@ -203,18 +208,16 @@ const DetailModal = ({
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg w-9/12 h-5/6 p-6 flex">
-        <div className="w-3/5 relative">
+      <div className="flex bg-white rounded-lg w-9/12 h-5/6 p-6 space-x-3">
+        <div className="w-3/5 h-auto relative">
           {/* 왼쪽 영역 */}
           {/* 이미지 */}
-          {/* {(feed.feedImages ?? []).length > 0 && ( */}
           <ImageComponent feedImages={feed.feedImages} />
-          {/* )} */}
         </div>
 
-        <div className="w-2/5 pl-3 h-full flex flex-col justify-center">
+        <div className="w-2/5 h-full flex flex-col justify-center space-y-2">
           {/* 오른쪽 영역 */}
-          <div className="flex justify-between mb-4 items-start">
+          <div className="flex justify-between items-start">
             {/* 프로필 */}
             {feed.user && (
               <ProfileComponent feedUserInfo={feed.user} pageType={"detail"} />
@@ -248,7 +251,7 @@ const DetailModal = ({
           {/* 버튼 + 등록일시 */}
           <ButtonComponent feed={feed} handleLikesEvent={handleLikesEvent} />
 
-          <div className="border border-gray-200 overflow-y-auto p-4 space-y-4 h-full">
+          <div className="border-2 border-gray-200 overflow-y-auto p-4 space-y-4 h-full rounded-lg">
             {/* 댓글 목록 + 등록인풋 */}
             <CommentListComponent
               commentList={commentList}
