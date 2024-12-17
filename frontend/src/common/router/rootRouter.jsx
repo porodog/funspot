@@ -3,10 +3,10 @@ import feedRouter from "../../usr/feed/router/feedRouter";
 import boardRouter from "../../usr/board/router/boardRouter";
 import BasicLayout from "../layout/BasicLayout";
 import chatRouter from "../../usr/chat/router/chatRouter";
-// import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
+import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
 import customRouter from "../../usr/custom/router/customRouter";
-import {Outlet} from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const { createBrowserRouter } = require("react-router-dom");
 
@@ -20,7 +20,6 @@ const LoginSuccessPage = lazy(() =>
 const MyPageIndexPage = lazy(() => import("../../usr/mypage/page/IndexPage"));
 const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
-// const CoursePage = lazy(() => import("../../usr/course/page/CourseListpage"));
 const BoardIndexPage = lazy(() =>
   import("../../usr/board/BoardIndex")
 );
@@ -30,13 +29,13 @@ const SocialSignupPage = lazy(() =>
 const DateCourseListPage = lazy(() =>
   import("../../usr/course/page/DateCourseListpage")
 );
-// const AddDatePage = lazy(() => import("../../usr/course/page/AddDatePage")); // 수정된 부분
 const ChatListPage = lazy(() => import("../../usr/chat/page/ChatListPage"));
 const AddCoursePage = lazy(() => import("../../usr/course/page/AddCoursePage")); // 수정된 부분
 const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
 const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
+const DateCourseDetailPage = lazy(() => import("../../usr/course/page/DateCourseDetailPage"))
 
 
 const rootRouter = createBrowserRouter(
@@ -126,7 +125,7 @@ const rootRouter = createBrowserRouter(
           <DateCourseListPage />
         </Suspense>
       ),
-      // children: dateRouter(), // DateRouter 자식 라우터 추가
+      children: dateRouter(), // DateRouter 자식 라우터 추가
     },
     {
       path: "addcourse",
@@ -135,6 +134,14 @@ const rootRouter = createBrowserRouter(
           <AddCoursePage />
         </Suspense>
       ),
+    },
+    {
+      path: "datecourses/:id",
+      element: (
+        <Suspense fallback={Loading}>
+          <DateCourseDetailPage />
+        </Suspense>
+      )
     },
 
     {
@@ -164,17 +171,17 @@ const rootRouter = createBrowserRouter(
     //   ),
     //     children: chatRouter(),
     // },
-      {
-          path: "chat",
-          element: (
-              <Suspense fallback={Loading}>
-                  <BasicLayout>
-                      <Outlet />
-                  </BasicLayout>
-              </Suspense>
-          ),
-          children: chatRouter()
-      },
+    {
+      path: "chat",
+      element: (
+        <Suspense fallback={Loading}>
+          <BasicLayout>
+            <Outlet />
+          </BasicLayout>
+        </Suspense>
+      ),
+      children: chatRouter()
+    },
   ],
   {
     future: {
