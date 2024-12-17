@@ -1,0 +1,74 @@
+.board-content h1 {
+    font-size: 2em; /* Heading 1 글자 크기 */
+    font-weight: bold; /* 볼드 처리 */
+    margin-bottom: 1rem;
+}
+
+.board-content h2 {
+    font-size: 1.75em; /* Heading 2 글자 크기 */
+    font-weight: bold; /* 볼드 처리 */
+    margin-bottom: 1rem;
+}
+
+.board-content h3 {
+    font-size: 1.5em; /* Heading 3 글자 크기 */
+    font-weight: bold; /* 볼드 처리 */
+    margin-bottom: 0.75rem;
+}
+
+.board-content p {
+    font-size: 1em; /* 기본 텍스트 크기 */
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.board-content ul, .board-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.board-content li {
+    margin-bottom: 0.5rem;
+}
+
+.board-content strong {
+    font-weight: bold; /* 볼드 텍스트 */
+}
+
+.board-content em {
+    font-style: italic; /* 이탤릭 텍스트 */
+}
+
+.board-content a {
+    color: #25E2B6; /* 링크 색상 */
+    text-decoration: underline;
+}
+
+.board-content img {
+    max-width: 100%; /* 이미지 크기 제한 */
+    height: auto;
+    margin: 1rem 0;
+}
+
+/* 기본 Heading 태그 스타일 */
+.board-content h1,
+.board-content h2,
+.board-content h3 {
+    font-weight: normal; /* 기본적으로 볼드 해제 */
+    margin-bottom: 1rem;
+}
+
+/* strong 태그가 포함된 경우 (Quill이 적용하는 볼드 스타일) */
+.board-content h1 strong,
+.board-content h2 strong,
+.board-content h3 strong {
+    font-weight: bold; /* strong 태그 안에 있을 때만 볼드 */
+}
+
+/* inline style로 볼드가 적용된 경우 */
+.board-content h1[style*="font-weight: bold"],
+.board-content h2[style*="font-weight: bold"],
+.board-content h3[style*="font-weight: bold"] {
+    font-weight: bold; /* inline style로 볼드 적용 시 */
+}
+

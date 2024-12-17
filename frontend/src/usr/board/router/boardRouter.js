@@ -1,9 +1,11 @@
 import { lazy, Suspense } from "react";
 
+
 const Loading = <div>Loading....</div>;
 const BoardList = lazy(() => import("../components/BoardList"));
 const BoardDetail = lazy(() => import("../components/BoardDetail"));
 const CreateBoard = lazy(() => import("../components/CreateBoard"));
+const EditBoard = lazy(() => import("../components/EditBoard"));
 
 const boardRouter = () => [
   {
@@ -30,6 +32,14 @@ const boardRouter = () => [
         </Suspense>
     ),
   },
+    {
+        path: "edit/:id", // 수정 페이지 라우트 추가
+        element: (
+            <Suspense fallback={Loading}>
+                <EditBoard/>
+            </Suspense>
+        ),
+    },
 ];
 
 export default boardRouter;

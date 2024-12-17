@@ -10,6 +10,7 @@ import com.spot.fun.usr.oauthlogin.utill.CustomOAuth2AuthenticationException;
 import com.spot.fun.usr.oauthlogin.utill.CustomRequestEntityConverter;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
+import com.spot.fun.usr.user.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -75,15 +77,13 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PERMITTED_PATHS).permitAll()
-                        .requestMatchers("/api/admin/").hasAuthority("ADMIN")
-                        .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
-                        .requestMatchers("/api/usr/datecourse/").permitAll()
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
+                        .requestMatchers("/api/usr/datecourse/public", "api/usr/datecourse/user").permitAll()
                         .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
-                        // WebSocket 엔드포인트 허용
-                        .requestMatchers("/ws/**").permitAll()
-//                      .requestMatchers("/api/chat/**").permitAll()
-                        .requestMatchers("/api/chat/**").authenticated()  // 명시적으로 인증 필요함을 표시
+                        .requestMatchers("/api/boards/**").permitAll() // 게시판 관련 경로 인증 없이 허용
+                        .requestMatchers("/uploads/**").permitAll() // 이미지 업로드 경로 인증 없이 허용
+                        .requestMatchers(PERMITTED_PATHS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .cors((auth) -> auth
@@ -96,9 +96,10 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))  // OAuth2 로그인 설정
-                        .tokenEndpoint(token -> token
-                                .accessTokenResponseClient(accessTokenResponseClient()))
-                        .successHandler(oAuth2AuthenticationSuccessHandler()) // 로그인 성공 시 동작
+                        .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                                .accessTokenResponseClient(accessTokenResponseClient()) // Kakao 토큰 요청 처리
+                        )
+                        .successHandler(oAuth2AuthenticationSuccessHandler())  // 로그인 성공 시 동작
                         .failureHandler(oAuth2AuthenticationFailureHandler()))  // 로그인 실패 시 동작
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -163,7 +164,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient()  {
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
         DefaultAuthorizationCodeTokenResponseClient tokenResponseClient =
                 new DefaultAuthorizationCodeTokenResponseClient();
         tokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter());

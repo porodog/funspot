@@ -1,66 +1,157 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import DOMPurify from "dompurify";
+
+// Quill Toolbar 설정
+const toolbarOptions = [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["image", "link"],
+    ["clean"],
+];
 
 const EditBoard = () => {
     const { id } = useParams();
-    const [board, setBoard] = useState({ title: "", content: "" });
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
     const navigate = useNavigate();
+    const quillRef = useRef(null);
 
+    // 게시글 불러오기
     useEffect(() => {
         axios
             .get(`http://localhost:8080/api/boards/${id}`)
             .then((response) => {
-                setBoard(response.data);
+                setTitle(response.data.title);
+                setContent(response.data.content);
             })
             .catch((error) => {
                 console.error("Error fetching board:", error);
+                alert("게시글을 불러오는 중 문제가 발생했습니다.");
             });
     }, [id]);
 
-    const handleSubmit = (e) => {
+    // 이미지 핸들러
+    const imageHandler = useCallback(() => {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await axios.post("http://localhost:8080/api/images/upload", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                const imageUrl = response.data.url;
+                const editor = quillRef.current.getEditor();
+                const range = editor.getSelection();
+                editor.insertEmbed(range.index, "image", imageUrl);
+            } catch (error) {
+                console.error("이미지 업로드 실패:", error);
+                alert("이미지 업로드에 실패했습니다.");
+            }
+        };
+    }, []);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!board.title.trim() || !board.content.trim()) {
-            alert("제목과 내용을 입력해주세요.");
+
+        if (!title.trim()) {
+            alert("제목을 입력해주세요.");
             return;
         }
-        axios
-            .put(`http://localhost:8080/api/boards/${id}`, board)
-            .then(() => {
-                navigate("/board/list"); // 수정 후 이동
-            })
-            .catch((error) => {
-                console.error("Error updating post:", error);
-            });
+        if (title.length > 100) {
+            alert("제목은 최대 100글자까지 작성할 수 있습니다.");
+            return;
+        }
+
+        const sanitizedContent = DOMPurify.sanitize(content);
+        const contentTextLength = sanitizedContent.replace(/<[^>]*>/g, "").trim().length;
+
+        if (!contentTextLength) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
+        if (contentTextLength > 5000) {
+            alert("내용은 최대 5000글자까지 작성할 수 있습니다.");
+            return;
+        }
+
+        try {
+            await axios.put(
+                `http://localhost:8080/api/boards/${id}`,
+                { title, content: sanitizedContent },
+                { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
+            );
+
+            alert("게시글이 성공적으로 수정되었습니다.");
+            navigate(`/board/detail/${id}`);
+        } catch (error) {
+            console.error("게시글 수정 실패:", error);
+            alert("게시글 수정에 실패했습니다.");
+        }
     };
 
-
     return (
-        <div>
-            <h1>게시글 수정</h1>
+        <div className="container mx-auto p-6 border rounded-md shadow-sm bg-white">
+            <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">게시글 수정</h1>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>제목</label>
+                <div className="mb-4">
                     <input
                         type="text"
-                        value={board.title}
-                        onChange={(e) =>
-                            setBoard({ ...board, title: e.target.value })
-                        }
-                        required
+                        placeholder="제목 (최대 100글자)"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        maxLength={100}
+                        className="w-full border px-3 py-2 rounded-md"
+                    />
+                    <p className="text-sm text-gray-500 text-right">{title.length} / 100</p>
+                </div>
+                <div className="mb-4">
+                    <ReactQuill
+                        theme="snow"
+                        value={content}
+                        onChange={setContent}
+                        ref={quillRef}
+                        style={{ height: "300px" }}
+                        modules={{
+                            toolbar: {
+                                container: toolbarOptions,
+                                handlers: { image: imageHandler },
+                            },
+                        }}
                     />
                 </div>
-                <div>
-                    <label>내용</label>
-                    <textarea
-                        value={board.content}
-                        onChange={(e) =>
-                            setBoard({ ...board, content: e.target.value })
-                        }
-                        required
-                    />
+                <p className="text-sm text-gray-500 text-right mb-4">
+                    {content.replace(/<[^>]*>/g, "").length} / 5000
+                </p>
+                <div className="flex justify-between">
+                    <button
+                        type="button"
+                        onClick={() => navigate(`/board/detail/${id}`)}
+                        className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                    >
+                        취소
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                    >
+                        수정
+                    </button>
                 </div>
-                <button type="submit">수정</button>
             </form>
         </div>
     );

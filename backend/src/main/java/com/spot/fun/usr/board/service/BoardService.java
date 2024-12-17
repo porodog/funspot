@@ -3,9 +3,11 @@ package com.spot.fun.usr.board.service;
 import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +16,8 @@ public class BoardService {
   private final BoardRepository boardRepository;
 
   // 모든 게시글 조회 (최신순 정렬)
-  public List<BoardEntity> getAllBoards() {
-    return boardRepository.findByDelYnOrderByRegDateDesc("N"); // 최신순 정렬
+  public Page<BoardEntity> getAllBoards(Pageable pageable) {
+    return boardRepository.findByDelYn("N", pageable); // 페이징된 결과 반환
   }
 
   // 게시글 작성
@@ -32,9 +34,12 @@ public class BoardService {
   // 게시글 수정
   public BoardEntity updateBoard(Long id, BoardEntity updatedBoard) {
     BoardEntity existingBoard = getBoardById(id);
+
+    // 수정 데이터 반영
     existingBoard.setTitle(updatedBoard.getTitle());
     existingBoard.setContent(updatedBoard.getContent());
-    existingBoard.setModDate(updatedBoard.getModDate());
+    existingBoard.setModDate(LocalDateTime.now()); // 수정일자 현재 시간으로 설정
+
     return boardRepository.save(existingBoard);
   }
 
@@ -43,5 +48,28 @@ public class BoardService {
     BoardEntity existingBoard = getBoardById(id);
     existingBoard.setDelYn("Y");
     boardRepository.save(existingBoard);
+  }
+
+  // 조회수 증가
+  public BoardEntity incrementViewCount(Long id) {
+    BoardEntity board = getBoardById(id);
+    board.setViewCount(board.getViewCount() + 1);
+    return boardRepository.save(board);
+  }
+
+  // 검색 기능
+  public Page<BoardEntity> searchBoards(String type, String keyword, Pageable pageable) {
+    switch (type) {
+      case "titleContent":
+        return boardRepository.searchByTitleOrContent(keyword, pageable);
+      case "title":
+        return boardRepository.searchByTitle(keyword, pageable);
+      case "content":
+        return boardRepository.searchByContent(keyword, pageable);
+      case "nickname":
+        return boardRepository.searchByNickname(keyword, pageable);
+      default:
+        return boardRepository.findByDelYn("N", pageable); // 기본적으로 모든 게시글 조회
+    }
   }
 }
