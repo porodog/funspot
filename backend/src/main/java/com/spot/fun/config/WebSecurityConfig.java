@@ -116,8 +116,8 @@ public class WebSecurityConfig {
         configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://localhost:3001");
 
-        // 요청 방식 설정
-        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE"));
+        // 허용할 HTTP 메서드 추가 (PATCH, DELETE, OPTIONS 등)
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
         // 허용할 HTTP 헤더 설정
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
