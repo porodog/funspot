@@ -45,12 +45,12 @@ public class ChatController {
         );
     }
 
-    @MessageMapping("/chat/{roomId}")
-    @SendToUser("/sub/user/{roomId}")
-    @SendTo("/sub/other/{otherRoomId}")
+    @MessageMapping("msg/{roomId}/{otherRoomId}")
+    @SendTo({"/sub/user/{roomId}", "/sub/other/{otherRoomId}"})
     public ChatMessage handleChatMessage(@DestinationVariable("roomId") Long roomId,
                                          @DestinationVariable("otherRoomId") Long otherRoomId,
                                          @RequestBody ChatMessageRequestDTO messageRequest) {
+        log.info("handleChatMessage : {}", messageRequest);
         return chatFacadeService.saveChatMessage(roomId, otherRoomId, messageRequest);
     }
 }

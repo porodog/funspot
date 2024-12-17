@@ -142,6 +142,7 @@ const ChatListPage = () => {
                         chatRoomListResponseDTOList={chatRoomListResponseDTOList}
                         handleRoomClick={handleRoomClick}
                     />
+                    <button onClick={()=>navigate(`/chat/3`)}>3번 채팅방 입장</button>
                 </>
             )}
         </div>

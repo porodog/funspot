@@ -21,12 +21,18 @@ public class ChatMessageService implements ChatService{
     }
 
     public ChatRoomListResponseDTO setChatRoomListResponseDTO(Long roomId) {
-        ChatMessage recendChatMessage = chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
+        ChatMessage recentChatMessage = chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
+        System.out.println("setChatRoomListResponseDTO recentChatMessage: " + recentChatMessage);
+        if(Objects.isNull(recentChatMessage)) {
+            return ChatRoomListResponseDTO.builder()
+                    .roomId(roomId)
+                    .build();
+        }
         return ChatRoomListResponseDTO.builder()
                 .roomId(roomId)
-                .recentMessage(recendChatMessage.getMsg())
-                .recentMessageTimestamp(recendChatMessage.getTimestamp())
-                .isRecentMessageRead(recendChatMessage.isRead())
+                .recentMessage(recentChatMessage.getMsg())
+                .recentMessageTimestamp(recentChatMessage.getTimestamp())
+                .isRecentMessageRead(recentChatMessage.isRead())
                 .build();
     }
 

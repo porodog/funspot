@@ -37,6 +37,7 @@ const ChatRoomPage = () => {
                 // 채팅방 정보 조회
                 const response = await chatApi.getChatRoom(otherIdx);
                 const { userRoomId, otherRoomId, chatIdChatMessageDTOMap, chatRoomContentDTO } = response;
+                console.log(response);
 
                 setRoomInfo({
                     userRoomId,
@@ -72,11 +73,12 @@ const ChatRoomPage = () => {
         <div className="flex flex-col h-screen">
             {/* 채팅방 헤더 */}
             <div className="p-4 border-b">
-                <h2 className="text-lg font-medium">{roomInfo?.otherNickname}</h2>
+                <h2 className="text-lg font-medium"><b>{roomInfo?.otherNickname}</b>님과의 대화방</h2>
             </div>
 
             {/* 메시지 목록 */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/*<div className="flex-1 overflow-y-auto p-4 space-y-4">*/}
+            <div className="flex-0 overflow-y-auto p-4 space-y-4">
                 {messages.map((message, index) => (
                     <div
                         key={index}

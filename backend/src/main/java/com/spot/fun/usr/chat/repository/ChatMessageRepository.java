@@ -12,7 +12,9 @@ import java.util.Optional;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, String> {
     ChatMessage findTopByRoomIdOrderByTimestampDesc(Long roomId);
-    List<Long> findChatIdByRoomId(Long roomId);
+
+    @Query("SELECT m.chatId FROM ChatMessage m WHERE m.roomId = :roomId")
+    List<Long> findChatIdByRoomId(@Param("roomId") Long roomId);
     ChatMessage findChatMessageByChatId(Long chatId);
 
     // 양방향 roomId로 메시지 조회

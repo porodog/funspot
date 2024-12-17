@@ -15,14 +15,16 @@ public class ChatMessageRequestDTO {
     private String msg;
     private Long roomId;
     private java.sql.Timestamp timestamp;
+    private Long userIdx;
 
     @Builder
-    public ChatMessageRequestDTO(Long fromIdx, Long toIdx, String msg, Long roomId) {
+    public ChatMessageRequestDTO(Long fromIdx, Long toIdx, String msg, Long roomId, Long userIdx) {
         this.fromIdx = fromIdx;
         this.toIdx = toIdx;
         this.msg = msg;
         this.roomId = roomId;
         this.timestamp = new java.sql.Timestamp(System.currentTimeMillis());
+        this.userIdx = userIdx;
     }
 
     public ChatMessage toEntity() {
