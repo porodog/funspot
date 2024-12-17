@@ -11,8 +11,6 @@ import { ReactComponent as Kakao } from "../../../common/img/kakao.svg";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-const CLIENT_ID = process.env.REACT_APP_REST_API_KEY;
-
 const LoginComponent = () => {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
@@ -73,25 +71,24 @@ const LoginComponent = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/");
-  };
-
   const handleSocialLogin = (provider) => {
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
-  const handleKakaoLogin = () => {
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${"http://localhost:8080/login/oauth2/code/kakao"}&response_type=code`;
-    window.location.href = kakaoAuthUrl;
-  };
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const errorMessage = params.get("error_message");
+    if (errorMessage) {
+      alert(errorMessage);
+      window.location.href = "/login"; // alert 후 로그인 페이지로 이동
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-5 bg-white">
       <h1 className="mb-6 text-2xl font-bold">로그인</h1>
       <form className="flex flex-col items-center" id="login-form">
         <div className="mb-4">
-          {/* <label className="font-bold text-xl">아이디</label> */}
           <input
             type="text"
             name="userId"
@@ -111,7 +108,6 @@ const LoginComponent = () => {
           )}
         </div>
         <div className="mb-6 relative w-80">
-          {/* <label className="font-bold text-xl">비밀번호</label> */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -153,13 +149,6 @@ const LoginComponent = () => {
         >
           로그인
         </button>
-        {/*<button*/}
-        {/*  type="button"*/}
-        {/*  onClick={handleCancel}*/}
-        {/*  className="p-2 w-80 bg-gray-500 text-white rounded-3xl cursor-pointer hover:bg-gray-600"*/}
-        {/*>*/}
-        {/*  취소*/}
-        {/*</button>*/}
       </form>
 
       <div id="search-user-info" className="mt-6 text-center">
@@ -212,7 +201,7 @@ const LoginComponent = () => {
           </div>
           <div className="text-center">
             <button
-              onClick={handleKakaoLogin}
+              onClick={() => handleSocialLogin("kakao")}
               className="bg-custom-cyan text-white rounded-full w-12 h-12 flex items-center justify-center cursor-pointer"
             >
               <Kakao />

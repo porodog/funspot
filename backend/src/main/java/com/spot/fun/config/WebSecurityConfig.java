@@ -6,6 +6,8 @@ import com.spot.fun.token.entity.AuthToken;
 import com.spot.fun.token.repository.AuthTokenRepository;
 import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.oauthlogin.service.CustomOAuth2UserService;
+import com.spot.fun.usr.oauthlogin.utill.CustomOAuth2AuthenticationException;
+import com.spot.fun.usr.oauthlogin.utill.CustomRequestEntityConverter;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -32,6 +45,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,19 +66,6 @@ public class WebSecurityConfig {
     @Value("${security.check.path.none}")
     private String[] PERMITTED_PATHS;
 
-    // 인증이 필요하지 않은 경로
-    public static final String[] allowUrls = {
-            "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/v3/api-docs/**",
-            "/api/v1/posts/**",
-            "/api/v1/replies/**",
-            "/login",
-            "/login/oauth/kakao",
-            "/auth/login/kakao/**",
-            "/auth/redirect/kakao/**"
-    };
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception  {
@@ -74,7 +75,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(allowUrls).permitAll()  // 인증 우회 URL 설정
                         .requestMatchers(PERMITTED_PATHS).permitAll()
                         .requestMatchers("/api/admin/").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/").hasAuthority("USER")
@@ -96,7 +96,9 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))  // OAuth2 로그인 설정
-                        .successHandler(oAuth2AuthenticationSuccessHandler())  // 로그인 성공 시 동작
+                        .tokenEndpoint(token -> token
+                                .accessTokenResponseClient(accessTokenResponseClient()))
+                        .successHandler(oAuth2AuthenticationSuccessHandler()) // 로그인 성공 시 동작
                         .failureHandler(oAuth2AuthenticationFailureHandler()))  // 로그인 실패 시 동작
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -141,15 +143,56 @@ public class WebSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    @Bean
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+            ClientRegistrationRepository clientRegistrationRepository,
+            OAuth2AuthorizedClientRepository authorizedClientRepository) {
+
+        OAuth2AuthorizedClientProvider authorizedClientProvider =
+                OAuth2AuthorizedClientProviderBuilder.builder()
+                        .authorizationCode()
+                        .refreshToken()
+                        .clientCredentials()
+                        .build();
+
+        DefaultOAuth2AuthorizedClientManager authorizedClientManager =
+                new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository, authorizedClientRepository);
+        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+
+        return authorizedClientManager;
+    }
+
+    @Bean
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+        DefaultAuthorizationCodeTokenResponseClient tokenResponseClient =
+                new DefaultAuthorizationCodeTokenResponseClient();
+        tokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter());
+        return tokenResponseClient;
+    }
+
 
     // OAuth2 로그인 실패 핸들러
     @Bean
     public AuthenticationFailureHandler oAuth2AuthenticationFailureHandler() {
         return (request, response, exception) -> {
-            log.error("OAuth2 Authentication failed: {}", exception.getMessage());
-            response.sendRedirect("http://localhost:3000/login?error=true");
+            String errorMessage;
+
+            // OAuth2Error에서 에러 메시지 가져오기
+            if (exception instanceof OAuth2AuthenticationException) {
+                OAuth2Error error = ((OAuth2AuthenticationException) exception).getError();
+                errorMessage = error.getDescription();
+            } else {
+                errorMessage = "소셜 로그인에 실패했습니다. 다시 시도해주세요.";
+            }
+
+            log.error("OAuth2 Authentication failed: {}", errorMessage);
+
+            // URL 파라미터로 에러 메시지 전달
+            response.sendRedirect("http://localhost:3000/login?error_message=" +
+                    URLEncoder.encode(errorMessage, "UTF-8"));
         };
     }
+
 
     // OAuth2 로그인 성공 핸들러
     @Bean
