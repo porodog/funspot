@@ -1,7 +1,6 @@
 import { useOutletContext, useParams } from "react-router-dom";
-import { useBasic } from "../../../../common/context/BasicContext";
 import { useEffect, useRef, useState } from "react";
-import { API_BASE_URL, getFeedListApi } from "../../api/MypageApi";
+import { getFeedListApi } from "../../api/MypageApi";
 import DetailModal from "../../../feed/modal/DetailModal";
 import {
   deleteFeedApi,
@@ -9,15 +8,11 @@ import {
   getFeedDetailApi,
 } from "../../../feed/api/FeedApi";
 import ModifyModal from "../../../feed/modal/ModifyModal";
-import ButtonComponent from "./ButtonComponent";
-import initSrc from "../../../../common/img/FunSpot.png";
+import ImageComponent from "./ImageComponent";
 
 const ListComponent = () => {
   const { handleFeedCountEvent } = useOutletContext();
-
   const { userIdx } = useParams();
-  const { userInfo } = useBasic();
-  const loginUserIdx = userInfo?.userIdx || "";
 
   // 피드목록
   const [feedList, setFeedList] = useState([]);
@@ -44,7 +39,7 @@ const ListComponent = () => {
         }
       })
       .catch((err) => {
-        console.log("[피드목록] 조회를 실패했습니다");
+        window.alert("[피드목록] 조회를 실패했습니다");
         console.log(err);
       })
       .finally(() => {
@@ -87,6 +82,11 @@ const ListComponent = () => {
 
   // 피드 삭제
   const handleListDeleteEvent = (idx) => {
+    const confirm = window.confirm("[피드삭제] 삭제하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     deleteFeedApi({ idx: idx })
       .then((data) => {
         if (data) {
@@ -96,10 +96,12 @@ const ListComponent = () => {
 
           feedCountRef.current = feedCountRef.current - 1;
           handleFeedCountEvent(feedCountRef.current);
+
+          window.alert("[피드삭제] 삭제를 성공했습니다");
         }
       })
       .catch((err) => {
-        console.log("[피드삭제] 삭제를 실패했습니다");
+        window.alert("[피드삭제] 삭제를 실패했습니다");
         console.log(err);
       });
   };
@@ -115,7 +117,7 @@ const ListComponent = () => {
         });
       })
       .catch((err) => {
-        console.log("[피드목록] 조회를 실패했습니다");
+        window.alert("[피드목록] 조회를 실패했습니다");
         console.log(err);
       });
   };
@@ -124,22 +126,24 @@ const ListComponent = () => {
   const handleLikesEvent = (targetIdx, likedYn, likeCount) => {
     feedLikeApi({ idx: targetIdx, likedYn })
       .then((data) => {
-        const newLikeCount = likeCount > 99 ? "99+" : likeCount;
-        setFeedList((prevFeedList) =>
-          prevFeedList.map((feed) =>
-            feed.idx === targetIdx
-              ? { ...feed, likedYn: likedYn, likeCount: newLikeCount }
-              : feed
-          )
-        );
-        setSelectedFeed((prevFeed) => ({
-          ...prevFeed,
-          likedYn: likedYn,
-          likeCount: newLikeCount,
-        }));
+        if (data) {
+          const newLikeCount = likeCount > 99 ? "99+" : likeCount;
+          setFeedList((prevFeedList) =>
+            prevFeedList.map((feed) =>
+              feed.idx === targetIdx
+                ? { ...feed, likedYn: likedYn, likeCount: newLikeCount }
+                : feed
+            )
+          );
+          setSelectedFeed((prevFeed) => ({
+            ...prevFeed,
+            likedYn: likedYn,
+            likeCount: newLikeCount,
+          }));
+        }
       })
       .catch((err) => {
-        console.log("[좋아요] 등록을 실패했습니다");
+        window.alert("[좋아요] 변경을 실패했습니다");
         console.log(err);
       });
   };
@@ -204,37 +208,13 @@ const ListComponent = () => {
       <div className="w-full grid grid-cols-3 gap-3 mx-auto">
         {/* 게시물 카드 */}
         {feedList.map((feed) => (
-          <div
+          <ImageComponent
             key={feed.idx}
-            className="relative w-full h-48 group 
-            bg-gray-50
-            transition-shadow duration-300"
-          >
-            <img
-              src={
-                (feed.feedImages ?? []).length > 0
-                  ? `${API_BASE_URL}/api/usr/feed/image/s_${feed.feedImages[0].uploadName}`
-                  : initSrc
-              }
-              alt="업로드 이미지"
-              className="w-full h-full object-contain"
-            />
-
-            <ButtonComponent
-              userIdx={userIdx}
-              loginUserIdx={loginUserIdx}
-              feedIdx={feed.idx}
-              openDetailModal={openDetailModal}
-              openModifyModal={openModifyModal}
-              handleListDeleteEvent={handleListDeleteEvent}
-            />
-
-            <div
-              className="absolute inset-0 
-              group-hover:shadow-lg group-hover:shadow-gray-400 
-              transition-shadow duration-300"
-            ></div>
-          </div>
+            feed={feed}
+            openDetailModal={openDetailModal}
+            openModifyModal={openModifyModal}
+            handleListDeleteEvent={handleListDeleteEvent}
+          />
         ))}
       </div>
 

@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { API_BASE_URL, getLikeListApi } from "../../api/MypageApi";
+import { useEffect, useState } from "react";
+import { getLikeListApi } from "../../api/MypageApi";
 import { useParams } from "react-router-dom";
-import { useBasic } from "../../../../common/context/BasicContext";
-import { FaPlus } from "react-icons/fa";
 import DetailModal from "../../../feed/modal/DetailModal";
 import { feedLikeApi } from "../../../feed/api/FeedApi";
-import initSrc from "../../../../common/img/FunSpot.png";
+import ImageComponent from "./ImageComponent";
 
 const ListComponent = () => {
   const { userIdx } = useParams();
-  const { userInfo } = useBasic();
-  const loginUserIdx = userInfo?.userIdx || "";
 
   // 좋아요 목록
   const [likeList, setLikeList] = useState([]);
@@ -34,7 +30,7 @@ const ListComponent = () => {
         }
       })
       .catch((err) => {
-        console.log("[좋아요목록] 조회를 실패했습니다");
+        window.alert("[좋아요목록] 조회를 실패했습니다");
         console.log(err);
       })
       .finally(() => {
@@ -92,7 +88,7 @@ const ListComponent = () => {
         }));
       })
       .catch((err) => {
-        console.log("[좋아요] 등록을 실패했습니다");
+        window.alert("[좋아요] 변경을 실패했습니다");
         console.log(err);
       });
   };
@@ -158,39 +154,11 @@ const ListComponent = () => {
       <div className="w-full grid grid-cols-3 gap-3 mx-auto">
         {/* 게시물 카드 */}
         {likeList.map((feed) => (
-          <div
+          <ImageComponent
             key={feed.idx}
-            className="relative w-full h-48 group 
-            bg-gray-50
-            transition-shadow duration-300"
-          >
-            <img
-              src={
-                (feed.feedImages ?? []).length > 0
-                  ? `${API_BASE_URL}/api/usr/feed/image/s_${feed.feedImages[0].uploadName}`
-                  : initSrc
-              }
-              alt="업로드 이미지"
-              className="w-full h-full object-contain"
-            />
-
-            <div
-              className="absolute inset-0 flex justify-center items-center opacity-0 
-            group-hover:opacity-100 transition-opacity duration-300 bg-gray-500 bg-opacity-30 z-10 
-            cursor-pointer"
-              onClick={() => openDetailModal(`${feed.idx}`)}
-            >
-              <div className="text-white flex items-center">
-                <FaPlus size="1.2rem" />
-              </div>
-            </div>
-
-            <div
-              className="absolute inset-0 
-              group-hover:shadow-lg group-hover:shadow-gray-400 
-              transition-shadow duration-300"
-            ></div>
-          </div>
+            feed={feed}
+            openDetailModal={openDetailModal}
+          />
         ))}
       </div>
 

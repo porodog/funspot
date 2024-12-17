@@ -27,7 +27,7 @@ const ListComponent = () => {
         }
       }
     } catch (err) {
-      console.log("[댓글목록] 조회를 실패했습니다");
+      window.alert("[댓글목록] 조회를 실패했습니다");
       console.log(err);
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ const ListComponent = () => {
       setSelectedFeed(data);
     } catch (err) {
       setSelectedFeed({});
-      console.log("[피드상세] 조회를 실패했습니다");
+      window.alert("[피드상세] 조회를 실패했습니다");
       console.log(err);
     }
   };
@@ -56,7 +56,6 @@ const ListComponent = () => {
   const closeDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedFeed({});
-    //window.location.reload();
   };
 
   // 좋아요
@@ -71,7 +70,7 @@ const ListComponent = () => {
         }));
       })
       .catch((err) => {
-        console.log("[좋아요] 등록을 실패했습니다");
+        window.alert("[좋아요] 변경을 실패했습니다");
         console.log(err);
       });
   };

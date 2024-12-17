@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { putFeedCommentDeleteApi } from "../../../api/MypageApi";
 
 const TableComponent = ({
@@ -8,19 +7,24 @@ const TableComponent = ({
 }) => {
   const handleDetailButtonEvent = ({ feedIdx, feedDelYn }) => {
     if (feedDelYn) {
-      console.log("[상세조회] 삭제된 피드입니다");
+      window.alert("[상세조회] 삭제된 피드입니다");
       return;
     }
     openDetailModal(feedIdx);
   };
 
   const handleDeleteButtonEvent = async (commentIdx) => {
+    const confirm = window.confirm("[댓글삭제] 삭제하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     try {
       const data = await putFeedCommentDeleteApi({ commentIdx });
-      console.log("[댓글삭제] 삭제를 성공했습니다");
+      window.alert("[댓글삭제] 삭제를 성공했습니다");
       handleDeleteListEvent(data.commentIdx);
     } catch (err) {
-      console.log("[댓글삭제] 삭제를 실패했습니다");
+      window.alert("[댓글삭제] 삭제를 실패했습니다");
       console.log(err);
     }
   };

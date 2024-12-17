@@ -62,6 +62,15 @@ const IndexPage = () => {
   const [followStatus, setFollowStatus] = useState(false);
   const [followCount, setFollowCount] = useState(initCount);
   const handleFollowClickEvent = async () => {
+    const confirm = window.confirm(
+      followStatus
+        ? "[팔로우상태] 해제 하시겠습니까?"
+        : "[팔로우상태] 팔로우 하시겠습니까?"
+    );
+    if (!confirm) {
+      return;
+    }
+
     try {
       const status = !followStatus;
       const param = { followerIdx: loginUserIdx, followingIdx: userIdx };
@@ -77,7 +86,7 @@ const IndexPage = () => {
         };
       });
     } catch (err) {
-      console.log("[팔로우상태] 변경을 실패했습니다");
+      window.alert("[팔로우상태] 변경을 실패했습니다");
       console.log(err);
     }
   };
@@ -104,7 +113,7 @@ const IndexPage = () => {
         const { followerCount, followingCount } = data;
         setFollowCount({ followerCount, followingCount });
       } catch (err) {
-        console.log("[팔로우수] 조회를 실패했습니다");
+        window.alert("[팔로우수] 조회를 실패했습니다");
         console.log(err);
       }
     };
@@ -116,17 +125,16 @@ const IndexPage = () => {
         });
         setFollowStatus(data.followStatus);
       } catch (err) {
-        console.log("[팔로우상태] 조회를 실패했습니다");
+        window.alert("[팔로우상태] 조회를 실패했습니다");
         console.log(err);
       }
     };
     const getMypageUser = async () => {
       try {
-        //const data = await getMypageUserApi({ idx: userIdx });
         const data = await getProfileApi({ userIdx });
         setMypageInfo(data);
       } catch (err) {
-        console.log("[사용자정보] 조회를 실패했습니다");
+        window.alert("[사용자정보] 조회를 실패했습니다");
         console.log(err);
       }
     };
