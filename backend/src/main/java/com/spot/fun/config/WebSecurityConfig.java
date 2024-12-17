@@ -163,7 +163,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient() {
+    public OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> accessTokenResponseClient()  {
         DefaultAuthorizationCodeTokenResponseClient tokenResponseClient =
                 new DefaultAuthorizationCodeTokenResponseClient();
         tokenResponseClient.setRequestEntityConverter(new CustomRequestEntityConverter());
