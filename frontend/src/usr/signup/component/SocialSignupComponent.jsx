@@ -273,18 +273,22 @@ const SocialSignupComponent = () => {
     try {
       const response = await postSocialSignupApi(formData);
       if (response.status === 200) {
-        setCallback(() => () => navigate("/")); // Callback 상태로 분리
+        setCallback(() => () => navigate("/"));
         setAlertModalConfig({
           isOpen: true,
           message: response.data.message,
         });
+      } else {
+        // 에러 발생 시 AlertModal에 에러 메시지 표시
+        setAlertModalConfig({
+          isOpen: true,
+          message: response.data.message || "서버 오류가 발생했습니다.",
+        });
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || "회원가입 처리 중 문제가 발생했습니다.";
       setAlertModalConfig({
         isOpen: true,
-        message: errorMessage,
+        message: "알 수 없는 오류가 발생했습니다.",
       });
     }
   };
