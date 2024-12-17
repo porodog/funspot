@@ -23,6 +23,7 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
       setImageSrc(URL.createObjectURL(file));
       setShowDeleteButton(true);
     } else {
+      window.alert("[프로필이미지] 이미자타입의 파일을 첨부해주세요");
       setImageSrc(initSrc);
       e.target.value = "";
       setShowDeleteButton(false);
@@ -47,13 +48,13 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     const originNickname = useOriginNicknameRef.current;
 
     if (originNickname === nickname) {
-      console.log("[중복확인] 이전닉네임과 동일합니다");
+      window.alert("[중복확인] 이전닉네임과 동일합니다");
       setDuplicate(true);
       return;
     }
 
     if (!nickname.match(/^[a-zA-Z0-9가-힣]{4,12}$/)) {
-      console.log("[중복확인] 한글,영문,숫자만 입력해주세요");
+      window.alert("[중복확인] 한글,영문,숫자만 입력해주세요");
       setDuplicate(false);
       return;
     }
@@ -61,14 +62,14 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     try {
       const data = await getNicknameDuplicateApi({ nickname });
       if (data.duplicate) {
-        console.log("[중복확인] 사용가능합니다");
+        window.alert("[중복확인] 사용가능합니다");
         setDuplicate(true);
       } else {
-        console.log("[중복확인] 사용할 수 없습니다");
+        window.alert("[중복확인] 사용할 수 없습니다");
         setDuplicate(false);
       }
     } catch (err) {
-      console.log("[중복확인] 조회를 실패했습니다");
+      window.alert("[중복확인] 조회를 실패했습니다");
       console.log(err);
     }
   };
@@ -79,7 +80,12 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
   //수정등록
   const handleProfileSubmitEvent = async () => {
     if (!duplicate) {
-      console.log("[등록] 닉네임 중복확인을 해주세요");
+      window.alert("[프로필] 닉네임 중복확인을 해주세요");
+      return;
+    }
+
+    const confirm = window.confirm("[프로필] 저장하시겠습니까?");
+    if (!confirm) {
       return;
     }
 
@@ -97,11 +103,11 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     try {
       const data = await putProfileApi(form);
       if (data) {
-        console.log("[프로필] 수정을 완료했습니다");
+        window.alert("[프로필] 수정을 완료했습니다");
         window.location.reload();
       }
     } catch (err) {
-      console.log("[프로필] 수정을 실패했습니다");
+      window.alert("[프로필] 수정을 실패했습니다");
       console.log(err);
     }
   };

@@ -51,8 +51,13 @@ const InsertModal = ({ closeInsertModal }) => {
   const handleFeedSubmit = () => {
     const content = useTextRef.current.value;
     if (content.trim().length < 1) {
-      console.log("[임시] 컨텐츠 내용을 입력해주세요");
+      window.alert("[피드등록] 컨텐츠 내용을 입력해주세요");
       return false;
+    }
+
+    const confirm = window.confirm("[피드등록] 등록 하시겠습니까?");
+    if (!confirm) {
+      return;
     }
 
     const form = new FormData();
@@ -75,12 +80,13 @@ const InsertModal = ({ closeInsertModal }) => {
     postFeedInsertApi(form)
       .then((data) => {
         if (data) {
+          window.alert("[피드등록] 등록을 성공했습니다");
           closeInsertModal(data);
           return;
         }
       })
       .catch((err) => {
-        console.log("[피드등록] 등록을 실패했습니다");
+        window.alert("[피드등록] 등록을 실패했습니다");
         console.log(err);
       });
   };
@@ -94,7 +100,7 @@ const InsertModal = ({ closeInsertModal }) => {
         const data = await getProfileApi({ userIdx: loginUserIdx });
         setFeedUserInfo(data);
       } catch (err) {
-        console.log("[프로필정보] 조회를 실패했습니다");
+        window.alert("[프로필정보] 조회를 실패했습니다");
         console.log(err);
       }
     };

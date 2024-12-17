@@ -26,7 +26,7 @@ const ListComponent = ({
               openModifyModal={() => openModifyModal(feed.idx)}
             />
 
-            <div className="flex max-h-[800px]">
+            <div className="flex max-h-[650px]">
               <div className="w-full relative">
                 {feed.feedImages.length > 0 && (
                   <ImageComponent

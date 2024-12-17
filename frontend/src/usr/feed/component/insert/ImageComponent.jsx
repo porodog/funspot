@@ -11,6 +11,7 @@ const ImageComponent = ({ id, useFileRef }) => {
       setImageSrc(URL.createObjectURL(file));
       setShowDeleteButton(true);
     } else {
+      window.alert("[파일첨부] 이미자타입의 파일을 첨부해주세요");
       setImageSrc(initSrc);
       e.target.value = "";
       setShowDeleteButton(false);

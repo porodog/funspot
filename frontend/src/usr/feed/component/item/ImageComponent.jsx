@@ -40,7 +40,7 @@ const ImageComponent = ({ openDetailModal, feedImages }) => {
           ) : (
             <img
               src={initSrc}
-              alt="펀스팟"
+              alt="펀스팟 이미지"
               className="w-full h-full object-contain shrink-0"
             />
           )}

@@ -7,8 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { FaRegEdit, FaUser } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-//const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
-
 const ReplyListComponent = ({
   parentIdx,
   replyList,
@@ -51,7 +49,7 @@ const ReplyListComponent = ({
             <div
               className={`
               ${loginUserIdx !== "" ? "cursor-pointer" : ""}
-              w-10 h-8 rounded-full overflow-hidden border border-emerald-400 
+              w-9 h-8 rounded-full overflow-hidden border border-emerald-400 
               flex items-center justify-center`}
               onClick={() => handleProfileEvent(reply.user.userIdx)}
             >

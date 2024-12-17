@@ -14,7 +14,7 @@ const HashTagModal = ({
         setList(data);
       })
       .catch((err) => {
-        console.log("[해시태그 목록] 조회를 실패했습니다");
+        window.alert("[해시태그목록] 조회를 실패했습니다");
         console.log(err);
       });
   }, []);

@@ -4,7 +4,7 @@ const InputComponent = ({ handleCommentEvent, content }) => {
   const [commentText, setCommentText] = useState("");
   const submitComment = () => {
     if (commentText.trim().length < 1) {
-      console.log("[임시] 댓글을 입력해주세요");
+      window.alert("[피드댓글] 댓글을 입력해주세요");
       return;
     }
     handleCommentEvent(commentText);
@@ -13,6 +13,10 @@ const InputComponent = ({ handleCommentEvent, content }) => {
 
   const handleInputEvent = (e) => {
     if (e.key === "Enter") {
+      if (commentText.trim().length < 1) {
+        window.alert("[피드댓글] 댓글을 입력해주세요");
+        return;
+      }
       submitComment();
     }
   };

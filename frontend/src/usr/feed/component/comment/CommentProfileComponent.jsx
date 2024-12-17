@@ -6,8 +6,6 @@ import { API_BASE_URL } from "../../api/FeedApi";
 import { FaRegEdit, FaUser } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-//const initSrc = `${API_BASE_URL}/api/usr/feed/image/no_image.jpg`;
-
 const CommentProfileComponent = ({
   comment,
   handleReplyClick,

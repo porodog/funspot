@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useBasic } from "../../../common/context/BasicContext";
 import HashTagModal from "./HashTagModal";
 import ProfileComponent from "../component/item/ProfileComponent";
 import ContentComponent from "../component/modify/ContentComponent";
@@ -8,9 +7,6 @@ import ImageComponent from "../component/modify/ImageComponent";
 import { API_BASE_URL, putFeedModifyApi } from "../api/FeedApi";
 
 const ModifyModal = ({ feed, closeModifyModal }) => {
-  const { userInfo } = useBasic();
-  const loginUserIdx = userInfo?.userIdx || "";
-
   // 이미지
   const useFileRef = useRef([]);
   const [imgList, setImgList] = useState([]);
@@ -60,8 +56,13 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
   const handleFeedSubmit = () => {
     const content = useTextRef.current.value;
     if (content.trim().length < 1) {
-      console.log("[임시] 내용을 입력해주세요");
+      window.alert("[피드수정] 내용을 입력해주세요");
       return false;
+    }
+
+    const confirm = window.confirm("[피드수정] 저장 하시겠습니까?");
+    if (!confirm) {
+      return;
     }
 
     const form = new FormData();
@@ -91,12 +92,13 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
     putFeedModifyApi(form)
       .then((data) => {
         if (data) {
+          window.alert("[피드수정] 저장을 성공했습니다");
           closeModifyModal(data);
           return;
         }
       })
       .catch((err) => {
-        console.log("[피드수정] 등록을 실패했습니다");
+        window.alert("[피드수정] 저장을 실패했습니다");
         console.log(err);
       });
   };

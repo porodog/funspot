@@ -80,7 +80,7 @@ const ListPage = () => {
         }
       })
       .catch((error) => {
-        console.log("[피드목록] 조회를 실패했습니다");
+        window.alert("[피드목록] 조회를 실패했습니다");
         console.log(error);
       })
       .finally(() => {
@@ -90,16 +90,22 @@ const ListPage = () => {
 
   // 피드 삭제
   const handleListDeleteEvent = (idx) => {
+    const confirm = window.confirm("[피드삭제] 삭제하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     deleteFeedApi({ idx: idx })
       .then((data) => {
         if (data) {
+          window.alert("[피드삭제] 삭제를 성공했습니다");
           setFeedList((prevlist) =>
             prevlist.filter((feed) => feed.idx !== data.idx)
           );
         }
       })
       .catch((err) => {
-        console.log("[피드삭제] 삭제를 실패했습니다");
+        window.alert("[피드삭제] 삭제를 실패했습니다");
         console.log(err);
       });
   };
@@ -121,7 +127,7 @@ const ListPage = () => {
         });
       })
       .catch((err) => {
-        console.log("[피드조회] 조회를 실패했습니다");
+        window.alert("[피드조회] 조회를 실패했습니다");
         console.log(err);
       });
   };
@@ -145,7 +151,7 @@ const ListPage = () => {
         }));
       })
       .catch((err) => {
-        console.log("[좋아요] 등록을 실패했습니다");
+        window.alert("[좋아요] 변경을 실패했습니다");
         console.log(err);
       });
   };

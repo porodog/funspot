@@ -33,7 +33,7 @@ const DetailModal = ({
           setCommentList(data);
         })
         .catch((err) => {
-          console.log("[댓글목록] 조회를 실패했습니다");
+          window.alert("[댓글목록] 조회를 실패했습니다");
           console.log(err);
         });
     }
@@ -42,6 +42,11 @@ const DetailModal = ({
   // 댓글 등록
   const handleCommentEvent = useCallback(
     (content) => {
+      const confirm = window.confirm("[댓글등록] 등록 하시겠습니까?");
+      if (!confirm) {
+        return;
+      }
+
       const param = {
         feedIdx: feed.idx,
         content,
@@ -50,12 +55,13 @@ const DetailModal = ({
       postCommentApi(param)
         .then((data) => {
           if (data) {
+            window.alert("[댓글등록] 등록을 성공했습니다");
             setCommentList((prevCommentList) => [...prevCommentList, data]);
             handleCommentCountEvent({ ...data, feedIdx: feed.idx }, "new");
           }
         })
         .catch((err) => {
-          console.log("[댓글등록] 등록을 실패했습니다");
+          window.alert("[댓글등록] 등록을 실패했습니다");
           console.log(err);
         });
     },
@@ -64,9 +70,15 @@ const DetailModal = ({
 
   // 댓글 수정
   const handleCommentModifyEvent = (param) => {
+    const confirm = window.confirm("[댓글수정] 저장 하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     putCommentApi(param)
       .then((data) => {
         if (data) {
+          window.alert("[댓글수정] 저장을 성공했습니다");
           setCommentList((prevList) => {
             return prevList.map((item) => {
               if (item.idx === data.idx) {
@@ -79,17 +91,23 @@ const DetailModal = ({
         }
       })
       .catch((err) => {
-        console.log("[댓글수정] 등록을 실패했습니다");
+        window.alert("[댓글수정] 저장을 실패했습니다");
         console.log(err);
       });
   };
 
   // 댓글 삭제
   const handleCommentDeleteEvent = (idx) => {
+    const confirm = window.confirm("[댓글삭제] 삭제 하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     deleteCommentApi({ idx: idx })
       .then((data) => {
         console.log(data);
         if (data) {
+          window.alert("[댓글삭제] 삭제를 성공했습니다");
           setCommentList((prevList) =>
             prevList.map((item) => {
               if (item.idx === data.idx) {
@@ -103,7 +121,7 @@ const DetailModal = ({
         }
       })
       .catch((err) => {
-        console.log("[댓글삭제] 삭제를 실패했습니다");
+        window.alert("[댓글삭제] 삭제를 실패했습니다");
         console.log(err);
       });
   };
@@ -111,8 +129,14 @@ const DetailModal = ({
   // 답글 등록
   const handleReplyEvent = useCallback(
     (obj) => {
+      const confirm = window.confirm("[답글등록] 등록 하시겠습니까?");
+      if (!confirm) {
+        return;
+      }
+
       postReplyApi({ ...obj, feedIdx: feed.idx })
         .then((data) => {
+          window.alert("[답글등록] 등록을 성공했습니다");
           setCommentList((prevList) =>
             prevList.map((item) => {
               if (item.idx === data.parentIdx) {
@@ -130,7 +154,7 @@ const DetailModal = ({
           }
         })
         .catch((err) => {
-          console.log("[답글등록] 등록을 실패했습니다");
+          window.alert("[답글등록] 등록을 실패했습니다");
           console.log(err);
         });
     },
@@ -139,11 +163,17 @@ const DetailModal = ({
 
   // 답글 수정
   const handleReplyModifyEvent = (obj) => {
+    const confirm = window.confirm("[답글수정] 저장 하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     const param = { ...obj, feedIdx: feed.idx };
     putCommentApi(param)
       .then((data) => {
         if (data) {
           setCommentList((prevList) => {
+            window.alert("[답글수정] 저장을 성공했습니다");
             return prevList.map((comment) => {
               if (comment.idx === param.parentIdx) {
                 return {
@@ -165,18 +195,24 @@ const DetailModal = ({
         }
       })
       .catch((err) => {
-        console.log("[답글수정] 등록을 실패했습니다");
+        window.alert("[답글수정] 저장을 실패했습니다");
         console.log(err);
       });
   };
 
   // 답글 삭제
   const handleReplyDeleteEvent = (idx, parentIdx) => {
+    const confirm = window.confirm("[답글삭제] 삭제 하시겠습니까?");
+    if (!confirm) {
+      return;
+    }
+
     deleteCommentApi({ idx: idx })
       .then((data) => {
         if (data) {
           setCommentList((prevList) =>
             prevList.map((comment) => {
+              window.alert("[답글삭제] 삭제를 성공했습니다");
               if (comment.idx === parentIdx) {
                 return {
                   ...comment,
@@ -201,7 +237,7 @@ const DetailModal = ({
         }
       })
       .catch((err) => {
-        console.log("[답글삭제] 삭제를 실패했습니다");
+        window.alert("[답글삭제] 삭제를 실패했습니다");
         console.log(err);
       });
   };

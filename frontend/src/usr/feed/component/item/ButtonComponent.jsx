@@ -23,11 +23,7 @@ const ButtonComponent = ({ feed, openDetailModal, handleLikesEvent }) => {
           <div className="flex items-center space-x-1">
             <button
               className={`flex items-center rounded-full p-1 justify-center border border-transparent 
-                ${
-                  loginUserIdx
-                    ? "hover:text-emerald-500" //"hover:bg-red-100 focus:outline-none transition-all duration-200"
-                    : ""
-                }
+                ${loginUserIdx ? "hover:text-emerald-500" : ""}
                 `}
               onClick={toggleLikes}
             >
@@ -44,11 +40,7 @@ const ButtonComponent = ({ feed, openDetailModal, handleLikesEvent }) => {
           <div className="flex items-center space-x-1">
             <button
               className={`flex items-center rounded-full p-1 justify-center border border-transparent 
-                            ${
-                              openDetailModal
-                                ? "hover:text-emerald-500" //"hover:bg-red-100 focus:outline-none transition-all duration-200"
-                                : ""
-                            }`}
+                            ${openDetailModal ? "hover:text-emerald-500" : ""}`}
               onClick={openDetailModal}
             >
               <BiMessageRoundedDots size="1.8rem" />

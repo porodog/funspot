@@ -4,9 +4,11 @@ const ContentComponent = ({ feed, openDetailModal }) => {
     <>
       {/* 컨텐츠 내용 */}
       <div
-        className={`flex flex-col justify-start 
-      w-full break-words whitespace-normal space-y-6
-      ${openDetailModal ? "cursor-pointer" : ""}`}
+        className={`
+          flex flex-col justify-start 
+          w-full break-words whitespace-normal space-y-6
+          ${openDetailModal ? "cursor-pointer" : ""}
+          `}
         onClick={openDetailModal}
       >
         <span className="font-semibold text-gray-800">{content}</span>
