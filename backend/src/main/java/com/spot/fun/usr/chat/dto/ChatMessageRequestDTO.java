@@ -15,10 +15,10 @@ public class ChatMessageRequestDTO {
     private String msg;
     private Long roomId;
     private java.sql.Timestamp timestamp;
-    private Long userIdx;
+    private String userIdx;
 
     @Builder
-    public ChatMessageRequestDTO(Long fromIdx, Long toIdx, String msg, Long roomId, Long userIdx) {
+    public ChatMessageRequestDTO(Long fromIdx, Long toIdx, String msg, Long roomId, String userIdx) {
         this.fromIdx = fromIdx;
         this.toIdx = toIdx;
         this.msg = msg;

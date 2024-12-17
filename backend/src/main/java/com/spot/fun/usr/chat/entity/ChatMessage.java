@@ -28,7 +28,7 @@ public class ChatMessage {
     @Column(name = "msg", updatable = false, nullable = false)
     private String msg;
 
-    @Column(name = "room_id", unique = true, updatable = false, nullable = false)
+    @Column(name = "room_id", updatable = false, nullable = false)
     private Long roomId;
 
     @Column(name = "timestamp", updatable = false, nullable = false)

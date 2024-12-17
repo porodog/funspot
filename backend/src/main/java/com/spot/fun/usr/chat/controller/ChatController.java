@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -45,12 +46,27 @@ public class ChatController {
         );
     }
 
+    // Principal을 통해 사용자 정보를 얻도록 수정
     @MessageMapping("msg/{roomId}/{otherRoomId}")
+//    @SendTo("/sub/user/{roomId}")
+//    @SendToUser("/sub/other/{otherRoomId}")
     @SendTo({"/sub/user/{roomId}", "/sub/other/{otherRoomId}"})
     public ChatMessage handleChatMessage(@DestinationVariable("roomId") Long roomId,
                                          @DestinationVariable("otherRoomId") Long otherRoomId,
-                                         @RequestBody ChatMessageRequestDTO messageRequest) {
+                                         @RequestBody ChatMessageRequestDTO messageRequest,
+                                         Principal principal) {
+        log.info("Message content: " + messageRequest.getMsg());
+        messageRequest.setUserIdx(principal.getName());
         log.info("handleChatMessage : {}", messageRequest);
         return chatFacadeService.saveChatMessage(roomId, otherRoomId, messageRequest);
     }
+
+//    @MessageMapping("msg/{roomId}/{otherRoomId}")
+//    @SendTo({"/sub/user/{roomId}", "/sub/other/{otherRoomId}"})
+//    public ChatMessage handleChatMessage(@DestinationVariable("roomId") Long roomId,
+//                                         @DestinationVariable("otherRoomId") Long otherRoomId,
+//                                         @RequestBody ChatMessageRequestDTO messageRequest) {
+//        log.info("handleChatMessage : {}", messageRequest);
+//        return chatFacadeService.saveChatMessage(roomId, otherRoomId, messageRequest);
+//    }
 }

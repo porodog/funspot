@@ -49,22 +49,33 @@ const ChatRoomPage = () => {
                 setMessages(Object.values(chatIdChatMessageDTOMap));
 
                 // WebSocket 연결 설정
-                chatApi.connectWebSocket(userRoomId, otherRoomId, (receivedMessage) => {
-                    setMessages(prev => [...prev, receivedMessage]);
-                });
+                // WebSocket 연결 시 userInfo 전달
+                chatApi.connectWebSocket(
+                    userRoomId,
+                    otherRoomId,
+                    userInfo?.userIdx,  // userInfo 전달
+                    (receivedMessage) => {
+                        setMessages(prev => [...prev, receivedMessage]);
+                    }
+                );
+                // chatApi.connectWebSocket(userRoomId, otherRoomId, (receivedMessage) => {
+                //     setMessages(prev => [...prev, receivedMessage]);
+                // });
             } catch (error) {
                 console.error('채팅방 초기화 실패:', error);
             }
         };
-        initializeChat();
+        if(userInfo){
+            initializeChat();
+        }
 
         // 컴포넌트 언마운트 시 WebSocket 연결 종료
         return () => chatApi.disconnect();
     }, [otherIdx, userInfo]);
 
     const handleSendMessage = () => {
-        if (newMessage.trim() && roomInfo) {
-            chatApi.sendMessage(roomInfo.userRoomId, roomInfo.otherRoomId, newMessage);
+        if (newMessage.trim() && roomInfo && userInfo) {
+            chatApi.sendMessage(userInfo.userIdx, otherIdx, newMessage, roomInfo.userRoomId, roomInfo.otherRoomId, userInfo.userIdx);
             setNewMessage('');
         }
     };
@@ -82,11 +93,11 @@ const ChatRoomPage = () => {
                 {messages.map((message, index) => (
                     <div
                         key={index}
-                        className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${message.isMine ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
                             className={`max-w-[70%] p-3 rounded-lg ${
-                                message.isUser
+                                message.isMine
                                     ? 'bg-blue-500 text-white'
                                     : 'bg-gray-200 text-gray-900'
                             }`}

@@ -16,9 +16,9 @@ public class ChatMessageService implements ChatService{
     private final ChatMessageRepository chatMessageRepository;
 
     // 채팅 메시지 저장 - 하나의 메시지만 저장
-    public ChatMessage save(ChatMessage chatMessage) {
-        return chatMessageRepository.save(chatMessage);
-    }
+//    public ChatMessage save(ChatMessage chatMessage) {
+//        return chatMessageRepository.save(chatMessage);
+//    }
 
     public ChatRoomListResponseDTO setChatRoomListResponseDTO(Long roomId) {
         ChatMessage recentChatMessage = chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
@@ -67,20 +67,26 @@ public class ChatMessageService implements ChatService{
         return userMessage;
     }
 
-    public ChatMessageDTO setChatMessageDTO(Long userIdx, ChatMessage chatMessage) {
-        if(Objects.equals(userIdx,chatMessage.getFromIdx())) {
-            return ChatMessageUserDTO.builder()
-                    .msg(chatMessage.getMsg())
-                    .timestamp(chatMessage.getTimestamp())
-                    .build();
-        }
-        if(Objects.equals(userIdx,chatMessage.getToIdx())) {
-            return ChatMessageOtherDTO.builder()
-                    .msg(chatMessage.getMsg())
-                    .timestamp(chatMessage.getTimestamp())
-                    .build();
-        }
-        return null;
+    // return 타입을 ChatMessageResponseDTO로 통일
+    public ChatMessageResponseDTO setChatMessageDTO(Long userIdx, ChatMessage chatMessage) {
+        return ChatMessageResponseDTO.builder()
+                .isMine(Objects.equals(chatMessage.getFromIdx(), userIdx))
+                .msg(chatMessage.getMsg())
+                .timestamp(chatMessage.getTimestamp())
+                .build();
+//        if(Objects.equals(userIdx,chatMessage.getFromIdx())) {
+//            return ChatMessageUserDTO.builder()
+//                    .msg(chatMessage.getMsg())
+//                    .timestamp(chatMessage.getTimestamp())
+//                    .build();
+//        }
+//        if(Objects.equals(userIdx,chatMessage.getToIdx())) {
+//            return ChatMessageOtherDTO.builder()
+//                    .msg(chatMessage.getMsg())
+//                    .timestamp(chatMessage.getTimestamp())
+//                    .build();
+//        }
+//        return null;
     }
 
 }

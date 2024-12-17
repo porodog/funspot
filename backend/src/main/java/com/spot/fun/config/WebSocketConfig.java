@@ -51,91 +51,28 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     registry.enableSimpleBroker("/sub/user", "/sub/other");   // 메시지를 구독(수신)하는 요청 엔드포인트
     registry.setApplicationDestinationPrefixes("/pub");   // 메시지를 발행(송신)하는 엔드포인트
   }
-//  @Override
-//  public void configureClientInboundChannel(ChannelRegistration registration) {
-//    registration.interceptors(new ChannelInterceptor() {
-//
-//    })
-//  }
+
   @Override
-  public void configureClientInboundChannel(ChannelRegistration registration) {}
-//  @Override
-//  public void configureClientInbound(ChannelRegistration registration) {
-//    registration.interceptors(new ChannelInterceptor() {
-//      @Override
-//      public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
-//                message, StompHeaderAccessor.class);
-//
-//        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-//          String userIdx = accessor.getFirstNativeHeader("userIdx");
-//          if (userIdx != null) {
-//            accessor.setUser(new Principal() {
-//              @Override
-//              public String getName() {
-//                return userIdx;
-//              }
-//            });
-//          }
-//        }
-//        return message;
-//      }
-//    });
-//  }
+  public void configureClientInboundChannel(ChannelRegistration registration) {
+    registration.interceptors(new ChannelInterceptor() {
+      @Override
+      public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
+                message, StompHeaderAccessor.class);
 
-//  @Override
-//  public void configureClientInbound(ClientInboundChannel channel) {
-//    channel.addInterceptor(new ChannelInterceptor() {
-//      @Override
-//      public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
-//                message, StompHeaderAccessor.class);
-//
-//        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-//          // 연결 시 사용자 정보 검증 및 저장
-//          String userIdx = accessor.getFirstNativeHeader("userIdx");
-//          if (userIdx != null) {
-//            accessor.setUser(new Principal() {
-//              @Override
-//              public String getName() {
-//                return userIdx;
-//              }
-//            });
-//          }
-//        }
-//        return message;
-//      }
-//    });
-//  }
-
-
-//  @Override
-//  public void configureClientInbound(MessageSecurityMetadataSourceRegistry messages) {
-//    messages
-//            .simpDestMatchers("/pub/**").authenticated()
-//            .anyMessage().authenticated();
-//  }
-//
-//  @Override
-//  public void configureClientInbound(ClientInboundChannelInterceptor registry) {
-//    registry.addInterceptor(new ChannelInterceptor() {
-//      @Override
-//      public Message<?> preSend(Message<?> message, MessageChannel channel) {
-//        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
-//                message, StompHeaderAccessor.class);
-//
-//        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-//          // 연결 시 사용자 정보 검증 및 저장
-//          String userIdx = accessor.getFirstNativeHeader("userIdx");
-//          accessor.setUser(new Principal() {
-//            @Override
-//            public String getName() {
-//              return userIdx;
-//            }
-//          });
-//        }
-//        return message;
-//      }
-//    });
-//  }
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+          String userIdx = accessor.getFirstNativeHeader("userIdx");
+          if (userIdx != null) {
+            accessor.setUser(new Principal() {
+              @Override
+              public String getName() {
+                return userIdx;
+              }
+            });
+          }
+        }
+        return message;
+      }
+    });
+  }
 }

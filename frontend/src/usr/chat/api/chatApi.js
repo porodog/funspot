@@ -17,8 +17,8 @@ const defaultConfig = {
 };
 
 export const chatApi = {
-    connectWebSocket: (userRoomId, otherRoomId, onMessageReceived) => {
-        const userInfo = useBasic();
+    connectWebSocket: (userRoomId, otherRoomId, userIdx, onMessageReceived) => {
+        // const userInfo = useBasic();
         // 기존 stompClient 연결 해제
         if (stompClient) {
             chatApi.disconnect();
@@ -27,7 +27,7 @@ export const chatApi = {
         stompClient = new Client({
             webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
             connectHeaders: {
-                userIdx: userInfo.userId
+                userIdx: userIdx?.toString()
             },
             debug: function (str) {
                 console.log('STOMP: ' + str);
@@ -119,16 +119,18 @@ export const chatApi = {
         // return await axios.get(`${API_BASE_URL}/api/chat/${otherIdx}`, defaultConfig);
     },
 
-    sendMessage: (roomId, otherRoomId, message) => {
+    sendMessage: (fromIdx, toIdx, message, roomId, otherRoomId, userIdx) => {
         if (stompClient && stompClient.connected) {
             stompClient.publish({
-                destination: `/pub/msg/${roomId}/${otherRoomId}`
-                ,
+                destination: `/pub/msg/${roomId}/${otherRoomId}`,
                 body: JSON.stringify({
+                    fromIdx: userIdx,
+                    toIdx: toIdx,
+                    msg: message,
                     roomId,
                     otherRoomId,
-                    msg: message,
-                    userIdx: userInfo.userIdx,
+                    userIdx: userIdx?.toString(),
+                    timestamp: Date.now(),
                 })
             });
             console.log("sendMessage : roomId-" + roomId + " otherRoomId-" + otherRoomId + " message-" + message);
