@@ -210,9 +210,9 @@ const DetailModal = ({
     deleteCommentApi({ idx: idx })
       .then((data) => {
         if (data) {
+          window.alert("[답글삭제] 삭제를 성공했습니다");
           setCommentList((prevList) =>
             prevList.map((comment) => {
-              window.alert("[답글삭제] 삭제를 성공했습니다");
               if (comment.idx === parentIdx) {
                 return {
                   ...comment,

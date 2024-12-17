@@ -23,7 +23,7 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
       setImageSrc(URL.createObjectURL(file));
       setShowDeleteButton(true);
     } else {
-      window.alert("[프로필이미지] 이미자타입의 파일을 첨부해주세요");
+      window.alert("[파일첨부] 이미자타입의 파일을 첨부해주세요");
       setImageSrc(initSrc);
       e.target.value = "";
       setShowDeleteButton(false);
@@ -48,13 +48,13 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     const originNickname = useOriginNicknameRef.current;
 
     if (originNickname === nickname) {
-      window.alert("[중복확인] 이전닉네임과 동일합니다");
+      window.alert("[닉네임] 이전닉네임과 동일합니다");
       setDuplicate(true);
       return;
     }
 
     if (!nickname.match(/^[a-zA-Z0-9가-힣]{4,12}$/)) {
-      window.alert("[중복확인] 한글,영문,숫자만 입력해주세요");
+      window.alert("[닉네임] 한글,영문,숫자만 입력해주세요");
       setDuplicate(false);
       return;
     }
@@ -62,10 +62,10 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     try {
       const data = await getNicknameDuplicateApi({ nickname });
       if (data.duplicate) {
-        window.alert("[중복확인] 사용가능합니다");
+        window.alert("[닉네임] 사용 가능합니다");
         setDuplicate(true);
       } else {
-        window.alert("[중복확인] 사용할 수 없습니다");
+        window.alert("[닉네임] 사용할 수 없습니다");
         setDuplicate(false);
       }
     } catch (err) {
@@ -84,7 +84,7 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
       return;
     }
 
-    const confirm = window.confirm("[프로필] 저장하시겠습니까?");
+    const confirm = window.confirm("[프로필] 저장 하시겠습니까?");
     if (!confirm) {
       return;
     }
@@ -103,11 +103,11 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
     try {
       const data = await putProfileApi(form);
       if (data) {
-        window.alert("[프로필] 수정을 완료했습니다");
+        window.alert("[프로필] 저장을 성공했습니다");
         window.location.reload();
       }
     } catch (err) {
-      window.alert("[프로필] 수정을 실패했습니다");
+      window.alert("[프로필] 저장을 실패했습니다");
       console.log(err);
     }
   };
@@ -145,7 +145,7 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
         </div>
 
         <div className="flex justify-start w-full h-auto space-x-10 px-6 pb-10">
-          <div className="w-1/3 h-auto">
+          <div className="w-1/3 h-auto space-y-2 flex flex-col items-center align-middle justify-center">
             {/* 프로필 이미지 */}
             <ImageComponent
               imageSrc={imageSrc}

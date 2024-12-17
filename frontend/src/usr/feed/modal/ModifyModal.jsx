@@ -136,7 +136,7 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
               text-white font-semibold text-sm rounded-full
               hover:bg-emerald-500"
             >
-              등록
+              저장
             </button>
           </div>
         </div>

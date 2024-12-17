@@ -9,6 +9,7 @@ import {
 } from "../../../feed/api/FeedApi";
 import ModifyModal from "../../../feed/modal/ModifyModal";
 import ImageComponent from "./ImageComponent";
+import { BiMessageAltDots } from "react-icons/bi";
 
 const ListComponent = () => {
   const { handleFeedCountEvent } = useOutletContext();
@@ -205,18 +206,30 @@ const ListComponent = () => {
 
   return (
     <>
-      <div className="w-full grid grid-cols-3 gap-3 mx-auto">
-        {/* 게시물 카드 */}
-        {feedList.map((feed) => (
-          <ImageComponent
-            key={feed.idx}
-            feed={feed}
-            openDetailModal={openDetailModal}
-            openModifyModal={openModifyModal}
-            handleListDeleteEvent={handleListDeleteEvent}
-          />
-        ))}
-      </div>
+      {/* 게시물 카드 */}
+      {(feedList ?? []).length > 0 ? (
+        <div className="w-full grid grid-cols-3 gap-3 mx-auto">
+          {feedList.map((feed) => (
+            <ImageComponent
+              key={feed.idx}
+              feed={feed}
+              openDetailModal={openDetailModal}
+              openModifyModal={openModifyModal}
+              handleListDeleteEvent={handleListDeleteEvent}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="w-full h-full 
+          my-10 py-10
+        flex flex-col justify-center items-center 
+        text-gray-600 space-y-4 "
+        >
+          <BiMessageAltDots className="text-4xl" />
+          <span className="font-semibold text-xl">등록된 피드 없습니다</span>
+        </div>
+      )}
 
       {(selectedFeed.idx ?? null) && isDetailModalOpen && (
         <DetailModal

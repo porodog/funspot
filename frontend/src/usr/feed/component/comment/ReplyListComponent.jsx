@@ -49,7 +49,7 @@ const ReplyListComponent = ({
             <div
               className={`
               ${loginUserIdx !== "" ? "cursor-pointer" : ""}
-              w-9 h-8 rounded-full overflow-hidden border border-emerald-400 
+              w-10 h-8 rounded-full overflow-hidden border border-emerald-400 
               flex items-center justify-center`}
               onClick={() => handleProfileEvent(reply.user.userIdx)}
             >

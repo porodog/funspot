@@ -18,7 +18,7 @@ const ImageComponent = ({
   return (
     <div
       key={feed.idx}
-      className="relative w-full h-80 group 
+      className="relative w-full max-h-80 group 
             bg-gray-50
             transition-shadow duration-300"
     >

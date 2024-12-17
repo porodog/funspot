@@ -64,8 +64,8 @@ const IndexPage = () => {
   const handleFollowClickEvent = async () => {
     const confirm = window.confirm(
       followStatus
-        ? "[팔로우상태] 해제 하시겠습니까?"
-        : "[팔로우상태] 팔로우 하시겠습니까?"
+        ? "[팔로우] 해제 하시겠습니까?"
+        : "[팔로우] 팔로우 하시겠습니까?"
     );
     if (!confirm) {
       return;
