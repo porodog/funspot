@@ -137,7 +137,7 @@ const UpdateComponent = () => {
       {currentStep === 1 && (
         <div>
           <h1 class="text-4xl font-bold text-center">데이트 코스 수정하기</h1>
-
+          <button onClick={handleNextStep}>다음 단계로</button>
           <div className="mb-6">
             {/* 제목 */}
             <h3 className="text-xl font-bold mb-2">장소를 선택해주세요</h3>
@@ -222,8 +222,6 @@ const UpdateComponent = () => {
               </div>
             </div>
           )}
-
-          <button onClick={handleNextStep}>다음 단계로</button>
         </div>
       )}
 
