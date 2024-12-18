@@ -202,6 +202,14 @@ const ReadComponent = () => {
         }}
       />
       <h1 className="text-2xl font-bold mb-2">{custom.title}</h1>
+      <button
+        onClick={handleWishListToggle}
+        className={`px-4 py-2 text-white rounded ${
+          isWishList ? "bg-red-500" : "bg-blue-500"
+        }`}
+      >
+        {isWishList ? "찜 취소" : "찜하기"}
+      </button>
       <div className="flex space-x-2 mb-4">
         {custom.tags.map((tag) => (
           <span class="px-4 py-1 text-sm font-semibold text-custom-cyan border border-custom-cyan rounded-full">
@@ -210,14 +218,6 @@ const ReadComponent = () => {
         ))}
         <button onClick={() => navigate(`/custom/update/${cno}`)}>수정</button>
         <button onClick={handleDelete}>삭제</button>
-        <button
-          onClick={handleWishListToggle}
-          className={`px-4 py-2 text-white rounded ${
-            isWishList ? "bg-red-500" : "bg-blue-500"
-          }`}
-        >
-          {isWishList ? "찜 취소" : "찜하기"}
-        </button>
       </div>
       <div className="container mx-auto px-4">
         {/* 카드 그리드 */}
