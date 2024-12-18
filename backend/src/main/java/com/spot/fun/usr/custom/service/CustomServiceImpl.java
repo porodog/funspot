@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.spot.fun.usr.custom.repository.WishListRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class CustomServiceImpl implements CustomService {
     private final ModelMapper modelMapper;
     private final CustomRepository customRepository;
+    private final WishListRepository wishListRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -65,7 +67,7 @@ public class CustomServiceImpl implements CustomService {
     
 
 @Override
-public CustomDTO get(Long cno) {
+public CustomDTO get(Long cno, Long userIdx) {
     Custom custom = customRepository.findById(cno)
         .orElseThrow(() -> new RuntimeException("Custom not found for cno: " + cno));
 
@@ -77,14 +79,17 @@ public CustomDTO get(Long cno) {
         .map(customPlace -> modelMapper.map(customPlace.getPlace(), PlaceDTO.class)) // 🔥 CustomPlace의 Place만 매핑
         .collect(Collectors.toList());
 
+   boolean isWishList = wishListRepository.existsByUserIdxAndCustomCno(userIdx, cno);
+
     customDTO.setPlaces(placeDTOs);
     customDTO.setTags(custom.getTagList()); // 🔥 태그 매핑 추가
+    customDTO.setWishList(isWishList);
 
     return customDTO;
 }
 
     @Override
-    public List<CustomDTO> list() {
+    public List<CustomDTO> list(Long userIdx) {
     List<Custom> customList = customRepository.findAll();
     
     return customList.stream().map(custom -> {
@@ -97,9 +102,12 @@ public CustomDTO get(Long cno) {
             .map(customPlace -> modelMapper.map(customPlace.getPlace(), PlaceDTO.class)) // 🔥 CustomPlace의 Place만 매핑
             .collect(Collectors.toList());
 
+        boolean isWishList = wishListRepository.existsByUserIdxAndCustomCno(userIdx, custom.getCno());
+
         // 3️⃣ CustomDTO에 places 설정
         customDTO.setPlaces(placeDTOs);
         customDTO.setTags(custom.getTagList());
+        customDTO.setWishList(isWishList);
         return customDTO;
     }).collect(Collectors.toList());
 }

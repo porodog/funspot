@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCustomDetail, deleteCustom } from "../api/CustomApi";
 import { addWishList, removeWishList } from "../api/WishListApi";
+import { useBasic } from "../../../common/context/BasicContext";
 import user from "../img/user.png";
 import vector from "../img/Vector.png";
 import locate from "../img/locate.png";
@@ -18,14 +19,15 @@ const ReadComponent = () => {
   const [custom, setCustom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isWishList, setIsWishList] = useState(false);
+
+  const { userInfo } = useBasic();
+  const loginUserIdx = userInfo?.userIdx || "";
 
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const data = await getCustomDetail(cno);
+        const data = await getCustomDetail(cno, loginUserIdx);
         setCustom(data);
-        setIsWishList(data.isWishList);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,7 +36,7 @@ const ReadComponent = () => {
     };
 
     fetchDetail();
-  }, [cno]);
+  }, [cno, loginUserIdx]);
 
   useEffect(() => {
     if (!mapElement.current || !custom || custom.places.length === 0) return;
@@ -170,24 +172,36 @@ const ReadComponent = () => {
     }
   };
 
+  // 🔥 찜하기 / 찜 취소 토글 함수
   const handleWishListToggle = async () => {
     try {
-      if (isWishList) {
-        await removeWishList(1, cno); // 유저 ID를 1로 설정
+      const updatedWishListStatus = !custom.wishList; // 🔥 변경된 상태
+      setCustom((prevCustom) => ({
+        ...prevCustom,
+        wishList: updatedWishListStatus,
+      }));
+
+      if (custom.wishList) {
+        await removeWishList(loginUserIdx, cno);
         alert("찜이 취소되었습니다.");
       } else {
-        await addWishList(1, cno); // 유저 ID를 1로 설정
+        await addWishList(loginUserIdx, cno);
         alert("찜에 추가되었습니다.");
       }
-      setIsWishList(!isWishList);
     } catch (error) {
       console.error("Error toggling favorite:", error);
+      setCustom((prevCustom) => ({
+        ...prevCustom,
+        wishList: !prevCustom.wishList,
+      })); // 🔥 실패하면 상태를 되돌림
     }
   };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!custom) return <div>No detail found.</div>;
+
+  console.log(custom.wishList);
 
   return (
     <div>
@@ -205,11 +219,12 @@ const ReadComponent = () => {
       <button
         onClick={handleWishListToggle}
         className={`px-4 py-2 text-white rounded ${
-          isWishList ? "bg-red-500" : "bg-blue-500"
+          custom.wishList ? "bg-red-500" : "bg-blue-500"
         }`}
       >
-        {isWishList ? "찜 취소" : "찜하기"}
+        {custom.wishList ? "찜 취소" : "찜하기"}
       </button>
+
       <div className="flex space-x-2 mb-4">
         {custom.tags.map((tag) => (
           <span class="px-4 py-1 text-sm font-semibold text-custom-cyan border border-custom-cyan rounded-full">

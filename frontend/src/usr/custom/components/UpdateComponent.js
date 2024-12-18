@@ -84,17 +84,16 @@ const UpdateComponent = () => {
   };
 
   // 장소 선택
-  const togglePlaceSelection = (place) => {
-    const alreadySelected = selectedPlaces.find((p) => p.id === place.id);
-    if (alreadySelected) {
-      setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id));
-    } else {
-      if (selectedPlaces.length >= 5) {
-        alert("5개까지만 선택이 가능합니다.");
-        return;
-      }
-      setSelectedPlaces([...selectedPlaces, place]);
-    }
+  // 장소 추가
+  const handleAddPlace = (place) => {
+    setSelectedPlaces([...selectedPlaces, place]); // 선택된 장소에 추가
+    setPlaces(places.filter((p) => p.id !== place.id)); // 장소 목록에서 제거
+  };
+
+  // 장소 삭제
+  const handleRemovePlace = (place) => {
+    setPlaces([...places, place]); // 장소 목록에 다시 추가
+    setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id)); // 선택된 장소에서 제거
   };
 
   // 태그 선택/해제 핸들러
@@ -171,15 +170,27 @@ const UpdateComponent = () => {
               <h3 className="text-xl font-bold mb-4">선택된 장소</h3>
               <div className="flex gap-4 list-none p-0">
                 {selectedPlaces.map((place) => (
-                  <div key={place.id} className="flex flex-col items-center">
+                  <div
+                    key={place.id}
+                    className="relative flex flex-col items-center w-24"
+                  >
+                    {/* X 버튼 */}
+                    <button
+                      onClick={() => handleRemovePlace(place)}
+                      className="absolute top-0 right-0 w-6 h-6 flex items-center justify-center bg-white text-gray-700 rounded-full shadow-md"
+                    >
+                      &times; {/* X 문자 */}
+                    </button>
+
                     {/* 원형 이미지 */}
                     <img
                       src={user}
                       alt={place.name}
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-md"
                     />
+
                     {/* 장소 이름 */}
-                    <p className="text-sm text-gray-800 font-medium mt-2 text-center">
+                    <p className="text-sm text-gray-800 font-medium mt-2 text-center truncate w-full">
                       {place.name}
                     </p>
                   </div>
@@ -205,16 +216,10 @@ const UpdateComponent = () => {
                         {place.name}
                       </h3>
                       <button
-                        className={`w-full py-2 rounded-md text-sm font-bold ${
-                          selectedPlaces.find((p) => p.id === place.id)
-                            ? "bg-red-500 text-white"
-                            : "bg-custom-cyan text-white"
-                        }`}
-                        onClick={() => togglePlaceSelection(place)}
+                        onClick={() => handleAddPlace(place)}
+                        className="w-full py-2 rounded-md text-sm font-bold bg-custom-cyan text-white hover:bg-custom-cyan/80 transition"
                       >
-                        {selectedPlaces.find((p) => p.id === place.id)
-                          ? "취소"
-                          : "코스에 추가하기"}
+                        코스에 추가하기
                       </button>
                     </div>
                   </div>
