@@ -10,12 +10,12 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class ChatMessageResponseDTO{
-  private boolean isMine;
+  private Long fromIdx;
   private String msg;
   private java.sql.Timestamp timestamp;
 
-  public ChatMessageResponseDTO(boolean isMine, String msg, java.sql.Timestamp timestamp) {
-    this.isMine = isMine;
+  public ChatMessageResponseDTO(Long fromIdx, String msg, java.sql.Timestamp timestamp) {
+    this.fromIdx = fromIdx;
     this.msg = msg;
     this.timestamp = timestamp;
   }

@@ -1,16 +1,15 @@
 package com.spot.fun.usr.chat.controller;
 
 import com.spot.fun.usr.chat.dto.ChatMessageRequestDTO;
+import com.spot.fun.usr.chat.dto.ChatMessageResponseDTO;
 import com.spot.fun.usr.chat.dto.ChatRoomListResponseDTO;
 import com.spot.fun.usr.chat.dto.RoomIdPairDTO;
-import com.spot.fun.usr.chat.entity.ChatMessage;
 import com.spot.fun.usr.chat.service.ChatFacadeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -23,20 +22,17 @@ import java.util.Map;
 @RequestMapping("/api/chat")
 public class ChatController {
     private final ChatFacadeService chatFacadeService;
+    private final SimpMessageSendingOperations messagingTemplate;  // 생성자 주입으로 변경
 
     @GetMapping("/")    //채팅방 리스트
     public List<ChatRoomListResponseDTO> getChatRoomList() {
-        log.info("getChatRoomList");
         return chatFacadeService.getChatRoomList();
-//    public Map<String, Object> getChatRoomList() {
-//        return Map.of("chatRoomList", chatFacadeService.getChatRoomList());
     }
 
     @GetMapping("/{otherIdx}")
     public Map<String, Object> getChatListOfOtherIdx(@PathVariable("otherIdx") Long otherIdx) {
         // 채팅방 조회 또는 생성 후, 두 개의 roomId 모두 반환
         RoomIdPairDTO roomIds = chatFacadeService.getOrCreateChatRooms(otherIdx);
-        log.info("getChatListOfOtherIdx : " + otherIdx);
 
         return Map.of(
                 "userRoomId", roomIds.getUserRoomId(),      // 내 채팅방 ID
@@ -48,25 +44,16 @@ public class ChatController {
 
     // Principal을 통해 사용자 정보를 얻도록 수정
     @MessageMapping("msg/{roomId}/{otherRoomId}")
-//    @SendTo("/sub/user/{roomId}")
-//    @SendToUser("/sub/other/{otherRoomId}")
-    @SendTo({"/sub/user/{roomId}", "/sub/other/{otherRoomId}"})
-    public ChatMessage handleChatMessage(@DestinationVariable("roomId") Long roomId,
+    public void handleChatMessage(@DestinationVariable("roomId") Long roomId,
                                          @DestinationVariable("otherRoomId") Long otherRoomId,
-                                         @RequestBody ChatMessageRequestDTO messageRequest,
+                                         @RequestBody ChatMessageRequestDTO chatMessageRequestDTO,
                                          Principal principal) {
-        log.info("Message content: " + messageRequest.getMsg());
-        messageRequest.setUserIdx(principal.getName());
-        log.info("handleChatMessage : {}", messageRequest);
-        return chatFacadeService.saveChatMessage(roomId, otherRoomId, messageRequest);
-    }
+        chatMessageRequestDTO.setUserIdx(principal.getName());
 
-//    @MessageMapping("msg/{roomId}/{otherRoomId}")
-//    @SendTo({"/sub/user/{roomId}", "/sub/other/{otherRoomId}"})
-//    public ChatMessage handleChatMessage(@DestinationVariable("roomId") Long roomId,
-//                                         @DestinationVariable("otherRoomId") Long otherRoomId,
-//                                         @RequestBody ChatMessageRequestDTO messageRequest) {
-//        log.info("handleChatMessage : {}", messageRequest);
-//        return chatFacadeService.saveChatMessage(roomId, otherRoomId, messageRequest);
-//    }
+        // 메시지 저장
+        ChatMessageResponseDTO chatMessageResponseDTO = chatFacadeService.saveChatMessage(roomId, otherRoomId, chatMessageRequestDTO);
+
+        // 발신자 채널로만 메시지 전송
+        messagingTemplate.convertAndSend("/sub/roomId/" + roomId, chatMessageResponseDTO);
+    }
 }

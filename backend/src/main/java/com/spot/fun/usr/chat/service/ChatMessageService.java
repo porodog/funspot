@@ -12,17 +12,12 @@ import java.util.Objects;
 // 채팅방 메시지 저장하는 로직
 @Service
 @RequiredArgsConstructor
-public class ChatMessageService implements ChatService{
+public class ChatMessageService{
     private final ChatMessageRepository chatMessageRepository;
-
-    // 채팅 메시지 저장 - 하나의 메시지만 저장
-//    public ChatMessage save(ChatMessage chatMessage) {
-//        return chatMessageRepository.save(chatMessage);
-//    }
 
     public ChatRoomListResponseDTO setChatRoomListResponseDTO(Long roomId) {
         ChatMessage recentChatMessage = chatMessageRepository.findTopByRoomIdOrderByTimestampDesc(roomId);
-        System.out.println("setChatRoomListResponseDTO recentChatMessage: " + recentChatMessage);
+//        System.out.println("setChatRoomListResponseDTO recentChatMessage: " + recentChatMessage);
         if(Objects.isNull(recentChatMessage)) {
             return ChatRoomListResponseDTO.builder()
                     .roomId(roomId)
@@ -68,25 +63,11 @@ public class ChatMessageService implements ChatService{
     }
 
     // return 타입을 ChatMessageResponseDTO로 통일
-    public ChatMessageResponseDTO setChatMessageDTO(Long userIdx, ChatMessage chatMessage) {
+    public ChatMessageResponseDTO toChatMessageResponseDTO(ChatMessage chatMessage) {
         return ChatMessageResponseDTO.builder()
-                .isMine(Objects.equals(chatMessage.getFromIdx(), userIdx))
+                .fromIdx(chatMessage.getFromIdx())
                 .msg(chatMessage.getMsg())
                 .timestamp(chatMessage.getTimestamp())
                 .build();
-//        if(Objects.equals(userIdx,chatMessage.getFromIdx())) {
-//            return ChatMessageUserDTO.builder()
-//                    .msg(chatMessage.getMsg())
-//                    .timestamp(chatMessage.getTimestamp())
-//                    .build();
-//        }
-//        if(Objects.equals(userIdx,chatMessage.getToIdx())) {
-//            return ChatMessageOtherDTO.builder()
-//                    .msg(chatMessage.getMsg())
-//                    .timestamp(chatMessage.getTimestamp())
-//                    .build();
-//        }
-//        return null;
     }
-
 }
