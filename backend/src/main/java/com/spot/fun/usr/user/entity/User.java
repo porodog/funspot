@@ -116,6 +116,17 @@ public class User implements UserDetails {
         return userId;
     }
 
+    public void updatePhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void updateAddress(String zonecode, String address, String detaileAdd) {
+        this.zonecode = zonecode;
+        this.address = address;
+        this.detaileAdd = detaileAdd;
+    }
+
+
     public UserDTO toDTO() {
         return UserDTO.builder()
                 .idx(idx)
@@ -127,8 +138,5 @@ public class User implements UserDetails {
                 .build();
     }
 
-    public boolean isNewUser() {
-        return this.provider == null || this.provider.isEmpty();
-    }
 
 }

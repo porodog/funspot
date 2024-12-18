@@ -7,4 +7,7 @@ public interface UserService {
     UserDTO findByUserId(String userId);
     String findUserIdByDetails(String name, String birthDate, String email);
     void updatePassword(String userId, String email, String newPassword);
+    boolean checkPassword(String userId, String rawPassword);
+    void validateAndUpdateUserProfile(String userId, UserDTO userDTO);
+    UserDTO findUserProfile(String userId);
 }

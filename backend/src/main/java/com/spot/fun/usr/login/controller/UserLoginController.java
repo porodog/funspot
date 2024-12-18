@@ -80,6 +80,7 @@ public class UserLoginController {
       responseBody.put("userIdx", loginUserDTO.getIdx());
       responseBody.put("nickname", loginUserDTO.getNickname());
 
+
       return ResponseEntity.ok(responseBody);
     } catch (Exception e) {
       log.error("tokenCheck Error: {}", e.getMessage());
