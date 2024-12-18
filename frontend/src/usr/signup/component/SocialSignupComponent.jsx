@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { postSocialSignupApi, checkDuplicateApi } from "../api/SignupApi";
 import { useNavigate } from "react-router-dom";
 import AddressModal from "../../../common/signupmodal/AddressModal";
@@ -33,6 +33,14 @@ const SocialSignupComponent = () => {
   // 오늘 날짜를 "YYYY-MM-DD" 형식으로 계산
   const today = new Date();
   const formattedToday = today.toISOString().split("T")[0];
+
+  const userIdRef = useRef(null);
+  const nameRef = useRef(null);
+  const birthDateRef = useRef(null);
+  const nicknameRef = useRef(null);
+  const phoneRef = useRef(null);
+  const addressRef = useRef(null);
+  const zonecodeRef = useRef(null);
 
   // 세션 데이터 가져오기
   useEffect(() => {
@@ -198,21 +206,89 @@ const SocialSignupComponent = () => {
       return;
     }
 
+    // 유효성 검사
+    if (!formData.userId) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "아이디를 입력해주세요.",
+      });
+      userIdRef.current.focus(); // 아이디 필드에 포커스
+      return;
+    }
+
+    if (!formData.name) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "이름을 입력해주세요.",
+      });
+      nameRef.current.focus(); // 이름 필드에 포커스
+      return;
+    }
+
+    if (!formData.birthDate) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "생년월일을 입력해주세요.",
+      });
+      birthDateRef.current.focus(); // 생년월일 필드에 포커스
+      return;
+    }
+
+    if (!formData.nickname) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "닉네임을 입력해주세요.",
+      });
+      nicknameRef.current.focus(); // 닉네임 필드에 포커스
+      return;
+    }
+
+    if (!formData.phone) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "핸드폰 번호를 입력해주세요.",
+      });
+      phoneRef.current.focus(); // 핸드폰 필드에 포커스
+      return;
+    }
+
+    if (!formData.zonecode) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "우편번호를 입력해주세요.",
+      });
+      zonecodeRef.current.focus(); // 우편번호 필드에 포커스
+      return;
+    }
+
+    if (!formData.address) {
+      setAlertModalConfig({
+        isOpen: true,
+        message: "주소를 입력해주세요.",
+      });
+      addressRef.current.focus(); // 주소 필드에 포커스
+      return;
+    }
+
     try {
       const response = await postSocialSignupApi(formData);
       if (response.status === 200) {
-        setCallback(() => () => navigate("/")); // Callback 상태로 분리
+        setCallback(() => () => navigate("/"));
         setAlertModalConfig({
           isOpen: true,
           message: response.data.message,
         });
+      } else {
+        // 에러 발생 시 AlertModal에 에러 메시지 표시
+        setAlertModalConfig({
+          isOpen: true,
+          message: response.data.message || "서버 오류가 발생했습니다.",
+        });
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || "회원가입 처리 중 문제가 발생했습니다.";
       setAlertModalConfig({
         isOpen: true,
-        message: errorMessage,
+        message: "알 수 없는 오류가 발생했습니다.",
       });
     }
   };
@@ -227,6 +303,7 @@ const SocialSignupComponent = () => {
         <div className="mb-2 mt-2">
           <p className="font-bold">아이디</p>
           <input
+            ref={userIdRef}
             type="text"
             name="userId"
             placeholder="영문, 숫자 포함 4~12자"
@@ -248,6 +325,7 @@ const SocialSignupComponent = () => {
         <div>
           <p className="font-bold">이름</p>
           <input
+            ref={nameRef}
             type="text"
             name="name"
             placeholder="한글 또는 영문"
@@ -262,6 +340,7 @@ const SocialSignupComponent = () => {
         <div>
           <p className="font-bold">생년월일</p>
           <input
+            ref={birthDateRef}
             type="date"
             name="birthDate"
             value={formData.birthDate}
@@ -278,6 +357,7 @@ const SocialSignupComponent = () => {
         <div>
           <p className="font-bold">닉네임</p>
           <input
+            ref={nicknameRef}
             type="text"
             name="nickname"
             placeholder="한글, 영문, 숫자 포함 4~12자"
@@ -299,6 +379,7 @@ const SocialSignupComponent = () => {
         <div>
           <p className="font-bold">핸드폰</p>
           <input
+            ref={phoneRef}
             type="text"
             name="phone"
             placeholder="숫자만 입력"
@@ -327,6 +408,7 @@ const SocialSignupComponent = () => {
           <p className="font-bold">우편번호</p>
           <div>
             <input
+              ref={zonecodeRef}
               type="text"
               name="zonecode"
               value={formData.zonecode}
@@ -348,6 +430,7 @@ const SocialSignupComponent = () => {
         <div>
           <p className="font-bold">주소</p>
           <input
+            ref={addressRef}
             type="text"
             name="address"
             value={formData.address}

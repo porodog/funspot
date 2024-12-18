@@ -1,5 +1,6 @@
 package com.spot.fun.usr.oauthlogin.service;
 
+import com.spot.fun.usr.oauthlogin.utill.CustomOAuth2AuthenticationException;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,11 +54,28 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     log.info("OAuth2 provider: {}", registrationId);
     log.info("OAuth2 attributes: {}", oAuth2User.getAttributes());
+    log.info("Attributes from Kakao: {}", attributes);
 
     Optional<User> userOptional = userRepository.findByEmail(email);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
       log.info("Existing user found: {}", user.getEmail());
+
+      // provider가 다른 경우 예외 처리
+      if (!registrationId.equalsIgnoreCase(user.getProvider())) {
+        log.warn("Email {} already exists with a different provider: {} (current: {})",
+                email, user.getProvider(), registrationId);
+
+        // 세션에 오류 메시지 저장
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//        request.getSession().setAttribute("loginError", "이미 가입된 사용자입니다. Fun Spot 로그인 페이지를 이용해주세요.");
+//
+//        throw new OAuth2AuthenticationException("이메일이 이미 가입되어 있습니다. Fun Spot 로그인을 이용해주세요.");
+
+        // 명확한 에러 메시지
+        String errorMessage = "이미 가입된 사용자입니다. Fun Spot 로그인 페이지를 이용해주세요.";
+        throw new CustomOAuth2AuthenticationException(errorMessage);
+      }
 
       // 기존 사용자 속성 추가
       attributes.put("email", email);
@@ -103,6 +121,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("email") : null;
+    } else if ("kakao".equals(registrationId)) { // 카카오 추가
+      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+      return kakaoAccount != null ? (String) kakaoAccount.get("email") : null;
     }
     return null;
   }
@@ -114,6 +135,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("name") : null;
+    } else if ("kakao".equals(registrationId)) { // 카카오 추가
+      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+      Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+      return profile != null ? (String) profile.get("nickname") : null;
     }
     return null;
   }
@@ -125,6 +150,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     } else if ("naver".equals(registrationId)) {
       Map<String, Object> response = (Map<String, Object>) attributes.get("response");
       return response != null ? (String) response.get("nickname") : null;
+    } else if ("kakao".equals(registrationId)) { // 카카오 추가
+      Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+      Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+      return profile != null ? (String) profile.get("nickname") : null;
     }
     return null;
   }

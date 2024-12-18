@@ -62,7 +62,7 @@ const ListComponent = () => {
                   {Array.from({ length: 5 - custom.places.length }).map(
                     (_, index) => (
                       <div key={`empty-${index}`} className="relative">
-                        <div className="w-full h-32 bg-gray-200"></div>
+                        <div className="w-full h-32 bg-white"></div>
                       </div>
                     )
                   )}

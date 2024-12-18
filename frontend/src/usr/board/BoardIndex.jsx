@@ -1,11 +1,18 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import Header from "../../common/component/Header";
 import Footer from "../../common/component/Footer";
 import { useBasic } from "../../common/context/BasicContext"; // 로그인 정보 가져오기
 
 function BoardIndex() {
     const { userInfo } = useBasic(); // 로그인 상태 가져오기
+    const navigate = useNavigate(); // React Router Navigation
+
+    const handleRefresh = () => {
+        // 현재 경로를 다시 로드
+        navigate("", { replace: true });
+        navigate("/board", { replace: true });
+    };
 
     return (
         <div>
@@ -14,9 +21,12 @@ function BoardIndex() {
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
                     {/* 홈 링크 */}
-                    <Link to="/board" className="text-blue-500 font-semibold">
+                    <button
+                        onClick={handleRefresh}
+                        className="text-blue-500 font-semibold"
+                    >
                         [게시판 홈]
-                    </Link>
+                    </button>
 
                     {/* 로그인 상태에서만 글쓰기 버튼 노출 */}
                     {userInfo && (

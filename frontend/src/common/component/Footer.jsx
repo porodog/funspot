@@ -26,17 +26,26 @@ const Footer = () => {
 
     return (
         <>
-            <div id="scrollTarget" style={{ height: '3vh' }}> {/* 테스트용 긴 영역 */}
+            <div id="scrollTarget" style={{ height: '10vh' }}> {/* 테스트용 긴 영역 */}
             </div>
             {isVisible && ( // 푸터가 보일 때만 렌더링
-                <footer className="bg-gray-800 text-white p-4 w-3/5 text-center fixed bottom-0">
-                    <div className="container mx-auto">
-                        <p>&copy; 2024 FunSpot</p>
+                <footer className="bg-gray-500 text-white p-4 w-3/5 text-center fixed bottom-0">
+                    <div className="container mx-auto flex justify-between items-center">
+                        {/* 로고 이미지를 왼쪽에 배치 */}
+                        <div className="flex items-center">
+                            <img src="/img/FunSpot.png" alt="FunSpot Logo" className="h-8" /> {/* 로고 크기 조정 */}
+                        </div>
+                        {/* 텍스트는 중앙으로 배치 */}
+                        <div className="text-center flex-grow">
+                            <span>&copy; Copyright 2024 ㈜FunSpot All Rights Reserved</span>
+                            <p>Designed by Mingbbu | Implement by Codyssey</p>
+                        </div>
                     </div>
                 </footer>
             )}
         </>
     );
+
 };
 
 export default Footer;

@@ -1,6 +1,9 @@
 package com.spot.fun.usr.course.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +19,7 @@ public class DateCourse {
     private String name;            // 코스 이름
     private String location;        // 위치
     private String description;     // 설명
-    private String  ageGroup;           // 나이 그룹 (예: 20대, 30대 등)
+    private String ageGroup;           // 나이 그룹 (예: 20대, 30대 등)
     private boolean fixed;          // 고정된 코스 여부 (변경 가능 여부)
     private double latitude; // 위도
     private double longitude; // 경도

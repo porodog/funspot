@@ -45,6 +45,7 @@ public class ChatFacadeService {
               Long roomId = chatRoom.getRoomId();
               Long otherIdx = chatRoom.getOther().getIdx();
               ChatRoomListResponseDTO halfDTO = chatMessageService.setChatRoomListResponseDTO(roomId);
+
               log.info("halfDTO: {}", halfDTO);
               UserDTO otherDTO = userService.findByIdx(otherIdx);
               log.info("otherDTO: {}", otherDTO);
@@ -62,20 +63,22 @@ public class ChatFacadeService {
   }
 
   // 특정 상대방과 나눈 채팅 메시지를 chatId로 오름차순 정렬하여 반환
-  public TreeMap<Long, ChatMessageDTO> getChatIdChatMessageDTOMap(Long otherIdx){
+  public TreeMap<Long, ChatMessageResponseDTO> getChatIdChatMessageDTOMap(Long otherIdx){
     Long userIdx = authTokenService.getCurrentUserIdx();
+    log.info("userIdx: {}", userIdx);
 
     // userIdx와 otherIdx로 roomId 조회
     Long roomId = chatRoomService.getRoomId(userIdx, otherIdx);
+    log.info("roomId: {}", roomId);
 
     // chatId를 key로 하는 TreeMap 생성
-    TreeMap<Long, ChatMessageDTO> chatIdChatMessageDTOMap = new TreeMap<>();
+    TreeMap<Long, ChatMessageResponseDTO> chatIdChatMessageDTOMap = new TreeMap<>();
 
     // 해당 방의 모든 채팅 메시지를 처리
     chatMessageService.findChatIdListByRoomId(roomId)
             .forEach(chatId -> {
               ChatMessage chatMessage = chatMessageService.findChatMessageById(chatId);
-              ChatMessageDTO messageDTO = chatMessageService.setChatMessageDTO(userIdx, chatMessage);
+              ChatMessageResponseDTO messageDTO = chatMessageService.setChatMessageDTO(userIdx, chatMessage);
               chatIdChatMessageDTOMap.put(chatId, messageDTO);
             });
     return chatIdChatMessageDTOMap;
@@ -112,10 +115,11 @@ public class ChatFacadeService {
   }
 
   public ChatMessage saveChatMessage(Long roomId, Long otherRoomId, ChatMessageRequestDTO messageRequest) {
-    Long userIdx = authTokenService.getCurrentUserIdx();
+    String userIdx = messageRequest.getUserIdx();
+//    Long userIdx = authTokenService.getCurrentUserIdx();
     Long otherIdx = chatRoomService.getOtherIdx(roomId);
 
-    return chatMessageService.saveMessageForBothRooms(roomId, otherRoomId, messageRequest, userIdx, otherIdx);
+    return chatMessageService.saveMessageForBothRooms(roomId, otherRoomId, messageRequest, Long.parseLong(userIdx), otherIdx);
   }
 
 

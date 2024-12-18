@@ -1,39 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useBasic } from "../../../common/context/BasicContext"; // 로그인 정보 가져오기
+import { useBasic } from "../../../common/context/BasicContext";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import DOMPurify from "dompurify";
+
+// Quill Toolbar 설정
+const toolbarOptions = [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["image", "link"],
+    ["clean"],
+];
 
 const CreateBoard = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const { userInfo } = useBasic(); // 로그인 정보에서 닉네임 가져오기
-    const navigate = useNavigate(); // 리다이렉트를 위한 훅
+    const { userInfo } = useBasic();
+    const navigate = useNavigate();
+    const quillRef = useRef(null);
+
+    // 이미지 핸들러
+    const imageHandler = useCallback(() => {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
+        input.click();
+
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await axios.post("http://localhost:8080/api/images/upload", formData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                const imageUrl = response.data.url;
+                const editor = quillRef.current.getEditor();
+                const range = editor.getSelection();
+                editor.insertEmbed(range.index, "image", imageUrl);
+            } catch (error) {
+                console.error("이미지 업로드 실패:", error);
+                alert("이미지 업로드에 실패했습니다.");
+            }
+        };
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!userInfo) {
             alert("로그인이 필요합니다.");
             return;
         }
 
-        const token = localStorage.getItem("authToken"); // 로컬 스토리지에서 JWT 토큰 가져오기
-
-        // 작성 데이터
-        const postData = {
-            title,
-            content,
-            nickname: userInfo.nickname, // 로그인된 사용자의 닉네임 추가
-        };
+        const sanitizedContent = DOMPurify.sanitize(content);
 
         try {
-            await axios.post("http://localhost:8080/api/boards", postData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const token = localStorage.getItem("authToken");
+            await axios.post("http://localhost:8080/api/boards", {
+                title,
+                content: sanitizedContent,
+                nickname: userInfo.nickname,
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
             });
-
-            // 성공 시 게시판 리스트 화면으로 이동 및 새로고침
             navigate("/board");
         } catch (error) {
             console.error("게시글 작성 실패:", error);
@@ -42,33 +78,41 @@ const CreateBoard = () => {
     };
 
     return (
-        <div className="max-w-xl mx-auto bg-white p-6 shadow-md rounded-md">
+        <div className="container mx-auto p-6 border rounded-md shadow-sm bg-white">
             <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">게시글 작성</h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <p className="text-sm text-gray-500">작성자: {userInfo?.nickname}</p>
-                </div>
-                <div className="mb-4">
                     <input
                         type="text"
-                        placeholder="제목"
+                        placeholder="제목 (최대 100글자)"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        className="w-full border px-3 py-2 rounded-md"
                     />
+                    <p className="text-sm text-gray-500 text-right">{title.length} / 100</p>
                 </div>
                 <div className="mb-4">
-                    <textarea
-                        placeholder="내용"
+                    <ReactQuill
+                        key="quill-editor" // ReactQuill 재마운트 방지
+                        theme="snow"
                         value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                        rows="6"
+                        onChange={setContent}
+                        ref={quillRef}
+                        style={{ height: "300px" }}
+                        modules={{
+                            toolbar: {
+                                container: toolbarOptions,
+                                handlers: { image: imageHandler },
+                            },
+                        }}
                     />
                 </div>
+                <p className="text-sm text-gray-500 text-right mb-4">
+                    {content.replace(/<[^>]*>/g, "").length} / 5000
+                </p>
                 <button
                     type="submit"
-                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
+                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
                 >
                     작성하기
                 </button>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import BasicLayout from '../../../common/layout/BasicLayout';
+import GoBackButton from '../../../common/hook/useBackbutton';
+
 
 const AddCoursePage = () => {
   const [newCourse, setNewCourse] = useState({
@@ -26,7 +28,7 @@ const AddCoursePage = () => {
     const token = getCookie("access_token"); // 쿠키에서 토큰 가져오기
 
     try {
-      const response = await axios.post('/api/usr/datecourse/addcourse', newCourse, {
+      const response = await axios.post('/api/usr/course/addcourse', newCourse, {
         headers: {
           Authorization: `Bearer ${token}`, // 쿠키에서 가져온 토큰 사용
         },
@@ -48,6 +50,10 @@ const AddCoursePage = () => {
 
   return (
     <BasicLayout>
+      <GoBackButton />
+      <div className='text-3xl text-center p-2 m-2 font-bold'>
+        <span>코스 추가</span>
+      </div>
       <div className="max-w-lg mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
         <form onSubmit={handleAddCourse} className="space-y-6">
           <div className="flex flex-col">

@@ -26,11 +26,6 @@ public class DateCourseController {
     public ResponseEntity<DateCourse> addCourse(@RequestBody DateCourse dateCourse,
                                                 HttpServletRequest request,
                                                 HttpServletResponse response) {
-        // 토큰 검증
-        if (!authTokenUtil.validateAccessToken(request)) {
-            log.error("Invalid or expired access token.");
-            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
-        }
 
         // 인증된 사용자만 코스를 추가할 수 있도록 처리
         DateCourse createdCourse = dateCourseService.addCourse(dateCourse);
@@ -41,11 +36,8 @@ public class DateCourseController {
     public ResponseEntity<DateCourse> getCourseById(@PathVariable Long id,
                                                     HttpServletRequest request,
                                                     HttpServletResponse response) {
-        // 토큰 검증
-        if (!authTokenUtil.validateAccessToken(request)) {
-            log.error("Invalid or expired access token.");
-            return ResponseEntity.status(401).body(null);  // 인증 실패 (401 Unauthorized)
-        }
+        log.info("dldldldlldldldldldldldldl");
+
 
         Optional<DateCourse> course = dateCourseService.getCourseById(id);
         return course.map(ResponseEntity::ok)
