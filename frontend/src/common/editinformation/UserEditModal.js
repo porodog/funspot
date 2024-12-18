@@ -206,8 +206,10 @@ export default function UserEditModal({ onClose }) {
           <div className="flex items-center space-x-2">
             <input
               name="zonecode"
+              type="text"
               placeholder="우편번호"
               className="border w-2/3 p-2 rounded"
+              readOnly
               value={userInfo.zonecode}
               onChange={handleChange}
             />
@@ -222,7 +224,9 @@ export default function UserEditModal({ onClose }) {
           {errors.zonecode && <p className="text-red-500">{errors.zonecode}</p>}
           <input
             name="address"
+            type="text"
             placeholder="주소"
+            readOnly
             className="border w-full p-2 rounded"
             value={userInfo.address}
             onChange={handleChange}
@@ -234,18 +238,6 @@ export default function UserEditModal({ onClose }) {
             className="border w-full p-2 rounded"
             value={userInfo.detaileAdd}
             onChange={handleChange}
-          />
-
-          <AddressModal
-            isOpen={addressModalOpen}
-            onClose={() => setAddressModalOpen(false)}
-            onComplete={(data) => {
-              setUserInfo((prev) => ({
-                ...prev,
-                address: data.address,
-                zonecode: data.zonecode,
-              }));
-            }}
           />
         </div>
 
@@ -262,6 +254,19 @@ export default function UserEditModal({ onClose }) {
           >
             정보수정
           </button>
+
+          <AddressModal
+            isOpen={addressModalOpen}
+            onClose={() => setAddressModalOpen(false)}
+            onComplete={(data) => {
+              setUserInfo({
+                ...userInfo,
+                address: data.address,
+                zonecode: data.zonecode,
+              });
+              setAddressModalOpen(false);
+            }}
+          />
         </div>
       </div>
     </div>
