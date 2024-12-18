@@ -61,7 +61,7 @@ const DateCourseListPage = () => {
     let filtered = datecourses;
 
     if (ageGroupFilter) {
-      filtered = filtered.filter(course => course.ageGroup == ageGroupFilter);
+      filtered = filtered.filter(course => course.ageGroup === ageGroupFilter);
     }
 
     if (locationFilter) {
@@ -137,7 +137,6 @@ const DateCourseListPage = () => {
             <ul className="space-y-4">
               {filteredCourses.map((course) => (
                 <li key={course.id} className="border-b pb-4">
-                  {/* <a href={`/datecourses/course/${course.id}`}><h3 className="text-xl font-semibold text-gray-800">{course.name}</h3></a> */}
                   <Link to={`/datecourses/${course.id}`}>{course.name}</Link>
                   <p className="text-gray-700">장소 : {course.location}</p>
                   <p className="text-gray-700">연령대 : {course.ageGroup}</p>

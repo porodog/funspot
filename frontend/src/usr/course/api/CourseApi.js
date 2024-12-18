@@ -4,7 +4,7 @@ export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
 export const searchPlaces = async (address) => {
   // 주소로 장소 검색
-  const response = await axios.get(`${API_BASE_URL}/api/usr/place/search`, {
+  const response = await axios.get(`${API_BASE_URL}/api/usr/place/`, {
     params: { address },
   });
   return response.data;
@@ -21,20 +21,20 @@ export const getCourseList = async () => {
   return response.data;
 };
 
-export const getCustomDetail = async (cno) => {
-  const response = await axios.get(`${API_BASE_URL}/api/usr/course/${cno}`);
+export const getCustomDetail = async (id) => {
+  const response = await axios.get(`${API_BASE_URL}/api/usr/course/${id}`);
   return response.data;
 };
 
-export const updateCustom = async (cno, courseObj) => {
+export const updateCustom = async (id, courseObj) => {
   const response = await axios.put(
-    `${API_BASE_URL}/api/usr/course/${cno}`,
+    `${API_BASE_URL}/api/usr/course/${id}`,
     courseObj
   );
   return response.data;
 };
 
-export const deleteCustom = async (cno) => {
-  const response = await axios.delete(`${API_BASE_URL}/api/usr/course/${cno}`);
+export const deleteCustom = async (id) => {
+  const response = await axios.delete(`${API_BASE_URL}/api/usr/course/${id}`);
   return response.data;
 };

@@ -4,6 +4,7 @@ import com.spot.fun.usr.course.model.DateCourse;
 import com.spot.fun.usr.course.repository.DateCourseRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,4 +50,11 @@ public class DateCourseService {
         return "코스를 찾을 수 없습니다.";
     }
 
+    public Page<DateCourse> getPagedCourses(int page, int size) {
+        return null;
+    }
+
+    public List<DateCourse> searchCourses(String keyword) {
+        return null;
+    }
 }
