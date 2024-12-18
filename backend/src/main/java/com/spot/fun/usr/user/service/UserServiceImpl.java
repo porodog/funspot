@@ -31,6 +31,30 @@ public class UserServiceImpl implements UserService {
                 .toDTO();
     }
 
+
+
+
+    @Override
+    public UserDTO findUserProfile(String userId) {
+        // 비밀번호를 제외한 사용자 정보 반환
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return UserDTO.builder()
+                .idx(user.getIdx())
+                .userId(user.getUserId())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .birthDate(user.getBirthDate())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .zonecode(user.getZonecode())
+                .address(user.getAddress())
+                .detaileAdd(user.getDetaileAdd())
+                .build();
+    }
+
+
     @Override
     public String findUserIdByDetails(String name, String birthDate, String email) {
         // UserRepository를 통해 사용자 정보 조회
@@ -64,8 +88,65 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public Optional<User> findUserByIdx(Long idx){
+    public Optional<User> findUserByIdx(Long idx) {
         return userRepository.findByIdx(idx);
     }
 
+    @Override
+    public boolean checkPassword(String userId, String rawPassword) {
+        // 비밀번호를 검증하는 로직
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return bcryptPasswordEncoder.matches(rawPassword, user.getPassword());
+    }
+
+    @Override
+    public void validateAndUpdateUserProfile(String userId, UserDTO userDTO) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 유효성 검사
+        if (userDTO.getPhone() != null && !userDTO.getPhone().matches("^(01[016789])-?[0-9]{3,4}-?[0-9]{4}$")) {
+            throw new IllegalArgumentException("phone:유효한 핸드폰 번호를 입력해주세요.");
+        }
+        if (userDTO.getNewPassword() != null && !userDTO.getNewPassword().isEmpty() &&
+                !userDTO.getNewPassword().matches("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$")) {
+            throw new IllegalArgumentException("newPassword:비밀번호를 입력해주세요.");
+        }
+
+        // 핸드폰 번호 중복 확인 (기존 번호와 다를 때만)
+        if (userDTO.getPhone() != null && !userDTO.getPhone().equals(user.getPhone()) &&
+                userRepository.existsByPhone(userDTO.getPhone())) {
+            throw new IllegalArgumentException("phone:이미 사용 중인 핸드폰 번호입니다.");
+        }
+
+        if (userDTO.getZonecode() == null || userDTO.getZonecode().trim().isEmpty()) {
+            throw new IllegalArgumentException("zonecode:우편번호를 입력해주세요");
+        }
+        if (userDTO.getAddress() == null || userDTO.getAddress().trim().isEmpty()) {
+            throw new IllegalArgumentException("address:주소를 입력해주세요");
+        }
+
+        // 비밀번호 변경
+        if (userDTO.getNewPassword() != null && !userDTO.getNewPassword().isEmpty()) {
+            String encodedPassword = bcryptPasswordEncoder.encode(userDTO.getNewPassword());
+            user.updatePassword(encodedPassword);
+        }
+
+        // 핸드폰 번호 업데이트
+        if (userDTO.getPhone() != null) {
+            user.updatePhone(userDTO.getPhone());
+        }
+
+        // 주소 업데이트
+        if (userDTO.getZonecode() != null && userDTO.getAddress() != null) {
+            user.updateAddress(userDTO.getZonecode(), userDTO.getAddress(), userDTO.getDetaileAdd());
+        }
+
+        userRepository.save(user);
+        log.info("회원 정보 수정 완료: userId={}", userId);
+    }
+
 }
+
