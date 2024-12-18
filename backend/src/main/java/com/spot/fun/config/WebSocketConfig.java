@@ -1,22 +1,5 @@
 package com.spot.fun.config;
 
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.messaging.Message;
-//import org.springframework.messaging.MessageChannel;
-//import org.springframework.messaging.simp.config.ChannelRegistration;
-//import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-//import org.springframework.messaging.simp.stomp.StompCommand;
-//import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-//import org.springframework.messaging.support.ChannelInterceptor;
-//import org.springframework.messaging.support.MessageHeaderAccessor;
-//import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
-//import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-//import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-//import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-//
-//import java.security.Principal;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -48,7 +31,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureMessageBroker(MessageBrokerRegistry registry) {
-    registry.enableSimpleBroker("/sub/user", "/sub/other");   // 메시지를 구독(수신)하는 요청 엔드포인트
+    // 메시지 구독 채널을 단일 채널로 설정
+    // 1번과 2번 사용자의 채팅방이라고 가정했을 때,
+    // 1번 사용자는 /sub/roomId/2를 구독하고 1에 브로드캐스팅
+    // 2번 사용자는 /sub/roomId/1를 구독하고 2에 브로드캐스팅하면 됨
+    registry.enableSimpleBroker("/sub/roomId");
+//    registry.enableSimpleBroker("/sub/user", "/sub/other");   // 메시지를 구독(수신)하는 요청 엔드포인트
     registry.setApplicationDestinationPrefixes("/pub");   // 메시지를 발행(송신)하는 엔드포인트
   }
 

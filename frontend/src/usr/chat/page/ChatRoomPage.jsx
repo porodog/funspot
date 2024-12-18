@@ -1,25 +1,8 @@
-// import React, { useEffect, useState } from 'react';
-// import { useBasic } from "../../../common/context/BasicContext";
-// import BasicLayout from "../../../common/layout/BasicLayout";
-//
-// const ChatListPage = () => {
-//     // 객체 { nickname: "유나티비", userIdx: 1 }
-//     const { userInfo } = useBasic();
-//     return (
-//         <BasicLayout>
-//             채팅방 티비
-//         </BasicLayout>
-//     );
-// };
-//
-// export default ChatListPage;
-
 // pages/ChatRoomPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { chatApi } from '../api/chatApi';
 import { useBasic } from '../../../common/context/BasicContext';
-// import ChatListPage from "./ChatListPage";
 
 const ChatRoomPage = () => {
     const { userInfo } = useBasic();
@@ -58,9 +41,6 @@ const ChatRoomPage = () => {
                         setMessages(prev => [...prev, receivedMessage]);
                     }
                 );
-                // chatApi.connectWebSocket(userRoomId, otherRoomId, (receivedMessage) => {
-                //     setMessages(prev => [...prev, receivedMessage]);
-                // });
             } catch (error) {
                 console.error('채팅방 초기화 실패:', error);
             }
@@ -73,10 +53,36 @@ const ChatRoomPage = () => {
         return () => chatApi.disconnect();
     }, [otherIdx, userInfo]);
 
+    // 내가 보낸 메시지는 프론트엔드에서 렌더링되도록
     const handleSendMessage = () => {
         if (newMessage.trim() && roomInfo && userInfo) {
-            chatApi.sendMessage(userInfo.userIdx, otherIdx, newMessage, roomInfo.userRoomId, roomInfo.otherRoomId, userInfo.userIdx);
-            setNewMessage('');
+            try {
+                // 메시지 전송
+                const sentMessage = chatApi.sendMessage(
+                    userInfo.userIdx,
+                    otherIdx,
+                    newMessage,
+                    roomInfo.userRoomId,
+                    roomInfo.otherRoomId,
+                    userInfo.userIdx
+                );
+
+                if (sentMessage) {
+                    // 프론트엔드에서 직접 메시지 목록 업데이트
+                    const messageToDisplay = {
+                        ...sentMessage,
+                        isMine: true  // 자신이 보낸 메시지 표시
+                    };
+                    setMessages(prev => [...prev, messageToDisplay]);
+                    setNewMessage('');
+                }
+            }catch (error){
+                // 메시지 전송 실패 처리
+                console.error('메시지 전송 실패:', error);
+                // 실패 알림 표시
+                alert('메시지 전송 중 문제가 발생했습니다.');
+                // 재시도 로직 구현
+            }
         }
     };
 
@@ -93,11 +99,11 @@ const ChatRoomPage = () => {
                 {messages.map((message, index) => (
                     <div
                         key={index}
-                        className={`flex ${message.isMine ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${message.fromIdx === userInfo.userIdx ? 'justify-end' : 'justify-start'}`}
                     >
                         <div
                             className={`max-w-[70%] p-3 rounded-lg ${
-                                message.isMine
+                                message.fromIdx === userInfo.userIdx
                                     ? 'bg-blue-500 text-white'
                                     : 'bg-gray-200 text-gray-900'
                             }`}
