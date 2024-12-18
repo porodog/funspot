@@ -3,9 +3,15 @@ package com.spot.fun.usr.custom.service;
 
 import com.spot.fun.usr.custom.domain.Custom;
 import com.spot.fun.usr.custom.domain.WishList;
+import com.spot.fun.usr.custom.dto.WishListDTO;
 import com.spot.fun.usr.custom.repository.WishListRepository;
+import com.spot.fun.usr.mypage.dto.CommentResponseDTO;
 import com.spot.fun.usr.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +45,15 @@ public class WishListServiceImpl implements WishListService {
 
    @Override
    @Transactional(readOnly = true)
-   public List<WishList> getFavoritesByUser(Long userIdx) {
-      return wishListRepository.findByUserIdx(userIdx);
+   public WishListDTO getFavoritesByUser(WishListDTO wishListDTO) {
+      int pageSize = wishListDTO.getPageSize();
+      Pageable pageable = PageRequest.of(0, pageSize, Sort.by("id").descending());
+      List<WishListDTO> list = wishListRepository.findWishListByMypageOrderByIdDesc(wishListDTO, pageable).stream()
+              .map(WishList::toDTO).toList();
+      boolean hasNext = ((list.size() == pageSize) && !ObjectUtils.isEmpty(list));
+      return WishListDTO.builder()
+              .wishList(list)
+              .hasNext(hasNext)
+              .build();
    }
 }

@@ -1,5 +1,6 @@
 package com.spot.fun.usr.custom.controller;
 
+import com.spot.fun.usr.custom.dto.WishListDTO;
 import com.spot.fun.usr.custom.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,10 @@ public class WishListController {
       return ResponseEntity.ok("찜 취소 완료");
    }
 
-   @GetMapping("/{userId}")
-   public ResponseEntity<?> getWishListByUser(@PathVariable Long userIdx) {
-      return ResponseEntity.ok(wishListService.getFavoritesByUser(userIdx));
+   @GetMapping("/{userIdx}")
+   public ResponseEntity<?> getWishListByUser(@PathVariable Long userIdx, WishListDTO wishListDTO) {
+      wishListDTO.setUserIdx(userIdx);
+      return ResponseEntity.ok(wishListService.getFavoritesByUser(wishListDTO));
    }
 
 }

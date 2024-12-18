@@ -14,9 +14,14 @@ export const removeWishList = async (userIdx, customCno) => {
   });
 };
 
-export const getWishList = async (userIdx) => {
+export const getWishList = async (userIdx, param) => {
+  const config = {
+    params: param,
+  };
+
   const response = await axios.get(
-    `${API_BASE_URL}/api/usr/feed/wishlist/${userIdx}`
+    `${API_BASE_URL}/api/usr/feed/wishlist/${userIdx}`,
+    config
   );
   return response.data;
 };

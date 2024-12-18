@@ -1,5 +1,6 @@
 package com.spot.fun.usr.custom.domain;
 
+import com.spot.fun.usr.custom.dto.WishListDTO;
 import com.spot.fun.usr.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,5 +33,13 @@ public class WishList {
    @PrePersist
    protected void onCreate() {
       this.createdAt = LocalDateTime.now();
+   }
+
+   public WishListDTO toDTO() {
+      return WishListDTO.builder()
+              .id(this.id)
+              .customCno(this.custom.getCno())
+              .title(this.custom.getTitle())
+              .build();
    }
 }

@@ -67,7 +67,7 @@ const CenterSideComponent = ({ spotSelected, setSpotSelected }) => {
           </div>
 
           {/* 하단 */}
-          <div className="w-full h-full space-y-3 flex flex-col overflow-y-auto">
+          <div className="w-full h-full space-y-6 flex flex-col overflow-y-auto">
             {(spotDetail.imageList ?? []).length > 0 ? (
               <>
                 {spotDetail.imageList.map((image, index) => (
