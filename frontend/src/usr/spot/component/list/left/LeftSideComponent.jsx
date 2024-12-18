@@ -3,6 +3,7 @@ import SearchSelectComponent from "./search/SearchSelectComponent";
 import InventoryComponent from "./inventory/InventoryComponent";
 import { useEffect, useRef, useState } from "react";
 import { BiMessageAltDots } from "react-icons/bi";
+import PagingComponent from "./paging/PagingComponent";
 
 // 유형, 연령, 테마, 기타 셀렉트 API로 하나?
 const initList = [
@@ -46,7 +47,11 @@ const sampleList = [
   },
 ];
 
-const LeftSideComponent = ({ spotList, handleSpotSearchEvent }) => {
+const LeftSideComponent = ({
+  spotList,
+  setSearchParameter,
+  setSpotSelected,
+}) => {
   // 검색어 정보
   const useInputRef = useRef(null);
 
@@ -64,9 +69,9 @@ const LeftSideComponent = ({ spotList, handleSpotSearchEvent }) => {
       return { ...old, [now.id]: now.value };
     }, {});
 
-    // 파라미터 전달
+    // 상위 컴포넌트 상태관리값 세팅처리
     const param = { ...searchObj, ...selectObj };
-    handleSpotSearchEvent(param);
+    setSearchParameter(param);
   };
 
   // 최초 마운트
@@ -102,12 +107,20 @@ const LeftSideComponent = ({ spotList, handleSpotSearchEvent }) => {
 
       {/* 하단 */}
       {/* 인벤토리(검색결과) */}
-      <div className="w-full h-auto p-2 space-y-5 flex flex-col">
+      <div className="w-full h-auto p-2 space-y-3 flex flex-col overflow-y-auto">
         {(spotList ?? []).length > 0 ? (
           <>
+            {/* 아이템 (목록) */}
             {spotList.map((spot, index) => (
-              <InventoryComponent key={index} spot={spot} />
+              <InventoryComponent
+                key={index}
+                spot={spot}
+                setSpotSelected={setSpotSelected}
+              />
             ))}
+
+            {/* 페이지 */}
+            <PagingComponent />
           </>
         ) : (
           <>
@@ -123,70 +136,6 @@ const LeftSideComponent = ({ spotList, handleSpotSearchEvent }) => {
           </>
         )}
       </div>
-
-      {/* 페이지 */}
-      {(spotList ?? []).length > 0 && (
-        <div className="w-full h-auto my-auto">
-          <ul className="p-0 space-x-1 flex justify-center list-none">
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                «
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                2
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                3
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                4
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                5
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="px-4 py-2 hover:bg-emerald-400 hover:text-white hover:rounded-full"
-              >
-                »
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

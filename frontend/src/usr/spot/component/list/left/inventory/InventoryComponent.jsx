@@ -1,8 +1,12 @@
 import ItemImageComponent from "./item/ItemImageComponent";
 import ItemButtonComponent from "./item/ItemButtonComponent";
+import ItemBookmarkComponent from "./item/ItemBookmarkComponent";
+import ItemNameComponent from "./item/ItemNameComponent";
 
-const InventoryComponent = ({ spot: { id, name, bookmark, imageList } }) => {
-  console.log(imageList);
+const InventoryComponent = ({
+  spot: { id, name, bookmark, imageList },
+  setSpotSelected,
+}) => {
   return (
     <div
       className="w-full h-1/4 pb-2 pr-2
@@ -10,28 +14,26 @@ const InventoryComponent = ({ spot: { id, name, bookmark, imageList } }) => {
     >
       {/* 상단 */}
       {/* 명소이름 */}
-      <p
-        className="w-full h-6 
-        text-base text-gray-600
-        font-medium font-mono 
-        cursor-pointer
-        hover:text-black"
-        onClick={() => console.log("click id >> " + id)}
-      >
-        {name}
-      </p>
+      <ItemNameComponent
+        id={id}
+        name={name}
+        setSpotSelected={setSpotSelected}
+      />
 
       {/* 하단 */}
-      {/* 아이템 (목록) */}
       <div
         className="w-full h-24
       flex justify-start"
       >
         {/* 이미지 */}
-        <ItemImageComponent imageList={imageList} />
+        <ItemImageComponent imageList={imageList} slideUnit={2} />
 
-        {/* 즐겨찾기, 담기버튼 */}
-        <ItemButtonComponent id={id} bookmark={bookmark} />
+        <div className="w-2/5 h-full pl-3 relative flex content-end">
+          {/* 즐겨찾기 */}
+          <ItemBookmarkComponent id={id} bookmark={bookmark} />
+          {/* 담기 버튼 */}
+          <ItemButtonComponent id={id} />
+        </div>
       </div>
     </div>
   );

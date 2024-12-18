@@ -6,6 +6,7 @@ import chatRouter from "../../usr/chat/router/chatRouter";
 import dateRouter from "../../usr/course/router/DateRouter"; // DateRouter 추가
 import mypageRouter from "../../usr/mypage/router/mypageRouter";
 import customRouter from "../../usr/custom/router/customRouter";
+import spotRouter from "../../usr/spot/router/spotRouter";
 import { Outlet } from "react-router-dom";
 
 const { createBrowserRouter } = require("react-router-dom");
@@ -20,9 +21,7 @@ const LoginSuccessPage = lazy(() =>
 const MyPageIndexPage = lazy(() => import("../../usr/mypage/page/IndexPage"));
 const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
-const BoardIndexPage = lazy(() =>
-  import("../../usr/board/BoardIndex")
-);
+const BoardIndexPage = lazy(() => import("../../usr/board/BoardIndex"));
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
 );
@@ -35,8 +34,10 @@ const SignupCheckPage = lazy(() =>
   import("../../usr/signup/page/SignupCheckPage")
 );
 const CustomIndexPage = lazy(() => import("../../usr/custom/page/IndexPage"));
-const DateCourseDetailPage = lazy(() => import("../../usr/course/page/DateCourseDetailPage"))
-
+const DateCourseDetailPage = lazy(() =>
+  import("../../usr/course/page/DateCourseDetailPage")
+);
+const SpotIndexPage = lazy(() => import("../../usr/spot/page/IndexPage"));
 
 const rootRouter = createBrowserRouter(
   [
@@ -141,7 +142,7 @@ const rootRouter = createBrowserRouter(
         <Suspense fallback={Loading}>
           <DateCourseDetailPage />
         </Suspense>
-      )
+      ),
     },
 
     {
@@ -180,7 +181,16 @@ const rootRouter = createBrowserRouter(
           </BasicLayout>
         </Suspense>
       ),
-      children: chatRouter()
+      children: chatRouter(),
+    },
+    {
+      path: "spot",
+      element: (
+        <Suspense fallback={Loading}>
+          <SpotIndexPage />
+        </Suspense>
+      ),
+      children: spotRouter(),
     },
   ],
   {

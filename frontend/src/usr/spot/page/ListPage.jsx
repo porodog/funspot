@@ -1,61 +1,41 @@
 import LeftSideComponent from "../component/list/left/LeftSideComponent";
 import RightSideComponent from "../component/list/right/RightSideComponent";
 
-import initSrc from "../../../common/img/image_upload.jpg";
 import { useState } from "react";
-
-let id = 0;
-const getId = () => {
-  return id++;
-};
-
-const initList = [];
-
-const sampleList = [
-  {
-    id: getId(),
-    name: `펀스팟 명소입니다_ ${id}`,
-    bookmark: true,
-    imageList: [initSrc, initSrc, initSrc, initSrc],
-  },
-  {
-    id: getId(),
-    name: `펀스팟 명소입니다_ ${id}`,
-    bookmark: false,
-    imageList: [initSrc, initSrc, initSrc],
-  },
-  {
-    id: getId(),
-    name: `펀스팟 명소입니다_ ${id}`,
-    bookmark: false,
-    imageList: [initSrc, initSrc],
-  },
-  {
-    id: getId(),
-    name: `펀스팟 명소입니다_ ${id}`,
-    bookmark: false,
-    imageList: [],
-  },
-];
+import CenterSideComponent from "../component/list/center/CenterSideComponent";
 
 const ListPage = () => {
+  // 검색 파라미터
+  const [searchParameter, setSearchParameter] = useState({});
+
   // 관광지 목록
-  const [spotList, setSpotList] = useState(initList);
-  const handleSpotSearchEvent = (param) => {
-    console.log(param);
-    setSpotList(sampleList);
-  };
+  const [spotList, setSpotList] = useState([]);
+
+  // 관광지 상세
+  const [spotSelected, setSpotSelected] = useState({});
 
   return (
-    <div className="w-full h-[775px] flex justify-start">
+    <div className="w-full h-[745px] flex justify-start">
       {/* 좌측영역 - 검색, 목록 */}
       <LeftSideComponent
         spotList={spotList}
-        handleSpotSearchEvent={handleSpotSearchEvent}
+        setSearchParameter={setSearchParameter}
+        setSpotSelected={setSpotSelected}
       />
 
+      {/* 중간영역 - 상세정보 */}
+      {Object.keys(spotSelected).length > 0 && (
+        <CenterSideComponent
+          spotSelected={spotSelected}
+          setSpotSelected={setSpotSelected}
+        />
+      )}
+
       {/* 우측영역 - 지도 */}
-      <RightSideComponent />
+      <RightSideComponent
+        searchParameter={searchParameter}
+        setSpotList={setSpotList}
+      />
     </div>
   );
 };

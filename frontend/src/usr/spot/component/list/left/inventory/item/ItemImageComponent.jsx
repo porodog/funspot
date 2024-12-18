@@ -1,11 +1,10 @@
 import { useState } from "react";
 
-const ItemImageComponent = ({ imageList }) => {
+const ItemImageComponent = ({ imageList, slideUnit }) => {
   // 현재 이미지의 인덱스
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // 슬라이드 설정
-  const slideUnit = 2;
   const listSize = imageList.length;
 
   // 이미지 슬라이드 이벤트
@@ -19,7 +18,7 @@ const ItemImageComponent = ({ imageList }) => {
   };
 
   return (
-    <div className="w-3/5 h-full">
+    <div className={`${slideUnit === 2 ? "w-3/5" : "w-11/12"} h-full`}>
       <div className="w-full h-full space-x-0.5 relative flex overflow-hidden">
         {/* 좌측 버튼 */}
         {currentIndex > 0 && (
