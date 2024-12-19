@@ -15,7 +15,7 @@ const ListPage = () => {
   const [spotSelected, setSpotSelected] = useState({});
 
   return (
-    <div className="w-full h-[745px] flex justify-start">
+    <div className="w-full h-[735px] flex justify-start">
       {/* 좌측영역 - 검색, 목록 */}
       <LeftSideComponent
         spotList={spotList}
