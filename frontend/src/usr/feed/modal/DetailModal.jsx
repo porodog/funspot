@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   deleteCommentApi,
   getFeedCommentListApi,
@@ -40,6 +40,8 @@ const DetailModal = ({
   }, []);
 
   // 댓글 등록
+  const commentsEndRef = useRef(null);
+  const [newComment, setNewComment] = useState(false);
   const handleCommentEvent = useCallback(
     (content) => {
       const confirm = window.confirm("[댓글등록] 등록 하시겠습니까?");
@@ -58,6 +60,7 @@ const DetailModal = ({
             window.alert("[댓글등록] 등록을 성공했습니다");
             setCommentList((prevCommentList) => [...prevCommentList, data]);
             handleCommentCountEvent({ ...data, feedIdx: feed.idx }, "new");
+            setNewComment(true);
           }
         })
         .catch((err) => {
@@ -67,6 +70,14 @@ const DetailModal = ({
     },
     [feed.idx]
   );
+
+  useEffect(() => {
+    if (newComment && commentsEndRef.current) {
+      setNewComment(false);
+      // commentsEndRef.current.scrollIntoView();
+      commentsEndRef.current.scrollTop = commentsEndRef.current.scrollHeight;
+    }
+  }, [commentList]);
 
   // 댓글 수정
   const handleCommentModifyEvent = (param) => {
@@ -287,7 +298,10 @@ const DetailModal = ({
           {/* 버튼 + 등록일시 */}
           <ButtonComponent feed={feed} handleLikesEvent={handleLikesEvent} />
 
-          <div className="border-2 border-gray-200 overflow-y-auto p-4 space-y-4 h-full rounded-lg">
+          <div
+            ref={commentsEndRef}
+            className="border-2 border-gray-200 overflow-y-auto p-4 space-y-4 h-full rounded-lg"
+          >
             {/* 댓글 목록 + 등록인풋 */}
             <CommentListComponent
               commentList={commentList}

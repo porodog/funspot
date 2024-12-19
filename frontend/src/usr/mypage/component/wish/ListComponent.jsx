@@ -9,7 +9,7 @@ const ListComponent = () => {
   const loginUserIdx = userInfo?.userIdx || "";
 
   // 목록
-  const [wishList, setWishList] = useState([]);
+  const [myWishList, setMyWishList] = useState([]);
   const [hasNext, setHasNext] = useState(true);
   const [lastId, setLastId] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -24,10 +24,10 @@ const ListComponent = () => {
       });
       if (data) {
         const { wishList, hasNext } = data;
-        setWishList((prevList) => [...prevList, ...wishList]);
+        setMyWishList((prevList) => [...prevList, ...wishList]);
         setHasNext(hasNext);
         if (wishList.length > 0) {
-          setLastId(parseInt(wishList[wishList.length - 1].idx));
+          setLastId(parseInt(wishList[wishList.length - 1].id));
         }
       }
     } catch (err) {
@@ -68,14 +68,14 @@ const ListComponent = () => {
   return (
     <>
       <div className="w-full h-auto mx-auto">
-        {(wishList ?? []).length > 0 ? (
-          <TableComponent wishList={wishList} setWishList={setWishList} />
+        {(myWishList ?? []).length > 0 ? (
+          <TableComponent wishList={myWishList} setWishList={setMyWishList} />
         ) : (
           <>
             <div className="w-full h-full py-10 flex flex-col justify-center items-center text-gray-600 space-y-4">
               <BiMessageAltDots className="text-4xl" />
               <span className="font-semibold text-xl">
-                등록된 위시리스트가 없습니다
+                등록된 정보가 없습니다
               </span>
             </div>
           </>

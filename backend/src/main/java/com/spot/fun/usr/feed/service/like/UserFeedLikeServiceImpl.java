@@ -164,10 +164,14 @@ public class UserFeedLikeServiceImpl implements UserFeedLikeService {
   private Map<String, Object> getListAndListIdx(List<FeedLike> feedLikeList) {
     Map<String, Object> map = new HashMap<>();
 
-    Long lastIdx = feedLikeList.get((feedLikeList.size())-1).getIdx();
-    feedLikeList = feedLikeList.stream()
-            .filter(filter -> !filter.getFeed().isDelYn())
-            .toList();
+    Long lastIdx = 0L;
+    if(!ObjectUtils.isEmpty(feedLikeList)) {
+      lastIdx = feedLikeList.get((feedLikeList.size())-1).getIdx();
+      feedLikeList = feedLikeList.stream()
+              .filter(filter -> !filter.getFeed().isDelYn())
+              .toList();
+    }
+
 
     map.put("lastIdx", lastIdx);
     map.put("list", feedLikeList);

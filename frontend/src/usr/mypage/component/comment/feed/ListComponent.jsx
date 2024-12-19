@@ -3,6 +3,7 @@ import TableComponent from "./TableComponent";
 import { getFeedCommentListApi } from "../../../api/MypageApi";
 import DetailModal from "../../../../feed/modal/DetailModal";
 import { feedLikeApi, getFeedDetailApi } from "../../../../feed/api/FeedApi";
+import { BiMessageAltDots } from "react-icons/bi";
 
 const ListComponent = () => {
   // 목록
@@ -163,12 +164,21 @@ const ListComponent = () => {
   return (
     <>
       <div className="w-full h-auto mx-auto">
-        {commentList && (
+        {(commentList ?? []).length > 0 ? (
           <TableComponent
             commentList={commentList}
             handleDeleteListEvent={handleDeleteListEvent}
             openDetailModal={openDetailModal}
           />
+        ) : (
+          <>
+            <div className="w-full h-full py-10 flex flex-col justify-center items-center text-gray-600 space-y-4">
+              <BiMessageAltDots className="text-4xl" />
+              <span className="font-semibold text-xl">
+                등록된 정보가 없습니다
+              </span>
+            </div>
+          </>
         )}
       </div>
       {(selectedFeed.idx ?? null) && isDetailModalOpen && (
