@@ -1,3 +1,8 @@
+.board-content {
+    text-align: start; /* 기본 좌측 정렬 */
+    line-height: 0.7; /* 전체 줄 간격 기본값 */
+}
+
 .board-content h1 {
     font-size: 2em; /* Heading 1 글자 크기 */
     font-weight: bold; /* 볼드 처리 */
@@ -18,8 +23,7 @@
 
 .board-content p {
     font-size: 1em; /* 기본 텍스트 크기 */
-    line-height: 1.6;
-    margin-bottom: 1rem;
+    line-height: 1.5;
 }
 
 .board-content ul, .board-content ol {
@@ -70,5 +74,17 @@
 .board-content h2[style*="font-weight: bold"],
 .board-content h3[style*="font-weight: bold"] {
     font-weight: bold; /* inline style로 볼드 적용 시 */
+}
+
+.board-content {
+    text-align: start; /* 기본 좌측 정렬 */
+}
+
+.board-content .ql-align-center {
+    text-align: center; /* 중앙 정렬 */
+}
+
+.board-content .ql-align-right {
+    text-align: right; /* 우측 정렬 */
 }
 

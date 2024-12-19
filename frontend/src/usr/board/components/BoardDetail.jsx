@@ -8,8 +8,10 @@ const BoardDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
+    const [hasLiked, setHasLiked] = useState(false); // 추천 여부 확인
     const { userInfo } = useBasic(); // 로그인된 사용자 정보 가져오기
 
+    // 게시글 가져오기
     useEffect(() => {
         axios
             .get(`http://localhost:8080/api/boards/${id}`)
@@ -20,6 +22,60 @@ const BoardDetail = () => {
                 console.error("Error fetching board:", error);
             });
     }, [id]);
+
+    // 게시글 추천 관리
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("authToken");
+
+                // 게시글 데이터 가져오기
+                const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
+                setBoard(boardResponse.data);
+
+                // 추천 여부 확인
+                if (userInfo?.userIdx) {
+                    const likeResponse = await axios.get(
+                        `http://localhost:8080/api/boards/${id}/has-liked`,
+                        {
+                            headers: { Authorization: `Bearer ${token}` },
+                            params: { userIdx: userInfo.userIdx }, // userIdx 전달
+                        }
+                    );
+                    setHasLiked(likeResponse.data.hasLiked); // 서버에서 반환된 true/false 값 설정
+                }
+            } catch (error) {
+                console.error("Error fetching board or like status:", error);
+            }
+        };
+
+        fetchData();
+    }, [id, userInfo]);
+
+    // 게시글 조회수 관리
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem("authToken");
+
+                // 게시글 데이터 가져오기
+                const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
+                setBoard(boardResponse.data);
+
+                // 조회수 증가 요청
+                if (userInfo?.userIdx) {
+                    await axios.get(`http://localhost:8080/api/boards/${id}/view`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                        params: { userIdx: userInfo.userIdx },
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching board or incrementing view count:", error);
+            }
+        };
+
+        fetchData();
+    }, [id, userInfo]);
 
     const formatDateTime = (dateString) => {
         if (!dateString) return "정보 없음";
@@ -62,6 +118,32 @@ const BoardDetail = () => {
         }
     };
 
+    const handleLike = async () => {
+        if (hasLiked) return; // 이미 추천한 경우 실행 방지
+
+        const token = localStorage.getItem("authToken");
+        try {
+            await axios.post(
+                `http://localhost:8080/api/boards/${id}/like`,
+                null,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    params: { userIdx: userInfo.userIdx }, // userIdx 전달
+                }
+            );
+
+            // 추천 후 상태 업데이트
+            setHasLiked(true);
+            setBoard((prevBoard) => ({
+                ...prevBoard,
+                likeCount: (prevBoard.likeCount || 0) + 1, // 추천 수 증가
+            }));
+        } catch (error) {
+            console.error("추천 실패:", error);
+        }
+    };
+
+
     if (!board) {
         return <p>Loading...</p>;
     }
@@ -82,7 +164,7 @@ const BoardDetail = () => {
             {/* 닉네임 */}
             <p className="text-sm text-gray-600 mb-4">작성자: {board.nickname}</p>
 
-            {/* 수정일 (null이 아닌 경우만 노출) */}
+            {/* 수정일 */}
             {board.modDate && (
                 <p className="text-sm text-gray-500 mb-4">
                     수정일: {formatDateTime(board.modDate)}
@@ -92,8 +174,24 @@ const BoardDetail = () => {
             {/* 내용 */}
             <div
                 className="board-content text-gray-700 leading-relaxed mb-6"
-                dangerouslySetInnerHTML={{__html: board.content}} // HTML 렌더링
+                dangerouslySetInnerHTML={{__html: board.content}}
             />
+
+            {/* 추천 버튼 */}
+            <div className="flex justify-between mb-6">
+                <button
+                    onClick={handleLike}
+                    disabled={hasLiked} // 추천 완료 시 비활성화
+                    className={`px-4 py-2 rounded-md transition ${
+                        hasLiked
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-green-500 text-white hover:bg-green-600"
+                    }`}
+                >
+                    {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
+                </button>
+            </div>
+
 
             {/* 수정/삭제 버튼 */}
             {userInfo?.nickname === board.nickname && (

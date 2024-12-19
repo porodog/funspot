@@ -9,7 +9,7 @@ const BoardList = () => {
     const [searchType, setSearchType] = useState("titleContent"); // 검색 유형
     const [keyword, setKeyword] = useState(""); // 검색 키워드
     const [searchQuery, setSearchQuery] = useState({ type: "titleContent", keyword: "" }); // 실제 검색 쿼리
-    const pageSize = 5; // 페이지당 게시글 수
+    const pageSize = 10; // 페이지당 게시글 수
     const buttonsPerGroup = 10; // 한 번에 보여줄 페이지 버튼 수
 
     useEffect(() => {
@@ -133,7 +133,9 @@ const BoardList = () => {
                             <p className="text-sm text-gray-600 mt-1">
                                 {truncateText(stripHtmlTags(board.content), 60)} {/* HTML 제거 후 내용 60자 제한 */}
                             </p>
-                            <div className="text-xs text-gray-400">조회수: {board.viewCount}</div>
+                            <div className="text-xs text-gray-400">
+                                조회수: {board.viewCount} | 추천수: {board.likeCount}
+                            </div>
                         </li>
                     </Link>
                 ))}

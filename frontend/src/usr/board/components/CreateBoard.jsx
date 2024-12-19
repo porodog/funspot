@@ -8,11 +8,16 @@ import DOMPurify from "dompurify";
 
 // Quill Toolbar 설정
 const toolbarOptions = [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["image", "link"],
-    ["clean"],
+    [{ header: [1, 2, 3, false] }], // 헤더 옵션
+    ["bold", "italic", "underline", "strike"], // 텍스트 스타일
+    [
+        { align: "" }, // 좌측 정렬
+        { align: "center" }, // 중앙 정렬
+        { align: "right" }, // 우측 정렬
+    ],
+    [{ color: [] }], // 글 색상
+    ["image", "link"], // 이미지 및 링크 삽입
+    ["clean"], // 포맷 제거
 ];
 
 const CreateBoard = () => {
