@@ -22,7 +22,7 @@ const AddCoursePage = () => {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/usr/course/datecourses/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/usr/places`);
         setPlaces(response.data); // 데이터 설정
       } catch (err) {
         console.error("장소 불러오기 실패", err);
@@ -62,7 +62,7 @@ const AddCoursePage = () => {
 
   return (
     <BasicLayout>
-      <div className="container mx-auto px-6 py-10 bg-gray-50">
+      <div className="container mx-auto px-6 py-10">
         {/* 타이틀 */}
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           ✨ 새로운 코스 추가
@@ -145,6 +145,11 @@ const AddCoursePage = () => {
             />
           </div>
 
+          {/* 이미지 추가 */}
+          <div className="mb-6">
+            <label className="block text-gray-700 font-semibold mb-2">이미지 추가</label>
+
+          </div>
           {/* 장소 선택 */}
           <div className="mb-6">
             <h3 className="text-gray-700 font-semibold mb-2">장소 선택 (최소 2개)</h3>

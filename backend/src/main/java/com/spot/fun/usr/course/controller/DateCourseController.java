@@ -46,11 +46,12 @@ public class DateCourseController {
 
     // 모든 코스 목록 조회
     @GetMapping("/datecourses")
-    public ResponseEntity<Page<DateCourse>> getPagedCourses(
+    public ResponseEntity<List<DateCourse>> getPagedCourses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<DateCourse> courses = dateCourseService.getPagedCourses(page, size);
-        return ResponseEntity.ok(courses);
+//        Page<DateCourse> courses = dateCourseService.getPagedCourses(page, size);
+        List<DateCourse> course = dateCourseService.getAllCourses();
+        return ResponseEntity.ok(course);
     }
 
 

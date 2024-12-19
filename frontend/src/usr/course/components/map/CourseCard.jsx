@@ -1,6 +1,6 @@
 import React from "react";
 
-const CourseCard = ({ index, title, description, cost, time, latitude, longitude }) => {
+const CourseCard = ({ index, name, title, description, cost, time, latitude, longitude }) => {
   // 네이버 지도 길찾기 링크 생성
   const handleDirections = () => {
     const currentLat = 37.5665; // 출발지: 예시로 서울시청 위도
@@ -10,7 +10,7 @@ const CourseCard = ({ index, title, description, cost, time, latitude, longitude
   };
 
   return (
-    <div className="relative w-[250px] rounded-lg shadow-lg overflow-hidden bg-white">
+    <div className="relative w-[250px] mt-6 rounded-lg shadow-lg overflow-hidden bg-white">
       {/* 이미지 */}
       <div className="relative">
         <img
@@ -20,7 +20,7 @@ const CourseCard = ({ index, title, description, cost, time, latitude, longitude
         />
         {/* 상단 태그 */}
         <div className="absolute top-2 left-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
-          부천 중동시
+          {name}
         </div>
         {/* 순번 */}
         <div className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-teal-400 text-white font-bold text-sm rounded-full shadow-md">
