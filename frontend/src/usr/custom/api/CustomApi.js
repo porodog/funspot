@@ -16,13 +16,17 @@ export const registerDateCourse = async (course) => {
   return response.data;
 };
 
-export const getCustomList = async () => {
-  const response = await axios.get(`${API_BASE_URL}/api/usr/custom/list`);
+export const getCustomList = async (userIdx) => {
+  const response = await axios.get(`${API_BASE_URL}/api/usr/custom/list`, {
+    params: { userIdx },
+  });
   return response.data;
 };
 
-export const getCustomDetail = async (cno) => {
-  const response = await axios.get(`${API_BASE_URL}/api/usr/custom/${cno}`);
+export const getCustomDetail = async (cno, userIdx) => {
+  const response = await axios.get(`${API_BASE_URL}/api/usr/custom/${cno}`, {
+    params: { userIdx },
+  });
   return response.data;
 };
 

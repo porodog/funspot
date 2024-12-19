@@ -2,12 +2,16 @@ package com.spot.fun.usr.course.service;
 
 import com.spot.fun.usr.course.model.DateCourse;
 import com.spot.fun.usr.course.repository.DateCourseRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Log4j2
 @Service
 public class DateCourseService {
 
@@ -19,8 +23,11 @@ public class DateCourseService {
     }
 
     // 코스 추가
+    @Transactional
     public DateCourse addCourse(DateCourse dateCourse) {
+        log.info("Attempting : {}", dateCourse);
         return dateCourseRepository.save(dateCourse);
+//        log.info("DateCourse saved successfully with ID: {}", .getId());
     }
 
     // 코스 정보 조회
@@ -41,5 +48,13 @@ public class DateCourseService {
             return "위도: " + dateCourse.getLatitude() + ", 경도: " + dateCourse.getLongitude();
         }
         return "코스를 찾을 수 없습니다.";
+    }
+
+    public Page<DateCourse> getPagedCourses(int page, int size) {
+        return null;
+    }
+
+    public List<DateCourse> searchCourses(String keyword) {
+        return null;
     }
 }

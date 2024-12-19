@@ -15,7 +15,7 @@ import java.util.List;
 // 채팅방 조회, 채팅방 삭제, 채팅방 전체 리스트 조회 로직
 @Service
 @RequiredArgsConstructor
-public class ChatRoomService implements ChatService{
+public class ChatRoomService{
     private final ChatRoomRepository chatRoomRepository;
     private final UserServiceImpl userService;
 

@@ -7,9 +7,9 @@ import com.spot.fun.usr.custom.dto.CustomDTO;
 public interface CustomService {
       Long register(CustomDTO customDTO);
 
-    CustomDTO get(Long cno);
+    CustomDTO get(Long cno, Long userIdx);
 
-    List<CustomDTO> list();
+    List<CustomDTO> list(Long userIdx);
 
     void update(Long cno, CustomDTO customDTO);
 

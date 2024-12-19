@@ -19,6 +19,8 @@ public class PlaceDTO {
   private Double longitude;
   private String description;
   private Integer estimatedCost;
-  private Integer durationMinutes; 
+  private Integer durationMinutes;
+  private String category;
+  private String simpleAddress;
   
 }

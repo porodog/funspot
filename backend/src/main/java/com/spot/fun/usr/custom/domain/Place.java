@@ -38,6 +38,8 @@ public class Place {
   private String description;
   private Integer estimatedCost;  
   private Integer durationMinutes;
+  private String category;
+  private String simpleAddress;
 
   @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomPlace> customPlaces = new ArrayList<>();

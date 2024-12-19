@@ -3,24 +3,40 @@ import { Navigate } from "react-router-dom";
 
 const Loading = <div>Loading...</div>;
 const AddCoursePage = lazy(() => import("../page/AddCoursePage.js"));
+const DetailPage = lazy(() => import("../page/Detail.jsx"));
+const MapComponent = lazy(() => import("../components/map/MapComponent.js")); // 지도 컴포넌트 추가
 
 const DateRouter = () => {
-  return (
-    [
-      {
-        path: "addcourse", // 상대 경로로 설정되도록
-        element: (
-          <Suspense fallback={Loading}>
-            <AddCoursePage />
-          </Suspense>
-        ),
-      },
-      {
-        path: "", // 기본 경로에서 리다이렉트
-        element: <Navigate replace to="/addcourse" />, // /datecourses -> /datecourses/addcourse 로 리다이렉트
-      },
-    ]
-  );
+  return [
+    {
+      path: "addcourse",
+      element: (
+        <Suspense fallback={Loading}>
+          <AddCoursePage />
+        </Suspense>
+      ),
+    },
+    {
+      path: "course/:id",
+      element: (
+        <Suspense fallback={Loading}>
+          <DetailPage />
+        </Suspense>
+      ),
+    },
+    {
+      path: "map", // 지도 경로 추가
+      element: (
+        <Suspense fallback={Loading}>
+          <MapComponent />
+        </Suspense>
+      ),
+    },
+    {
+      path: "",
+      element: <Navigate replace to="addcourse" />,
+    },
+  ];
 };
 
 export default DateRouter;

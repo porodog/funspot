@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCustomDetail, deleteCustom } from "../api/CustomApi";
+import { addWishList, removeWishList } from "../api/WishListApi";
+import { useBasic } from "../../../common/context/BasicContext";
 import user from "../img/user.png";
 import vector from "../img/Vector.png";
+import locate from "../img/locate.png";
+import restaurant from "../img/Restaurant.png";
+import cafe from "../img/Cafe.png";
+import exercise from "../img/Exercise.png";
+import walk from "../img/Walk.png";
+import basic from "../img/Basic.png";
 
 const ReadComponent = () => {
   const mapElement = useRef(null);
@@ -12,10 +20,13 @@ const ReadComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { userInfo } = useBasic();
+  const loginUserIdx = userInfo?.userIdx || "";
+
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const data = await getCustomDetail(cno);
+        const data = await getCustomDetail(cno, loginUserIdx);
         setCustom(data);
       } catch (err) {
         setError(err.message);
@@ -25,7 +36,7 @@ const ReadComponent = () => {
     };
 
     fetchDetail();
-  }, [cno]);
+  }, [cno, loginUserIdx]);
 
   useEffect(() => {
     if (!mapElement.current || !custom || custom.places.length === 0) return;
@@ -57,34 +68,74 @@ const ReadComponent = () => {
       for (let i = 0; i < pathCoords.length; i++) {
         const position = pathCoords[i];
 
+        const categoryIcons = {
+          식당: restaurant,
+          카페: cafe,
+          체험: exercise,
+          명소: walk,
+          기본: basic,
+        };
+
         new naver.maps.Marker({
           position: position,
           map: map,
           icon: {
             content: `
-               <div style="
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        background-color: #00E5E5; /* 마커 배경 색상 */
-        border-radius: 50% 50% 50% 0; /* 아래쪽이 뾰족한 핀 형태 */
-        transform: rotate(-45deg); /* 회전하여 핀 모양 구현 */
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* 그림자 추가 */
-      ">
-        <div style="
-          transform: rotate(45deg); /* 내부 컨텐츠 회전 복구 */
-          font-size: 20px;
-          font-weight: bold;
-          color: white;
-        ">
-          ${i + 1} <!-- 마커 번호 -->
-        </div>
-      </div>
+              <div style="
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                background-color: #00E5E5; /* 마커 배경 색상 */
+                border-radius: 50% 50% 50% 0; /* 핀 형태 */
+                transform: rotate(-45deg);
+                box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3); /* 그림자 추가 */
+              ">
+                <!-- 내부 아이콘 -->
+                <div style="
+                  position: absolute;
+                  width: 30px;
+                  height: 30px;
+                  background-color: #FFFFFF; /* 아이콘 배경색 흰색 */
+                  border-radius: 50%; /* 원형 */
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  transform: rotate(45deg); /* 회전 복구 */
+                ">
+                  <img src="${
+                    categoryIcons[custom.places.category] ||
+                    categoryIcons["기본"]
+                  }" alt="아이콘" style="
+                    width: 18px;
+                    height: 18px;
+                  "/>
+                </div>
+        
+                <!-- 마커 번호 -->
+                <div style="
+                  position: absolute;
+                  top: -12px;
+                  left: 4px;
+                  width: 20px;
+                  height: 20px;
+                  background-color: #2C3E50; /* 번호 배경색 */
+                  color: white;
+                  border-radius: 50%;
+                  font-size: 12px;
+                  font-weight: bold;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  transform: rotate(45deg);
+                ">
+                  ${i + 1} <!-- 번호 -->
+                </div>
+              </div>
             `,
-            anchor: new naver.maps.Point(20, 50), // 마커 위치 조정
+            anchor: new naver.maps.Point(25, 60), // 마커 위치 조정
           },
         });
 
@@ -121,9 +172,36 @@ const ReadComponent = () => {
     }
   };
 
+  // 🔥 찜하기 / 찜 취소 토글 함수
+  const handleWishListToggle = async () => {
+    try {
+      const updatedWishListStatus = !custom.wishList; // 🔥 변경된 상태
+      setCustom((prevCustom) => ({
+        ...prevCustom,
+        wishList: updatedWishListStatus,
+      }));
+
+      if (custom.wishList) {
+        await removeWishList(loginUserIdx, cno);
+        alert("찜이 취소되었습니다.");
+      } else {
+        await addWishList(loginUserIdx, cno);
+        alert("찜에 추가되었습니다.");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      setCustom((prevCustom) => ({
+        ...prevCustom,
+        wishList: !prevCustom.wishList,
+      })); // 🔥 실패하면 상태를 되돌림
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!custom) return <div>No detail found.</div>;
+
+  console.log(custom.wishList);
 
   return (
     <div>
@@ -138,6 +216,15 @@ const ReadComponent = () => {
         }}
       />
       <h1 className="text-2xl font-bold mb-2">{custom.title}</h1>
+      <button
+        onClick={handleWishListToggle}
+        className={`px-4 py-2 text-white rounded ${
+          custom.wishList ? "bg-red-500" : "bg-blue-500"
+        }`}
+      >
+        {custom.wishList ? "찜 취소" : "찜하기"}
+      </button>
+
       <div className="flex space-x-2 mb-4">
         {custom.tags.map((tag) => (
           <span class="px-4 py-1 text-sm font-semibold text-custom-cyan border border-custom-cyan rounded-full">
@@ -149,7 +236,7 @@ const ReadComponent = () => {
       </div>
       <div className="container mx-auto px-4">
         {/* 카드 그리드 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {custom.places.map((place, index) => (
             <div
               key={index}
@@ -163,15 +250,26 @@ const ReadComponent = () => {
                   className="w-full h-40 object-cover"
                 />
 
-                {/* 정보 텍스트와 버튼 */}
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between items-center px-4 py-2 text-white">
-                  {/* 번호와 이름 */}
-                  <div>
-                    <p className="text-lg font-bold">0{index + 1}</p>
-                    <p className="text-base">{place.name}</p>
-                  </div>
+                {/* 왼쪽 상단에 아이콘과 추가 텍스트 */}
+                <div className="absolute top-1 left-1 flex items-center bg-black/60 text-white px-1.5 py-0.5 rounded text-xs">
+                  {/* 아이콘 */}
+                  <img src={locate} alt="위치" className="w-3 h-3 mr-0.5" />
+                  {/* 텍스트 */}
+                  <span>{place.simpleAddress}</span>
+                </div>
 
-                  {/* 길찾기 버튼 */}
+                {/* 번호 */}
+                <div className="absolute bottom-6 left-2 text-white text-xl font-bold">
+                  {index + 1}
+                </div>
+
+                {/* 장소 이름 */}
+                <p className="absolute bottom-2 left-2 text-white text-sm font-semibold">
+                  {place.name}
+                </p>
+
+                {/* 하단 오른쪽에 길찾기 버튼 */}
+                <div className="absolute bottom-2 right-2">
                   <button
                     onClick={() =>
                       window.open(

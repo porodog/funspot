@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import DetailModal from "../../../feed/modal/DetailModal";
 import { feedLikeApi } from "../../../feed/api/FeedApi";
 import ImageComponent from "./ImageComponent";
+import { BiMessageAltDots } from "react-icons/bi";
 
 const ListComponent = () => {
   const { userIdx } = useParams();
@@ -151,16 +152,28 @@ const ListComponent = () => {
 
   return (
     <>
-      <div className="w-full grid grid-cols-3 gap-3 mx-auto">
-        {/* 게시물 카드 */}
-        {likeList.map((feed) => (
-          <ImageComponent
-            key={feed.idx}
-            feed={feed}
-            openDetailModal={openDetailModal}
-          />
-        ))}
-      </div>
+      {/* 게시물 카드 */}
+      {(likeList ?? []).length > 0 ? (
+        <div className="w-full grid grid-cols-3 gap-3 mx-auto">
+          {likeList.map((feed) => (
+            <ImageComponent
+              key={feed.idx}
+              feed={feed}
+              openDetailModal={openDetailModal}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="w-full h-full 
+          my-10 py-10
+        flex flex-col justify-center items-center 
+        text-gray-600 space-y-4 "
+        >
+          <BiMessageAltDots className="text-4xl" />
+          <span className="font-semibold text-xl">등록된 정보가 없습니다</span>
+        </div>
+      )}
 
       {(selectedFeed.idx ?? null) && isDetailModalOpen && (
         <DetailModal

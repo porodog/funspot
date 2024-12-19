@@ -227,7 +227,7 @@ const ListComponent = () => {
         text-gray-600 space-y-4 "
         >
           <BiMessageAltDots className="text-4xl" />
-          <span className="font-semibold text-xl">등록된 피드 없습니다</span>
+          <span className="font-semibold text-xl">등록된 정보가 없습니다</span>
         </div>
       )}
 

@@ -43,7 +43,9 @@ export const postSocialSignupApi = async (param) => {
     return { status: res.status, data: res.data };
   } catch (err) {
     console.error("API error:", err);
-    const status = err.response ? err.response.status : 500;
-    return { status, data: err.response ? err.response.data : "Unknown error" };
+    const status = err.response?.status || 500; // Optional chaining 사용
+    const message =
+      err.response?.data?.message || "서버에서 알 수 없는 에러가 발생했습니다.";
+    return { status, data: { message } }; // 항상 일관된 객체 구조로 반환
   }
 };

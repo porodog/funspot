@@ -18,6 +18,9 @@ public class CustomDTO {
     private String title;
     private String description;
     private List<PlaceDTO> places;
-    private List<String> tags;   
+    private List<String> tags;
+
+    @Builder.Default
+    private boolean wishList = false;
     
 }

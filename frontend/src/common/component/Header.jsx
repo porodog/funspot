@@ -4,6 +4,8 @@ import { useBasic } from "../context/BasicContext";
 import { postLogoutApi } from "../../usr/login/api/LogoutApi";
 import Logo from "../img/FunSpotLogo.jpg";
 import Dropdown from "./Dropdown";
+import PasswordCheckModal from "../editinformation/PasswordCheckModal";
+import UserEditModal from "../editinformation/UserEditModal";
 
 const Header = () => {
   const { userInfo, setUserInfo } = useBasic();
@@ -21,6 +23,19 @@ const Header = () => {
   };
 
   const [view, setView] = useState(false);
+  const [isPasswordModalOpen, setPasswordModalOpen] = useState(false); // 비밀번호 확인 모달 열림 상태
+  const [isEditModalOpen, setEditModalOpen] = useState(false); // 회원정보 수정 모달 열림 상태
+
+  // 비밀번호 확인 성공 시 호출
+  const handlePasswordSuccess = () => {
+    setPasswordModalOpen(false);
+    setEditModalOpen(true);
+  };
+
+  // 회원정보 수정 모달 닫기
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+  };
 
   return (
     <header className="bg-white text-black p-4 mb-4 shadow-md rounded-md">
@@ -37,16 +52,24 @@ const Header = () => {
               }}
               className="flex items-center cursor-pointer relative"
             >
-              <span className="mr-2 text-gray-800 font-medium">{userInfo.nickname}님</span>
+              <span className="mr-2 text-gray-800 font-medium">
+                {userInfo.nickname}님
+              </span>
               <span
-                className={`text-lg font-semibold transition-transform duration-500 ease-in-out transform ${view ? "rotate-180 translate-y-1 text-green-600" : "translate-y-0 text-gray-600"
-                  }`}
+                className={`text-lg font-semibold transition-transform duration-500 ease-in-out transform ${
+                  view
+                    ? "rotate-180 translate-y-1 text-green-600"
+                    : "translate-y-0 text-gray-600"
+                }`}
               >
                 {view ? "▲" : "▼"}
               </span>
-
-
-              {view && <Dropdown handleLogout={handleLogout} />}
+              {view && (
+                <Dropdown
+                  handleLogout={handleLogout}
+                  onOpenPasswordModal={() => setPasswordModalOpen(true)}
+                /> // 비밀번호 확인 모달 열기
+              )}
             </ul>
           ) : (
             <ul className="flex items-center">
@@ -63,6 +86,17 @@ const Header = () => {
           )}
         </div>
       </div>
+
+      {/* 비밀번호 확인 모달 */}
+      {isPasswordModalOpen && (
+        <PasswordCheckModal
+          onSuccess={handlePasswordSuccess}
+          onClose={() => setPasswordModalOpen(false)}
+        />
+      )}
+
+      {/* 회원정보 수정 모달 */}
+      {isEditModalOpen && <UserEditModal onClose={handleCloseEditModal} />}
     </header>
   );
 };
