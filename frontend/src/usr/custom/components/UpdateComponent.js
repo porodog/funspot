@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { searchPlaces, updateCustom, getCustomDetail } from "../api/CustomApi";
 import { useParams, useNavigate } from "react-router-dom";
-import user from "../img/user.png";
+
+import Place from "../img/Place.png";
 
 const WITH_TAGS = [
   "연인과",
@@ -75,8 +76,12 @@ const UpdateComponent = () => {
   // 주소로 장소 검색
   const handleSearch = async () => {
     try {
-      const data = await searchPlaces(address);
-      setPlaces(data);
+      const data = await searchPlaces(address); // 🔥 주소로 장소 검색
+      // 🔥 이미 선택된 장소는 제외하는 필터 추가
+      const filteredData = data.filter(
+        (place) => !selectedPlaces.some((selected) => selected.id === place.id)
+      );
+      setPlaces(filteredData); // 선택된 장소가 제외된 목록만 추가
     } catch (error) {
       console.error("Error fetching places:", error);
       alert("Failed to fetch places. Please try again.");
@@ -86,14 +91,24 @@ const UpdateComponent = () => {
   // 장소 선택
   // 장소 추가
   const handleAddPlace = (place) => {
+    if (selectedPlaces.length >= 5) {
+      alert("최대 5개의 장소만 추가할 수 있습니다.");
+      return;
+    }
     setSelectedPlaces([...selectedPlaces, place]); // 선택된 장소에 추가
     setPlaces(places.filter((p) => p.id !== place.id)); // 장소 목록에서 제거
   };
 
   // 장소 삭제
   const handleRemovePlace = (place) => {
-    setPlaces([...places, place]); // 장소 목록에 다시 추가
-    setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id)); // 선택된 장소에서 제거
+    // 🔥 이미 목록에 존재하지 않는 경우에만 추가
+    const isPlaceExists = places.some((p) => p.id === place.id);
+    if (!isPlaceExists) {
+      setPlaces([...places, place]); // 중복되지 않으면 장소 추가
+    }
+
+    // 선택된 장소에서 제거
+    setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id));
   };
 
   // 태그 선택/해제 핸들러
@@ -184,7 +199,7 @@ const UpdateComponent = () => {
 
                     {/* 원형 이미지 */}
                     <img
-                      src={user}
+                      src={Place}
                       alt={place.name}
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-md"
                     />
@@ -207,7 +222,7 @@ const UpdateComponent = () => {
                 {places.map((place) => (
                   <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-sm">
                     <img
-                      src={user}
+                      src={Place}
                       alt="user"
                       className="w-full h-40 object-cover"
                     />

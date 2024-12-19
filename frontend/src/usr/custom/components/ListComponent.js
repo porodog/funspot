@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCustomList } from "../api/CustomApi";
-import user from "../img/user.png";
 import { Link } from "react-router-dom";
+import Place from "../img/Place.png";
 
 const ListComponent = () => {
   const [customs, setCustoms] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +38,12 @@ const ListComponent = () => {
       <h1 className="text-3xl font-bold text-center mb-8">
         유저들이 만든 코스에요
       </h1>
+      <button
+        onClick={() => navigate("/custom/add")}
+        className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer"
+      >
+        코스 만들기
+      </button>
 
       {customs.length > 0 ? (
         <div className="p-4">
@@ -44,16 +53,19 @@ const ListComponent = () => {
                 {/* 이미지 영역 */}
                 <div className="grid grid-cols-5 gap-1">
                   {custom.places.map((place, index) => (
-                    <div key={index} className="relative">
+                    <div
+                      key={index}
+                      className="relative p-2 bg-white rounded-lg overflow-hidden"
+                    >
                       <img
-                        src={user}
+                        src={Place}
                         alt={place.name}
-                        className="w-full h-32 object-cover"
+                        className="w-full h-32 object-cover rounded-lg"
                       />
-                      <div className="absolute bottom-6 left-2 text-white text-xl font-bold">
+                      <div className="absolute bottom-6 left-4 text-white text-xl font-bold">
                         {index + 1}
                       </div>
-                      <p className="absolute bottom-2 left-2 text-white text-sm font-semibold">
+                      <p className="absolute bottom-2 left-4 text-white text-sm font-semibold">
                         {place.name}
                       </p>
                     </div>
@@ -69,7 +81,7 @@ const ListComponent = () => {
                 </div>
 
                 {/* 코스 정보 */}
-                <div className="p-6">
+                <div className="p-4">
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
                     {custom.title}
                   </h3>

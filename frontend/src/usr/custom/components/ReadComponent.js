@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getCustomDetail, deleteCustom } from "../api/CustomApi";
 import { addWishList, removeWishList } from "../api/WishListApi";
 import { useBasic } from "../../../common/context/BasicContext";
-import user from "../img/user.png";
 import vector from "../img/Vector.png";
 import locate from "../img/locate.png";
 import restaurant from "../img/Restaurant.png";
@@ -11,6 +10,9 @@ import cafe from "../img/Cafe.png";
 import exercise from "../img/Exercise.png";
 import walk from "../img/Walk.png";
 import basic from "../img/Basic.png";
+import addwish from "../img/addWish.png";
+import removewish from "../img/removeWish.png";
+import Place from "../img/Place.png";
 
 const ReadComponent = () => {
   const mapElement = useRef(null);
@@ -68,6 +70,8 @@ const ReadComponent = () => {
       for (let i = 0; i < pathCoords.length; i++) {
         const position = pathCoords[i];
 
+        const place = custom.places[i];
+
         const categoryIcons = {
           식당: restaurant,
           카페: cafe,
@@ -106,8 +110,7 @@ const ReadComponent = () => {
                   transform: rotate(45deg); /* 회전 복구 */
                 ">
                   <img src="${
-                    categoryIcons[custom.places.category] ||
-                    categoryIcons["기본"]
+                    categoryIcons[place.category] || categoryIcons["기본"]
                   }" alt="아이콘" style="
                     width: 18px;
                     height: 18px;
@@ -183,10 +186,10 @@ const ReadComponent = () => {
 
       if (custom.wishList) {
         await removeWishList(loginUserIdx, cno);
-        alert("찜이 취소되었습니다.");
+        alert("위시리스트에서 삭제되었습니다.");
       } else {
         await addWishList(loginUserIdx, cno);
-        alert("찜에 추가되었습니다.");
+        alert("위시리스트에 추가되었습니다.");
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
@@ -201,29 +204,37 @@ const ReadComponent = () => {
   if (error) return <div>Error: {error}</div>;
   if (!custom) return <div>No detail found.</div>;
 
-  console.log(custom.wishList);
-
   return (
     <div>
       <div
         ref={mapElement}
         style={{
           width: "1150px",
-          height: "440px",
+          height: "400px",
           border: "0",
           borderRadius: "25px",
-          marginBottom: "20px",
+          marginBottom: "10px",
         }}
       />
-      <h1 className="text-2xl font-bold mb-2">{custom.title}</h1>
-      <button
-        onClick={handleWishListToggle}
-        className={`px-4 py-2 text-white rounded ${
-          custom.wishList ? "bg-red-500" : "bg-blue-500"
-        }`}
-      >
-        {custom.wishList ? "찜 취소" : "찜하기"}
-      </button>
+      <div className="flex items-center justify-between mb-2">
+        {/* 제목 */}
+        <h1 className="text-2xl font-bold">{custom.title}</h1>
+
+        {/* 버튼 */}
+        <button
+          onClick={handleWishListToggle}
+          className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-500 hover:text-gray-700 transition"
+        >
+          {/* 하트 이미지 */}
+          <img
+            src={custom.wishList ? addwish : removewish} // 조건부 렌더링
+            alt={custom.wishList ? "찜 취소" : "찜하기"}
+            className="w-5 h-5"
+          />
+          {/* 텍스트 */}
+          <span>{custom.wishList ? "찜 취소" : "찜하기"}</span>
+        </button>
+      </div>
 
       <div className="flex space-x-2 mb-4">
         {custom.tags.map((tag) => (
@@ -245,7 +256,7 @@ const ReadComponent = () => {
               {/* 이미지 */}
               <div className="relative">
                 <img
-                  src={user}
+                  src={Place}
                   alt={place.name}
                   className="w-full h-40 object-cover"
                 />
@@ -281,7 +292,7 @@ const ReadComponent = () => {
                     className="flex flex-col items-center justify-center bg-blue-500 hover:bg-blue-700 text-white font-bold w-12 h-12 rounded-full"
                   >
                     <img src={vector} alt="길찾기" className="w-4 h-4 mb-1" />
-                    <span className="text-[10px] font-bold">길 찾기</span>
+                    <span className="text-[10px] font-bold">길찾기</span>
                   </button>
                 </div>
               </div>

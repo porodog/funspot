@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { searchPlaces, registerDateCourse } from "../api/CustomApi";
-import user from "../img/user.png";
+import Place from "../img/Place.png";
 
 const WITH_TAGS = [
   "연인과",
@@ -141,7 +141,7 @@ const AddComponent = () => {
               />
               {/* 버튼 */}
               <button
-                className="flex-shrink-0 basis-[15%] px-4 py-3 bg-custom-cyan text-white rounded-full hover:bg-custom-cyan-dark transition"
+                className="flex-shrink-0 basis-[15%] px-4 py-3 bg-custom-cyan text-white rounded-full hover:bg-emerald-500 transition duration-200 cursor-pointer"
                 onClick={handleSearch}
               >
                 검색
@@ -169,7 +169,7 @@ const AddComponent = () => {
 
                     {/* 원형 이미지 */}
                     <img
-                      src={user}
+                      src={Place}
                       alt={place.name}
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-md"
                     />
@@ -192,7 +192,7 @@ const AddComponent = () => {
                 {places.map((place) => (
                   <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-sm">
                     <img
-                      src={user}
+                      src={Place}
                       alt="user"
                       className="w-full h-40 object-cover"
                     />
@@ -202,7 +202,7 @@ const AddComponent = () => {
                       </h3>
                       <button
                         onClick={() => handleAddPlace(place)}
-                        className="w-full py-2 rounded-md text-sm font-bold bg-custom-cyan text-white hover:bg-custom-cyan/80 transition"
+                        className="w-full py-2 rounded-md text-sm font-bold bg-custom-cyan text-white hover:bg-emerald-500 transition duration-200 cursor-pointer"
                       >
                         코스에 추가하기
                       </button>

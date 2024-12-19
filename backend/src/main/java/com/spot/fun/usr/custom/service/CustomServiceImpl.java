@@ -143,13 +143,18 @@ public void update(Long cno, CustomDTO customDTO) {
     customRepository.save(existingCustom);
 }
 
-@Override
-public void delete(Long cno) {
-    Custom custom = customRepository.findById(cno)
-        .orElseThrow(() -> new RuntimeException("존재하지 않는 코스입니다."));
+   @Transactional
+   @Override
+   public void delete(Long cno) {
+      Custom custom = customRepository.findById(cno)
+              .orElseThrow(() -> new RuntimeException("존재하지 않는 코스입니다."));
 
-    customRepository.delete(custom); // 🔥 삭제 수행
-}
+      // 🔥 실제 삭제 대신 delYn 플래그를 Y로 변경
+      custom.markAsDeleted();
+
+      // 🔥 변경사항 저장 (이전의 delete 대신)
+      customRepository.save(custom);
+   }
 
     
 }
