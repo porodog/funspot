@@ -8,7 +8,11 @@ axios.defaults.withCredentials = true; // 쿠키사용여부 설정
 
 // 커스텀 훅: usePostTokenCheck
 const usePostTokenCheck = () => {
-  const { setUserInfo, setTokenLoading } = useBasic(); // Context에서 setUserIdx를 가져옴
+  const { userInfo, setUserInfo, setTokenLoading } = useBasic(); // Context에서 setUserIdx를 가져옴
+
+  useEffect(() => {
+    console.log("Updated userInfo:", userInfo);
+  }, [userInfo]);
 
   useEffect(() => {
     // postTokenCheck 함수 호출
@@ -22,7 +26,10 @@ const usePostTokenCheck = () => {
         // setUserInfo(res.data); // 상태 업데이트
         // setNickname(res.data.nickname); // 닉네임 업데이트
         if (res.status === 200 && res.data) {
-          setUserInfo(res.data); // 토큰이 유효한 경우 사용자 정보 설정
+          setUserInfo({
+            ...res.data, // 기존 데이터
+            provider: res.data.provider || null, // provider 값 포함
+          });
         } else {
           setUserInfo(null); // 토큰이 없거나 유효하지 않은 경우 초기화
         }

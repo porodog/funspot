@@ -61,6 +61,14 @@ public class User implements UserDetails {
     @Column
     private String provider;
 
+    @Column(name = "use_yn", nullable = false)
+    private String useYn = "Y"; // 기본값: 활성 상태 ('Y' → 활성, 'N' → 비활성)
+
+    // 회원 비활성화 메서드 추가
+    public void deactivate() {
+        this.useYn = "N";
+    }
+
     @CreationTimestamp
     @Column(name = "reg_date")
     private LocalDateTime regDate;

@@ -70,6 +70,11 @@ export default function PasswordCheckModal({ onSuccess, onClose }) {
           className="border w-full p-2 mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleCheckPassword();
+            }
+          }}
         />
         {error && <p className="text-red-500 mb-2">{error}</p>}
         <div className="flex justify-between">

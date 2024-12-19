@@ -37,6 +37,7 @@ public class UserDTO {
                 .zonecode(user.getZonecode())
                 .address(user.getAddress())
                 .detaileAdd(user.getDetaileAdd())
+                .provider(user.getProvider())
                 .build();
     }
 

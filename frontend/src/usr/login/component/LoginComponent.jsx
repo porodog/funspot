@@ -87,7 +87,14 @@ const LoginComponent = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-5 bg-white">
       <h1 className="mb-6 text-2xl font-bold">로그인</h1>
-      <form className="flex flex-col items-center" id="login-form">
+      <form
+        className="flex flex-col items-center"
+        id="login-form"
+        onSubmit={(e) => {
+          e.preventDefault(); // 기본 제출 동작 방지
+          doLogin(); // 로그인 함수 실행
+        }}
+      >
         <div className="mb-4">
           <input
             type="text"
@@ -143,8 +150,7 @@ const LoginComponent = () => {
           )}
         </div>
         <button
-          type="button"
-          onClick={doLogin}
+          type="submit"
           className="mb-2 p-2 w-80 bg-custom-cyan  text-white rounded-3xl cursor-pointer hover:bg-emerald-500"
         >
           로그인

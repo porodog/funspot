@@ -1,10 +1,12 @@
 package com.spot.fun.usr.user.controller;
 
 import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
 import com.spot.fun.usr.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +42,13 @@ public class EditUserInfoController {
   public ResponseEntity<?> getUserProfile(Principal principal) {
     String loggedInUserId = principal.getName();
     UserDTO userProfile = userService.findUserProfile(loggedInUserId); // 비밀번호 제외
+
+    // 소셜 회원은 비밀번호 관련 필드 제거
+    if (!"LOCAL".equals(userProfile.getProvider())) {
+      userProfile.setPassword(null);
+      userProfile.setNewPassword(null);
+    }
+
     return ResponseEntity.ok(userProfile);
   }
 
@@ -68,5 +77,31 @@ public class EditUserInfoController {
     return ResponseEntity.ok(Map.of("isDuplicate", isDuplicate));
   }
 
+
+  @PostMapping("/verify-password")
+  public ResponseEntity<?> verifyPassword(@RequestBody Map<String, String> request) {
+    try {
+      // 요청에서 비밀번호 가져오기
+      String password = request.get("password");
+      if (password == null || password.isEmpty()) {
+        return ResponseEntity.badRequest().body(Map.of("message", "비밀번호를 입력해주세요."));
+      }
+
+      // 로그인된 사용자 정보 가져오기 (SecurityContext 사용)
+      User user = userService.getCurrentUser()
+              .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+      // 비밀번호 확인
+      boolean isPasswordValid = userService.checkPassword(user.getUserId(), password);
+      if (!isPasswordValid) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "비밀번호가 올바르지 않습니다."));
+      }
+
+      return ResponseEntity.ok(Map.of("message", "비밀번호 확인 성공"));
+    } catch (Exception e) {
+      log.error("비밀번호 확인 중 오류 발생:", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다."));
+    }
+  }
 
 }

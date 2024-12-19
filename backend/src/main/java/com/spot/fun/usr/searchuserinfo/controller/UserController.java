@@ -48,4 +48,15 @@ public class UserController {
               .body(Map.of("error", "비밀번호 변경 중 문제가 발생했습니다."));
     }
   }
+
+  @PostMapping("/deactivate")
+  public ResponseEntity<?> deactivateUser(@RequestBody Long userIdx) {
+    try {
+      userService.deactivateUser(userIdx);
+      return ResponseEntity.ok(Map.of("message", "회원 탈퇴가 완료되었습니다."));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    }
+  }
+
 }

@@ -14,13 +14,15 @@ public class AuthTokenDTO {
     private String accessToken;
     private String refreshToken;
     private String nickname;
+    private String useYn;
 
     @Builder
-    public AuthTokenDTO(String accessToken, String refreshToken, String nickname, Long idx) {
+    public AuthTokenDTO(String accessToken, String refreshToken, String nickname, Long idx, String useYn) {
 //        this.refreshToken = authToken.getRefreshToken();
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.nickname = nickname;
+        this.useYn = useYn;
         this.idx = idx;
     }
 }

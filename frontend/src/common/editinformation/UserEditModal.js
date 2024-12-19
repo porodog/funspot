@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AddressModal from "../signupmodal/AddressModal";
 import usePostTokenCheck from "../hook/usePostTokenCheck";
+import { sendEmailVerificationApi } from "../../usr/signup/api/SignupApi";
 
 export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 axios.defaults.baseURL = API_BASE_URL;
@@ -24,10 +25,16 @@ export default function UserEditModal({ onClose }) {
     detaileAdd: "",
     newPassword: "",
     confirmPassword: "",
+    provider: "",
   });
   const [originalPhone, setOriginalPhone] = useState("");
   const [isPhoneChecked, setIsPhoneChecked] = useState(true); // 핸드폰 중복 확인 상태
   const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 탈퇴 모달 상태
+  const [passwordForDelete, setPasswordForDelete] = useState(""); // 탈퇴용 비밀번호
+  const [verificationCode, setVerificationCode] = useState(""); // 사용자 입력 인증 코드
+  const [serverCode, setServerCode] = useState(""); // 서버에서 반환한 인증 코드
+  const [isEmailVerified, setIsEmailVerified] = useState(false); // 이메일 인증 상태
 
   // 유효성 검사
   useEffect(() => {
@@ -92,13 +99,12 @@ export default function UserEditModal({ onClose }) {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("/api/user/profile");
+        const response = await axios.get("/api/user/profile"); // 서버에서 사용자 정보 가져오기
         setUserInfo({
           ...response.data,
           newPassword: "",
           confirmPassword: "",
         });
-        setOriginalPhone(response.data.phone);
       } catch (err) {
         console.error("회원 정보 불러오기 실패", err);
       }
@@ -141,6 +147,65 @@ export default function UserEditModal({ onClose }) {
     }
   };
 
+  const handleSendEmail = async () => {
+    try {
+      const response = await sendEmailVerificationApi({
+        email: userInfo.email,
+      });
+      setServerCode(response.data.verificationCode);
+      alert("인증 코드가 이메일로 전송되었습니다.");
+    } catch (err) {
+      console.error("이메일 인증 코드 전송 실패:", err);
+      alert("이메일 인증 코드 전송에 실패했습니다.");
+    }
+  };
+
+  const handleVerifyCode = () => {
+    if (verificationCode === serverCode) {
+      setIsEmailVerified(true);
+      alert("이메일 인증이 완료되었습니다.");
+    } else {
+      alert("인증 코드가 일치하지 않습니다.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      if (userInfo.provider === "LOCAL") {
+        // 자체 회원 비밀번호 확인
+        const response = await axios.post("/api/usr/verify-password", {
+          password: passwordForDelete,
+        });
+        if (response.status !== 200) {
+          alert("비밀번호가 올바르지 않습니다.");
+          return;
+        }
+      } else if (!isEmailVerified) {
+        // 소셜 회원 이메일 인증 확인
+        alert("이메일 인증을 완료해주세요.");
+        return;
+      }
+
+      // 회원 탈퇴 요청 (비활성화 처리)
+      const deactivateResponse = await axios.post(
+        "/api/usr/searchuserinfo/deactivate",
+        {
+          userIdx: userInfo.idx,
+        }
+      );
+
+      if (deactivateResponse.status === 200) {
+        alert("탈퇴처리가 정상적으로 완료되었습니다.");
+        onClose();
+      } else {
+        alert("탈퇴 요청에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("회원 탈퇴 실패:", err);
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 overflow-auto">
       <div className="relative bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
@@ -172,27 +237,25 @@ export default function UserEditModal({ onClose }) {
             readOnly
             className="border w-full p-2 rounded bg-gray-100 text-gray-500"
           />
-
-          {/* 수정 가능 필드 */}
-          <input
-            name="newPassword"
-            placeholder="영문, 숫자, 특수문자 포함 8~16자"
-            className="border w-full p-2 rounded"
-            type="password"
-            onChange={handleChange}
-          />
-          {errors.newPassword && (
-            <p className="text-red-500">{errors.newPassword}</p>
-          )}
-          <input
-            name="confirmPassword"
-            placeholder="비밀번호 확인"
-            className="border w-full p-2 rounded"
-            type="password"
-            onChange={handleChange}
-          />
-          {errors.confirmPassword && (
-            <p className="text-red-500">{errors.confirmPassword}</p>
+          {userInfo?.provider === "LOCAL" ? (
+            <>
+              <input
+                name="newPassword"
+                placeholder="비밀번호"
+                className="border w-full p-2 rounded"
+                type="password"
+                onChange={handleChange}
+              />
+              <input
+                name="confirmPassword"
+                placeholder="비밀번호 확인"
+                className="border w-full p-2 rounded"
+                type="password"
+                onChange={handleChange}
+              />
+            </>
+          ) : (
+            <p>소셜 회원은 비밀번호를 수정할 수 없습니다.</p>
           )}
           <input
             name="phone"
@@ -241,34 +304,106 @@ export default function UserEditModal({ onClose }) {
           />
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-between mt-4">
+          {/* 왼쪽 끝에 위치한 회원탈퇴 버튼 */}
           <button
-            onClick={onClose}
-            className="bg-custom-cyan text-white px-4 py-2 rounded hover:bg-emerald-400 mr-2"
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-400"
           >
-            취소
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="bg-custom-cyan text-white px-4 py-2 rounded hover:bg-emerald-400"
-          >
-            정보수정
+            회원탈퇴
           </button>
 
-          <AddressModal
-            isOpen={addressModalOpen}
-            onClose={() => setAddressModalOpen(false)}
-            onComplete={(data) => {
-              setUserInfo({
-                ...userInfo,
-                address: data.address,
-                zonecode: data.zonecode,
-              });
-              setAddressModalOpen(false);
-            }}
-          />
+          {/* 오른쪽 끝에 위치한 취소와 정보수정 버튼 그룹 */}
+          <div className="flex space-x-2">
+            <button
+              onClick={onClose}
+              className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="bg-custom-cyan text-white px-4 py-2 rounded hover:bg-emerald-400"
+            >
+              정보수정
+            </button>
+          </div>
         </div>
+        <AddressModal
+          isOpen={addressModalOpen}
+          onClose={() => setAddressModalOpen(false)}
+          onComplete={(data) => {
+            setUserInfo({
+              ...userInfo,
+              address: data.address,
+              zonecode: data.zonecode,
+            });
+            setAddressModalOpen(false);
+          }}
+        />
       </div>
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded shadow-lg w-80">
+            <h3 className="text-lg font-bold mb-4">정말 탈퇴하시겠습니까?</h3>
+            {userInfo.provider === "LOCAL" ? (
+              <>
+                <input
+                  type="password"
+                  placeholder="비밀번호 입력"
+                  value={passwordForDelete}
+                  onChange={(e) => setPasswordForDelete(e.target.value)}
+                  className="border w-full p-2 rounded mb-4"
+                />
+              </>
+            ) : (
+              <>
+                {!isEmailVerified && (
+                  <>
+                    <button
+                      onClick={handleSendEmail}
+                      className="bg-custom-cyan text-white px-4 py-2 rounded mb-2"
+                    >
+                      이메일 인증코드 전송
+                    </button>
+                    <input
+                      type="text"
+                      placeholder="인증 코드 입력"
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value)}
+                      className="border w-full p-2 rounded mb-2"
+                    />
+                    <button
+                      onClick={handleVerifyCode}
+                      className="bg-green-500 text-white px-4 py-2 rounded"
+                    >
+                      인증 코드 확인
+                    </button>
+                  </>
+                )}
+                {isEmailVerified && (
+                  <p className="text-green-500">이메일 인증 완료</p>
+                )}
+              </>
+            )}
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-300 text-black px-4 py-2 rounded mr-2"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

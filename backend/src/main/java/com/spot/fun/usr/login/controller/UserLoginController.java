@@ -43,6 +43,12 @@ public class UserLoginController {
 
       AuthTokenDTO authTokenDTO = userLoginService.doLogin(userDTO);
 
+      // 비활성화된 회원인지 확인
+      if ("N".equals(authTokenDTO.getUseYn())) {
+        log.warn("Deactivated account login attempt: userId={}", userDTO.getUserId());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("탈퇴된 회원입니다.");
+      }
+
       log.info("Generated AuthTokenDTO: accessToken={}, refreshToken={}, nickname={}",
               authTokenDTO.getAccessToken(),
               authTokenDTO.getRefreshToken(),
@@ -79,6 +85,7 @@ public class UserLoginController {
       Map<String, Object> responseBody = new HashMap<>();
       responseBody.put("userIdx", loginUserDTO.getIdx());
       responseBody.put("nickname", loginUserDTO.getNickname());
+      responseBody.put("provider", loginUserDTO.getProvider());
 
 
       return ResponseEntity.ok(responseBody);

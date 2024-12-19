@@ -26,6 +26,16 @@ const Header = () => {
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false); // 비밀번호 확인 모달 열림 상태
   const [isEditModalOpen, setEditModalOpen] = useState(false); // 회원정보 수정 모달 열림 상태
 
+  // 회원정보 수정 모달 열기 (소셜 회원과 자체 회원 구분)
+  const handleEditModalOpen = () => {
+    if (userInfo.provider !== "LOCAL") {
+      setEditModalOpen(true); // 소셜 회원은 바로 수정 모달 열기
+    } else {
+      setPasswordModalOpen(true); // 자체 회원은 비밀번호 확인 필요
+    }
+    console.log("provider :" + userInfo.provider);
+  };
+
   // 비밀번호 확인 성공 시 호출
   const handlePasswordSuccess = () => {
     setPasswordModalOpen(false);
@@ -67,8 +77,8 @@ const Header = () => {
               {view && (
                 <Dropdown
                   handleLogout={handleLogout}
-                  onOpenPasswordModal={() => setPasswordModalOpen(true)}
-                /> // 비밀번호 확인 모달 열기
+                  onOpenPasswordModal={handleEditModalOpen} // 수정된 로직 적용
+                />
               )}
             </ul>
           ) : (

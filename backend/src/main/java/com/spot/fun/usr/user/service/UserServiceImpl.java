@@ -5,6 +5,7 @@ import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findByUserId(String userId) {
-        return userRepository.findByUserId(userId)
-                .orElseThrow(IllegalArgumentException::new)
-                .toDTO();
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 탈퇴된 회원 여부 확인
+        if ("N".equals(user.getUseYn())) {
+            throw new IllegalStateException("탈퇴된 회원입니다."); // 탈퇴된 회원 예외 처리
+        }
+
+        return user.toDTO(); // 활성화된 회원만 반환
     }
 
 
@@ -51,7 +58,25 @@ public class UserServiceImpl implements UserService {
                 .zonecode(user.getZonecode())
                 .address(user.getAddress())
                 .detaileAdd(user.getDetaileAdd())
+                .provider(user.getProvider())
                 .build();
+    }
+
+    @Override
+    public void deactivateUser(Long userIdx) {
+        User user = userRepository.findByIdx(userIdx)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 회원 비활성화 처리
+        user.deactivate();
+        userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> getCurrentUser() {
+        // SecurityContext에서 현재 사용자 정보 가져오기
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUserId(userId);
     }
 
 
@@ -105,6 +130,18 @@ public class UserServiceImpl implements UserService {
     public void validateAndUpdateUserProfile(String userId, UserDTO userDTO) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 소셜 회원 처리
+        if (!"LOCAL".equals(user.getProvider())) {
+            if (userDTO.getPhone() != null) {
+                user.updatePhone(userDTO.getPhone());
+            }
+            if (userDTO.getZonecode() != null && userDTO.getAddress() != null) {
+                user.updateAddress(userDTO.getZonecode(), userDTO.getAddress(), userDTO.getDetaileAdd());
+            }
+            userRepository.save(user);
+            return;
+        }
 
         // 유효성 검사
         if (userDTO.getPhone() != null && !userDTO.getPhone().matches("^(01[016789])-?[0-9]{3,4}-?[0-9]{4}$")) {
