@@ -3,7 +3,6 @@ package com.spot.fun.usr.feed.dto;
 import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import com.spot.fun.usr.feed.dto.hashtag.FeedHashtagDTO;
 import com.spot.fun.usr.feed.dto.image.FeedImageDTO;
-import com.spot.fun.usr.feed.entity.Feed;
 import com.spot.fun.usr.feed.util.UserFeedUtil;
 import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
 import lombok.*;
