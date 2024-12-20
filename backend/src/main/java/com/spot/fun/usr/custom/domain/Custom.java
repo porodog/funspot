@@ -28,7 +28,13 @@ public class Custom {
     private String title;
     private String description;
     private String tags;
-    private String delYn = "N"; // 기본값 N (삭제되지 않음)
+
+   @Column(name = "del_yn", nullable = false, length = 1)
+   private String delYn = "N"; // 기본값 N (삭제되지 않음)
+
+   public void markAsDeleted() {
+      this.delYn = "Y"; // 삭제 표시
+   }
 
     @OneToMany(mappedBy = "custom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomPlace> customPlaces = new ArrayList<>();
@@ -56,10 +62,6 @@ public class Custom {
 
     public void addCustomPlace(CustomPlace customPlace) {
         customPlaces.add(customPlace);
-    }
-
-    public void markAsDeleted() {
-       this.delYn = "Y";
     }
     
 }

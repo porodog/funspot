@@ -43,9 +43,9 @@ public class CustomController {
         return ResponseEntity.ok(cno);
     }
 
-   @PatchMapping("/{cno}")
-   public ResponseEntity<String> delete(@PathVariable("cno") Long cno) {
+   @PostMapping("/api/usr/custom/delete/{cno}")
+   public String delete(@PathVariable Long cno) {
       service.delete(cno);
-      return ResponseEntity.ok("코스가 성공적으로 삭제되었습니다.");
+      return "삭제되었습니다.";
    }
 }

@@ -220,36 +220,20 @@ const ReadComponent = () => {
         {/* 제목 */}
         <h1 className="text-2xl font-bold">{custom.title}</h1>
 
-        {/* 버튼 그룹 */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate(`/custom/update/${cno}`)}
-            className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-          >
-            수정
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-3 py-1 text-sm bg-red-200 text-red-600 rounded hover:bg-red-300"
-          >
-            삭제
-          </button>
-          <button
-            onClick={handleWishListToggle}
-            className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-500 hover:text-gray-700 transition"
-          >
-            {/* 하트 이미지 */}
-            <img
-              src={custom.wishList ? addwish : removewish} // 조건부 렌더링
-              alt={custom.wishList ? "찜 취소" : "찜하기"}
-              className="w-5 h-5"
-            />
-            {/* 텍스트 */}
-            <span className="text-sm">
-              {custom.wishList ? "찜 취소" : "찜하기"}
-            </span>
-          </button>
-        </div>
+        {/* 버튼 */}
+        <button
+          onClick={handleWishListToggle}
+          className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-500 hover:text-gray-700 transition"
+        >
+          {/* 하트 이미지 */}
+          <img
+            src={custom.wishList ? addwish : removewish} // 조건부 렌더링
+            alt={custom.wishList ? "찜 취소" : "찜하기"}
+            className="w-5 h-5"
+          />
+          {/* 텍스트 */}
+          <span>{custom.wishList ? "찜 취소" : "찜하기"}</span>
+        </button>
       </div>
 
       <div className="flex space-x-2 mb-4">
@@ -258,6 +242,8 @@ const ReadComponent = () => {
             {tag}
           </span>
         ))}
+        <button onClick={() => navigate(`/custom/update/${cno}`)}>수정</button>
+        <button onClick={handleDelete}>삭제</button>
       </div>
       <div className="container mx-auto px-4">
         {/* 카드 그리드 */}

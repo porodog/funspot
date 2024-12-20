@@ -14,8 +14,7 @@ const ListComponent = () => {
     const fetchData = async () => {
       try {
         const data = await getCustomList();
-        const filteredData = data.filter((custom) => custom.delYn === "N"); // ✅ delYn이 N인 것만 남김
-        setCustoms(filteredData);
+        setCustoms(data);
       } catch (error) {
         console.error("Failed to fetch custom list:", error);
       } finally {
@@ -41,7 +40,7 @@ const ListComponent = () => {
       </h1>
       <button
         onClick={() => navigate("/custom/add")}
-        className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer mb-4"
+        className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer"
       >
         코스 만들기
       </button>
@@ -92,21 +91,24 @@ const ListComponent = () => {
                       0
                     )}
                     원 |{" "}
-                    {(() => {
-                      const totalMinutes = custom.places.reduce(
-                        (total, place) => total + place.durationMinutes,
+                    {custom.places.reduce(
+                      (total, place) =>
+                        Math.floor(total + place.durationMinutes / 60),
+                      0
+                    ) > 0 &&
+                      `${custom.places.reduce(
+                        (total, place) =>
+                          Math.floor(total + place.durationMinutes / 60),
                         0
-                      );
-                      const hours = Math.floor(totalMinutes / 60);
-                      const minutes = totalMinutes % 60;
-
-                      return (
-                        <>
-                          {hours > 0 && `${hours}시간 `}
-                          {minutes > 0 && `${minutes}분`}
-                        </>
-                      );
-                    })()}
+                      )}시간`}
+                    {custom.places.reduce(
+                      (total, place) => total + (place.durationMinutes % 60),
+                      0
+                    ) > 0 &&
+                      `${custom.places.reduce(
+                        (total, place) => total + (place.durationMinutes % 60),
+                        0
+                      )}분`}
                   </p>
 
                   <div className="flex gap-2 mt-4">
