@@ -39,6 +39,6 @@ export const updateCustom = async (cno, customObj) => {
 };
 
 export const deleteCustom = async (cno) => {
-  const response = await axios.delete(`${API_BASE_URL}/api/usr/custom/${cno}`);
+  const response = await axios.patch(`${API_BASE_URL}/api/usr/custom/${cno}`);
   return response.data;
 };

@@ -21,48 +21,46 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class Custom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cno;
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   private Long cno;
 
-    private String title;
-    private String description;
-    private String tags;
-
-   @Column(name = "del_yn", nullable = false, length = 1)
+   private String title;
+   private String description;
+   private String tags;
    private String delYn = "N"; // 기본값 N (삭제되지 않음)
 
-   public void markAsDeleted() {
-      this.delYn = "Y"; // 삭제 표시
+   @OneToMany(mappedBy = "custom", cascade = CascadeType.ALL, orphanRemoval = true)
+   private List<CustomPlace> customPlaces = new ArrayList<>();
+
+   @PostLoad
+   public void splitTags() {
+      if (tags != null && !tags.isBlank()) {
+         this.tagList = List.of(tags.split(","));
+      }
    }
 
-    @OneToMany(mappedBy = "custom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustomPlace> customPlaces = new ArrayList<>();
+   @Transient
+   private List<String> tagList = new ArrayList<>();
 
-    @PostLoad
-    public void splitTags() {
-        if (tags != null && !tags.isBlank()) {
-            this.tagList = List.of(tags.split(","));
-        }
-    }
+   public List<String> getTagList() {
+      if (tags == null || tags.isBlank()) {
+         return new ArrayList<>();
+      }
+      return List.of(tags.split(","));
+   }
 
-    @Transient
-    private List<String> tagList = new ArrayList<>();
+   public void setTagList(List<String> tags) {
+      this.tags = String.join(",", tags);
+   }
 
-    public List<String> getTagList() {
-        if (tags == null || tags.isBlank()) {
-            return new ArrayList<>();
-        }
-        return List.of(tags.split(","));
-    }
+   public void addCustomPlace(CustomPlace customPlace) {
+      customPlaces.add(customPlace);
+   }
 
-    public void setTagList(List<String> tags) {
-        this.tags = String.join(",", tags);
-    }
+   public void markAsDeleted() {
+      this.delYn = "Y";
+   }
 
-    public void addCustomPlace(CustomPlace customPlace) {
-        customPlaces.add(customPlace);
-    }
-    
 }
 

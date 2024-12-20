@@ -14,38 +14,38 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping("/api/usr/custom")  
+@RequestMapping("/api/usr/custom")
 public class CustomController {
 
-    private final CustomService service;
+   private final CustomService service;
 
-    @GetMapping("/{cno}")
-    public ResponseEntity<CustomDTO> get(@PathVariable("cno") Long cno, @RequestParam(required = false) Long userIdx) {
-        CustomDTO customDTO = service.get(cno, userIdx);
-        return ResponseEntity.ok(customDTO);
-    }
+   @GetMapping("/{cno}")
+   public ResponseEntity<CustomDTO> get(@PathVariable("cno") Long cno, @RequestParam(required = false) Long userIdx) {
+      CustomDTO customDTO = service.get(cno, userIdx);
+      return ResponseEntity.ok(customDTO);
+   }
 
-    @GetMapping("/list")
-    public ResponseEntity<List<CustomDTO>> list(@RequestParam(required = false) Long userIdx) {
-        List<CustomDTO> customList = service.list(userIdx); // 🟢 서비스 호출
-        return ResponseEntity.ok(customList); // 🟢 조회된 목록을 JSON 형태로 반환
-    }
-    
-    @PostMapping("/")
-    public ResponseEntity<Long> register(@RequestBody CustomDTO customDTO) {
-        Long id = service.register(customDTO);
-        return ResponseEntity.ok(id);
-    }
+   @GetMapping("/list")
+   public ResponseEntity<List<CustomDTO>> list(@RequestParam(required = false) Long userIdx) {
+      List<CustomDTO> customList = service.list(userIdx); // 🟢 서비스 호출
+      return ResponseEntity.ok(customList); // 🟢 조회된 목록을 JSON 형태로 반환
+   }
 
-    @PutMapping("/{cno}")
-    public ResponseEntity<Long> update(@PathVariable("cno") Long cno, @RequestBody CustomDTO customDTO) {
-        service.update(cno, customDTO);
-        return ResponseEntity.ok(cno);
-    }
+   @PostMapping("/")
+   public ResponseEntity<Long> register(@RequestBody CustomDTO customDTO) {
+      Long id = service.register(customDTO);
+      return ResponseEntity.ok(id);
+   }
 
-   @PostMapping("/api/usr/custom/delete/{cno}")
-   public String delete(@PathVariable Long cno) {
+   @PutMapping("/{cno}")
+   public ResponseEntity<Long> update(@PathVariable("cno") Long cno, @RequestBody CustomDTO customDTO) {
+      service.update(cno, customDTO);
+      return ResponseEntity.ok(cno);
+   }
+
+   @PatchMapping("/{cno}")
+   public ResponseEntity<String> delete(@PathVariable("cno") Long cno) {
       service.delete(cno);
-      return "삭제되었습니다.";
+      return ResponseEntity.ok("코스가 성공적으로 삭제되었습니다.");
    }
 }
