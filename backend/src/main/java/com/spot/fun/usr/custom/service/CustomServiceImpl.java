@@ -36,10 +36,14 @@ public class CustomServiceImpl implements CustomService {
 
     @Override
     public Long register(CustomDTO customDTO) {
+       if (customDTO.getDelYn() == null) {
+          customDTO.setDelYn("N");
+       }
     Custom custom = Custom.builder()
         .title(customDTO.getTitle())
         .description(customDTO.getDescription())
         .tags(String.join(",", customDTO.getTags()))
+            .delYn(customDTO.getDelYn())
         .build();
 
     List<CustomPlace> customPlaces = IntStream.range(0, customDTO.getPlaces().size())
@@ -143,16 +147,11 @@ public void update(Long cno, CustomDTO customDTO) {
     customRepository.save(existingCustom);
 }
 
-   @Transactional
    @Override
    public void delete(Long cno) {
       Custom custom = customRepository.findById(cno)
               .orElseThrow(() -> new RuntimeException("존재하지 않는 코스입니다."));
-
-      // 🔥 실제 삭제 대신 delYn 플래그를 Y로 변경
       custom.markAsDeleted();
-
-      // 🔥 변경사항 저장 (이전의 delete 대신)
       customRepository.save(custom);
    }
 

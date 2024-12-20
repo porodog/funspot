@@ -19,6 +19,7 @@ public class CustomDTO {
     private String description;
     private List<PlaceDTO> places;
     private List<String> tags;
+    private String delYn = "N";
 
     @Builder.Default
     private boolean wishList = false;
