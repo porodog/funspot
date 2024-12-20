@@ -45,13 +45,6 @@ public class FeedDTO {
 
   private UserProfileResponseDTO user;
 
-  public Feed toEntity() {
-    return Feed.builder()
-            .content(this.content)
-            .delYn(this.delYn)
-            .build();
-  }
-
 
   public FeedDTO(FeedDTO feedDTO, UserFeedUtil userFeedUtil) {
     this.idx = feedDTO.getIdx();

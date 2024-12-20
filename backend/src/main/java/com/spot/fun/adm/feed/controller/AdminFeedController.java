@@ -3,7 +3,6 @@ package com.spot.fun.adm.feed.controller;
 import com.spot.fun.adm.feed.dto.AdminFeedRequestDTO;
 import com.spot.fun.adm.feed.dto.AdminFeedResponseDTO;
 import com.spot.fun.adm.feed.service.AdminFeedService;
-import com.spot.fun.usr.feed.dto.FeedResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
