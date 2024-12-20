@@ -4,6 +4,7 @@ import com.spot.fun.usr.feed.dto.comment.FeedCommentDTO;
 import com.spot.fun.usr.feed.dto.hashtag.FeedHashtagDTO;
 import com.spot.fun.usr.feed.dto.image.FeedImageDTO;
 import com.spot.fun.usr.feed.entity.Feed;
+import com.spot.fun.usr.feed.util.UserFeedUtil;
 import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,7 @@ public class FeedDTO {
   private Long feedIdx;
   private Long likeIdx;
   private Long userIdx;
+  private String userId;
 
   private UserProfileResponseDTO user;
 
@@ -50,5 +52,21 @@ public class FeedDTO {
             .build();
   }
 
+
+  public FeedDTO(FeedDTO feedDTO, UserFeedUtil userFeedUtil) {
+    this.idx = feedDTO.getIdx();
+    this.content = feedDTO.getContent();
+    this.delYn = feedDTO.getDelYn();
+    this.regDateStr = userFeedUtil.getDateFormat(feedDTO.getRegDate());
+    this.userId = feedDTO.getUserId();
+  }
+
+  public FeedDTO(Long idx, String content, Boolean delYn,LocalDateTime regDate, String userId) {
+    this.idx = idx;
+    this.content = content;
+    this.delYn = delYn;
+    this.regDate = regDate;
+    this.userId = userId;
+  }
 
 }

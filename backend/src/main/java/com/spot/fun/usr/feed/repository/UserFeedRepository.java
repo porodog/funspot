@@ -1,5 +1,7 @@
 package com.spot.fun.usr.feed.repository;
 
+import com.spot.fun.adm.feed.dto.AdminFeedRequestDTO;
+import com.spot.fun.usr.feed.dto.FeedDTO;
 import com.spot.fun.usr.feed.dto.FeedRequestDTO;
 import com.spot.fun.usr.feed.entity.Feed;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +30,16 @@ public interface UserFeedRepository extends JpaRepository<Feed, Long> {
   Long countByUserIdxAndDelYnFalse(Long userIdx);
 
 
+  @Query("SELECT new com.spot.fun.usr.feed.dto.FeedDTO(" +
+          "f.idx, " +
+          "f.content, " +
+          "f.delYn, " +
+          "f.regDate, " +
+          "u.userId) " +
+          "FROM Feed f " +
+          "LEFT JOIN f.user u " +
+          "WHERE 1=1 " +
+          "AND (:#{#feed.searchValue} is NULL or :#{#feed.searchValue}='' or f.content LIKE %:#{#feed.searchValue}%) ")
+  List<FeedDTO> findFeedListByAdminCustom(@Param("feed")AdminFeedRequestDTO adminFeedRequestDTO, Pageable pageable);
+  Optional<Feed> findByIdx(Long idx);
 }

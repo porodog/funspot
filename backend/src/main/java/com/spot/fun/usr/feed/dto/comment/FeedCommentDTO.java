@@ -23,6 +23,7 @@ public class FeedCommentDTO {
   //private UserDTO user;
   private String regDateStr;
   private Long userIdx;
+  private String userId;
   private Boolean likedYn;
   private Long parentIdx;
   private Boolean parentDelYn;
