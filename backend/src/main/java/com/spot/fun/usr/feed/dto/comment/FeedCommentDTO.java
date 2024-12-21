@@ -33,4 +33,12 @@ public class FeedCommentDTO {
 
   private UserProfileResponseDTO user;
 
+  public FeedCommentDTO(Long idx, String content, Long parentIdx, Boolean parentDelYn, Long feedIdx, Boolean feedDelYn) {
+    this.idx = idx;
+    this.content = content;
+    this.parentIdx = parentIdx;
+    this.parentDelYn = parentDelYn;
+    this.feedIdx = feedIdx;
+    this.feedDelYn = feedDelYn;
+  }
 }
