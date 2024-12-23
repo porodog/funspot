@@ -293,9 +293,9 @@ const SocialSignupComponent = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/");
-  };
+  // const handleCancel = () => {
+  //   navigate("/");
+  // };
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -456,17 +456,17 @@ const SocialSignupComponent = () => {
 
         <button
           type="submit"
-          className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-2 p-2 w-32  hover:bg-emerald-400"
+          className="bg-custom-cyan rounded-3xl mt-2 mb-4 ml-5 p-2 w-96 justify-center hover:bg-emerald-400"
         >
           가입하기
         </button>
-        <button
+        {/* <button
           type="button"
           className="ml-48 mt-2 mb-4 p-2 w-32 bg-gray-500 text-white rounded-3xl hover:bg-gray-600 cursor-pointer"
           onClick={handleCancel}
         >
           취소
-        </button>
+        </button> */}
       </form>
 
       <AddressModal
