@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { searchPlaces, updateCustom, getCustomDetail } from "../api/CustomApi";
 import { useParams, useNavigate } from "react-router-dom";
-
 import Place from "../img/Place.png";
+import regions from "../data/regions";
+import locate from "../img/locate.png";
 
 const WITH_TAGS = [
   "연인과",
@@ -33,12 +34,17 @@ const UpdateComponent = () => {
   const navigate = useNavigate(); // 수정 후 페이지 이동
   const [currentStep, setCurrentStep] = useState(1);
   const [address, setAddress] = useState(""); // 검색할 주소
+  const [name, setName] = useState(""); // 검색할 장소이름
   const [places, setPlaces] = useState([]); // 검색 결과
   const [selectedPlaces, setSelectedPlaces] = useState([]); // 선택한 장소
   const [title, setTitle] = useState(""); // 데이트 코스 제목
   const [description, setDescription] = useState(""); // 데이트 코스 설명
   const [selectedTags, setSelectedTags] = useState([]); // 태그
   const [loading, setLoading] = useState(true); // 로딩 상태
+
+  const selectedCity = address.split(" ")[0];
+  const selectedDistrict = address.split(" ")[1] || "";
+  const districts = selectedCity ? regions[selectedCity] : [];
 
   // 수정할 데이터 가져오기
   useEffect(() => {
@@ -76,7 +82,7 @@ const UpdateComponent = () => {
   // 주소로 장소 검색
   const handleSearch = async () => {
     try {
-      const data = await searchPlaces(address); // 🔥 주소로 장소 검색
+      const data = await searchPlaces(address, name); // 🔥 주소로 장소 검색
       // 🔥 이미 선택된 장소는 제외하는 필터 추가
       const filteredData = data.filter(
         (place) => !selectedPlaces.some((selected) => selected.id === place.id)
@@ -101,12 +107,6 @@ const UpdateComponent = () => {
 
   // 장소 삭제
   const handleRemovePlace = (place) => {
-    // 🔥 이미 목록에 존재하지 않는 경우에만 추가
-    const isPlaceExists = places.some((p) => p.id === place.id);
-    if (!isPlaceExists) {
-      setPlaces([...places, place]); // 중복되지 않으면 장소 추가
-    }
-
     // 선택된 장소에서 제거
     setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id));
   };
@@ -150,8 +150,31 @@ const UpdateComponent = () => {
     <div>
       {currentStep === 1 && (
         <div>
-          <h1 class="text-4xl font-bold text-center">데이트 코스 수정하기</h1>
-          <button onClick={handleNextStep}>다음 단계로</button>
+          <div className="mb-2">
+            {/* 제목 */}
+            <h1 className="text-4xl font-bold text-center mb-2">
+              데이트 코스 수정하기
+            </h1>
+
+            {/* 버튼 그룹 */}
+            <div className="flex justify-between items-center">
+              {/* 뒤로가기 버튼 */}
+              <button
+                onClick={() => navigate(`/custom/read/${cno}`)}
+                className="px-4 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300 transition"
+              >
+                뒤로가기
+              </button>
+
+              {/* 다음 단계로 버튼 */}
+              <button
+                onClick={handleNextStep}
+                className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+              >
+                다음 단계로
+              </button>
+            </div>
+          </div>
           <div className="mb-6">
             {/* 제목 */}
             <h3 className="text-xl font-bold mb-2">장소를 선택해주세요</h3>
@@ -160,22 +183,73 @@ const UpdateComponent = () => {
             </p>
 
             {/* 검색 입력 필드와 버튼 */}
-            <div className="flex items-center space-x-2">
-              {/* 입력 필드 */}
-              <input
-                type="text"
-                placeholder="장소 검색"
-                className="flex-shrink-0 basis-[85%] pl-4 pr-4 py-3 border border-custom-cyan rounded-full text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-custom-cyan focus:border-custom-cyan"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-              {/* 버튼 */}
-              <button
-                className="flex-shrink-0 basis-[15%] px-4 py-3 bg-custom-cyan text-white rounded-full hover:bg-custom-cyan-dark transition"
-                onClick={handleSearch}
-              >
-                검색
-              </button>
+            <div className="flex flex-col space-y-4 my-6">
+              {/* 첫 번째 줄: 시/도 선택과 구/군 선택 */}
+              <div className="flex items-center space-x-4">
+                {/* 시/도 선택 */}
+                <div>
+                  <label className="block mb-1 text-gray-700 font-medium">
+                    지역을 선택해주세요.
+                  </label>
+                  <select
+                    value={selectedCity}
+                    onChange={(e) => {
+                      setAddress(`${e.target.value} `); // 구/군 초기화
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
+                  >
+                    <option value="">전체</option>
+                    {Object.keys(regions).map((city) => (
+                      <option key={city} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 구/군 선택 */}
+                <div>
+                  <label className="block mb-1 text-gray-700 font-medium">
+                    상세 지역을 선택해주세요.
+                  </label>
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) =>
+                      setAddress(`${selectedCity} ${e.target.value}`)
+                    } // 시/도 + 구/군 조합
+                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
+                  >
+                    <option value="">전체</option>
+                    {districts.map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* 두 번째 줄: 장소 이름 입력과 버튼 */}
+              <div className="flex items-center space-x-4">
+                {/* 장소 이름 입력 */}
+                <div className="flex-grow">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="장소 이름을 입력해주세요."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
+                  />
+                </div>
+
+                {/* 검색 버튼 */}
+                <button
+                  className="px-8 py-3 bg-custom-cyan text-white rounded-xl hover:bg-emerald-500 transition duration-200 cursor-pointer"
+                  onClick={handleSearch}
+                >
+                  검색
+                </button>
+              </div>
             </div>
           </div>
 
@@ -221,11 +295,25 @@ const UpdateComponent = () => {
               <div className="grid grid-cols-5 gap-4 list-none p-1">
                 {places.map((place) => (
                   <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-sm">
-                    <img
-                      src={Place}
-                      alt="user"
-                      className="w-full h-40 object-cover"
-                    />
+                    <div className="relative">
+                      <img
+                        src={Place}
+                        alt="user"
+                        className="w-full h-40 object-cover"
+                      />
+
+                      {/* 좌측 상단 이미지와 텍스트 */}
+                      <div className="absolute top-2 left-2 flex items-center bg-black/60 text-white px-2 py-1 rounded-md">
+                        {/* 추가 이미지 */}
+                        <img
+                          src={locate} // 추가하려는 이미지 경로
+                          alt="locate"
+                          className="w-4 h-4 mr-1"
+                        />
+                        {/* 텍스트 */}
+                        <span className="text-xs">{place.simpleAddress}</span>
+                      </div>
+                    </div>
                     <div class="p-4">
                       <h3 class="text-gray-800 text-lg font-bold mb-2">
                         {place.name}

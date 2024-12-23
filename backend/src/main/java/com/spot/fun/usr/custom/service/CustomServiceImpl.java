@@ -94,7 +94,7 @@ public class CustomServiceImpl implements CustomService {
 
    @Override
    public List<CustomDTO> list(Long userIdx) {
-      List<Custom> customList = customRepository.findAll();
+      List<Custom> customList = customRepository.findAllByOrderByCnoDesc();
 
       return customList.stream().map(custom -> {
          // 1️⃣ CustomDTO 생성

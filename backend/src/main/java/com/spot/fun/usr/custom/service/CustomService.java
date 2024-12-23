@@ -5,7 +5,7 @@ import java.util.List;
 import com.spot.fun.usr.custom.dto.CustomDTO;
 
 public interface CustomService {
-      Long register(CustomDTO customDTO);
+    Long register(CustomDTO customDTO);
 
     CustomDTO get(Long cno, Long userIdx);
 

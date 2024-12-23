@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getCustomList } from "../api/CustomApi";
 import { Link } from "react-router-dom";
 import Place from "../img/Place.png";
+import locate from "../img/locate.png";
 
 const ListComponent = () => {
   const [customs, setCustoms] = useState([]);
@@ -37,7 +38,7 @@ const ListComponent = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold text-center mb-8">
-        유저들이 만든 코스에요
+        최근 유저들이 만든 코스에요
       </h1>
       <button
         onClick={() => navigate("/custom/add")}
@@ -58,14 +59,31 @@ const ListComponent = () => {
                       key={index}
                       className="relative p-2 bg-white rounded-lg overflow-hidden"
                     >
+                      {/* 이미지 */}
                       <img
                         src={Place}
                         alt={place.name}
                         className="w-full h-32 object-cover rounded-lg"
                       />
+
+                      {/* 좌측 상단 아이콘과 텍스트 */}
+                      <div className="absolute top-2 left-2 flex items-center bg-black/60 text-white px-2 py-1 rounded-md">
+                        {/* 아이콘 */}
+                        <img
+                          src={locate} // 아이콘 경로
+                          alt="locate"
+                          className="w-4 h-4 mr-1"
+                        />
+                        {/* 텍스트 */}
+                        <span className="text-xs">{place.simpleAddress}</span>
+                      </div>
+
+                      {/* 번호 */}
                       <div className="absolute bottom-6 left-4 text-white text-xl font-bold">
                         {index + 1}
                       </div>
+
+                      {/* 장소 이름 */}
                       <p className="absolute bottom-2 left-4 text-white text-sm font-semibold">
                         {place.name}
                       </p>

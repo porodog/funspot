@@ -22,14 +22,8 @@ public class PlaceController {
     private final PlaceService service;
 
     @GetMapping("/search")
-    public List<PlaceDTO> searchPlaces(@RequestParam("address") String address) {
-        return service.searchPlacesByAddress(address);
-    }
-
-    @GetMapping("/list")
-    public ResponseEntity<List<PlaceDTO>> getAllPlaces() {
-        List<PlaceDTO> places = service.getAllPlaces();
-        return ResponseEntity.ok(places);
+    public List<PlaceDTO> searchPlaces(@RequestParam("address") String address, @RequestParam("name") String name) {
+        return service.searchPlaces(address, name);
     }
      
     

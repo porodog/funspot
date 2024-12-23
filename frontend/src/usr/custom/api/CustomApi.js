@@ -2,10 +2,10 @@ import axios from "axios";
 
 export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
-export const searchPlaces = async (address) => {
+export const searchPlaces = async (address = "", name = "") => {
   // 주소로 장소 검색
   const response = await axios.get(`${API_BASE_URL}/api/usr/place/search`, {
-    params: { address },
+    params: { address, name },
   });
   return response.data;
 };

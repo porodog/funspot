@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.spot.fun.usr.custom.domain.Place;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-  List<Place> findByAddressContainingIgnoreCase(String address);
+   List<Place> findByAddressContainingIgnoreCase(String address);
+   List<Place> findByNameContainingIgnoreCase(String name);
+   List<Place> findByAddressContainingIgnoreCaseAndNameContainingIgnoreCase(String address, String name);
 }
