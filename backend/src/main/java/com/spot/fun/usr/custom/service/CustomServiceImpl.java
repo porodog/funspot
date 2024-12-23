@@ -42,6 +42,7 @@ public class CustomServiceImpl implements CustomService {
       Custom custom = Custom.builder()
               .title(customDTO.getTitle())
               .description(customDTO.getDescription())
+              .idx(customDTO.getIdx())
               .tags(String.join(",", customDTO.getTags()))
               .delYn(customDTO.getDelYn())
               .build();
@@ -157,4 +158,3 @@ public class CustomServiceImpl implements CustomService {
 
 
 }
-

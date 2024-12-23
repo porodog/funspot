@@ -204,6 +204,8 @@ const ReadComponent = () => {
   if (error) return <div>Error: {error}</div>;
   if (!custom) return <div>No detail found.</div>;
 
+  console.log(custom);
+
   return (
     <div>
       <div
@@ -222,18 +224,23 @@ const ReadComponent = () => {
 
         {/* 버튼 그룹 */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate(`/custom/update/${cno}`)}
-            className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-          >
-            수정
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-3 py-1 text-sm bg-red-200 text-red-600 rounded hover:bg-red-300"
-          >
-            삭제
-          </button>
+          {custom.idx === loginUserIdx && (
+            <>
+              <button
+                onClick={() => navigate(`/custom/update/${cno}`)}
+                className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+              >
+                수정
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-3 py-1 text-sm bg-red-200 text-red-600 rounded hover:bg-red-300"
+              >
+                삭제
+              </button>
+            </>
+          )}
+
           <button
             onClick={handleWishListToggle}
             className="flex items-center gap-2 px-4 py-2 border rounded-full text-gray-500 hover:text-gray-700 transition"
@@ -248,6 +255,13 @@ const ReadComponent = () => {
             <span className="text-sm">
               {custom.wishList ? "찜 취소" : "찜하기"}
             </span>
+          </button>
+
+          <button
+            onClick={() => navigate("/custom/list")}
+            className="px-4 py-2 bg-custom-cyan text-white rounded-lg hover:bg-emerald-500 transition duration-200 cursor-pointer"
+          >
+            코스 목록
           </button>
         </div>
       </div>

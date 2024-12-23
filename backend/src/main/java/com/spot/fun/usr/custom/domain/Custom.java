@@ -27,6 +27,7 @@ public class Custom {
 
    private String title;
    private String description;
+   private Long idx;
    private String tags;
    private String delYn = "N"; // 기본값 N (삭제되지 않음)
 

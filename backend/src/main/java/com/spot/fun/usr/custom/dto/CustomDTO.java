@@ -17,6 +17,7 @@ public class CustomDTO {
     private Long cno;
     private String title;
     private String description;
+    private Long idx;
     private List<PlaceDTO> places;
     private List<String> tags;
    private String delYn = "N";
