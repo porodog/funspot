@@ -6,6 +6,7 @@ import com.spot.fun.token.entity.AuthToken;
 import com.spot.fun.token.repository.AuthTokenRepository;
 import com.spot.fun.usr.user.dto.UserDTO;
 import com.spot.fun.usr.user.entity.User;
+import com.spot.fun.usr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,22 +36,14 @@ public class UserLoginServiceImpl implements UserLoginService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         User user = (User) authentication.getPrincipal();
-        Long userIdx = user.getIdx();
 
-//        // 자체 로그인 시 email 필드가 null일 수 있으므로 기본값 설정
-//        if (user.getProvider() == null || "LOCAL".equalsIgnoreCase(user.getProvider())) {
-//            log.info("LOCAL login detected for userId={}", user.getUserId());
-//            if (user.getEmail() == null) {
-//                user = User.builder()
-//                        .idx(user.getIdx())
-//                        .userId(user.getUserId())
-//                        .nickname(user.getNickname())
-//                        .email("default@local.com") // 기본 email 값 설정
-//                        .provider("LOCAL") // LOCAL 로그인
-//                        .userRole(user.getUserRole())
-//                        .build();
-//            }
-//        }
+        // 탈퇴 회원인지 확인
+        if ("N".equals(user.getUseYn())) {
+            log.warn("Deactivated account attempted login: userId={}", user.getUserId());
+            throw new IllegalStateException("탈퇴된 회원입니다.");
+        }
+
+        Long userIdx = user.getIdx();
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
         String refreshToken = jwtTokenProvider.generateRefreshToken(user);
@@ -70,6 +63,7 @@ public class UserLoginServiceImpl implements UserLoginService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
+                .useYn(user.getUseYn())
                 .build();
     }
 

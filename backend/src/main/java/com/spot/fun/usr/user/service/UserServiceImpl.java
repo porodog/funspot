@@ -68,9 +68,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         // 회원 비활성화 처리
-        user.deactivate();
+        user.deactivate("N");
         userRepository.save(user);
     }
+
+
+
 
     @Override
     public Optional<User> getCurrentUser() {

@@ -43,12 +43,6 @@ public class UserLoginController {
 
       AuthTokenDTO authTokenDTO = userLoginService.doLogin(userDTO);
 
-      // 비활성화된 회원인지 확인
-      if ("N".equals(authTokenDTO.getUseYn())) {
-        log.warn("Deactivated account login attempt: userId={}", userDTO.getUserId());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("탈퇴된 회원입니다.");
-      }
-
       log.info("Generated AuthTokenDTO: accessToken={}, refreshToken={}, nickname={}",
               authTokenDTO.getAccessToken(),
               authTokenDTO.getRefreshToken(),
@@ -59,6 +53,9 @@ public class UserLoginController {
       authTokenUtil.makeRefreshToken(response, authTokenDTO.getRefreshToken());
 
       return ResponseEntity.status(HttpStatus.OK).body(authTokenDTO.getNickname());
+    } catch (IllegalStateException e) {
+      log.warn("Login attempt failed: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage()); // 403 반환
     } catch (AuthenticationException e) {
       log.error("Authentication failed: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
@@ -67,6 +64,7 @@ public class UserLoginController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
     }
   }
+
 
   @PostMapping("/token/check")
   public ResponseEntity<?> tokenCheck(HttpServletRequest request, HttpServletResponse response) {

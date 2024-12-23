@@ -20,7 +20,6 @@ import java.util.Arrays;
 @RequestMapping("/api/usr/logout")
 public class UserLogoutController {
 
-  private final AuthTokenRepository authTokenRepository;
   private final AuthTokenUtil authTokenUtil;
 
   @PostMapping("/logout")

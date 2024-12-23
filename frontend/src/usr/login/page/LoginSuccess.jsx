@@ -12,6 +12,12 @@ const LoginSuccess = () => {
       try {
         const response = await axios.post("/api/usr/login/token/check");
         if (response.status === 200 && response.data) {
+          if (response.data.useYn === "N") {
+            // 탈퇴된 회원 처리
+            alert("탈퇴된 회원입니다. 로그인할 수 없습니다.");
+            navigate("/login"); // 로그인 페이지로 이동
+            return; // 더 이상 진행하지 않음
+          }
           alert(`${response.data.nickname}님, 환영합니다!`);
           setUserInfo(response.data); // 사용자 정보 업데이트
           setUserInfo(response.data.userId);
@@ -27,7 +33,6 @@ const LoginSuccess = () => {
         navigate("/login");
       }
     };
-
     fetchUserInfo();
   }, [setUserInfo, navigate]);
 

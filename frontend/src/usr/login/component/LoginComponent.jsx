@@ -63,6 +63,9 @@ const LoginComponent = () => {
         setUserInfo(result.data.nickname);
         setUserInfo(result.data);
         navigate("/");
+      } else if (result.status === 403) {
+        // 탈퇴된 회원 처리
+        alert("탈퇴된 회원입니다.");
       } else {
         alert("로그인 실패. 아이디와 비밀번호를 확인해주세요.");
       }

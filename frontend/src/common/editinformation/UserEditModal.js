@@ -3,6 +3,7 @@ import axios from "axios";
 import AddressModal from "../signupmodal/AddressModal";
 import usePostTokenCheck from "../hook/usePostTokenCheck";
 import { sendEmailVerificationApi } from "../../usr/signup/api/SignupApi";
+import { postLogoutApi } from "../../usr/login/api/LogoutApi";
 
 export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 axios.defaults.baseURL = API_BASE_URL;
@@ -193,10 +194,18 @@ export default function UserEditModal({ onClose }) {
           userIdx: userInfo.idx,
         }
       );
+      console.log("userIdx : " + userInfo.idx);
 
       if (deactivateResponse.status === 200) {
         alert("탈퇴처리가 정상적으로 완료되었습니다.");
-        onClose();
+
+        // 로그아웃 호출
+        const logoutResponse = await postLogoutApi();
+        if (logoutResponse.success) {
+          window.location.href = "/"; // 메인 화면으로 리다이렉트
+        } else {
+          alert("로그아웃 처리에 실패했습니다.");
+        }
       } else {
         alert("탈퇴 요청에 실패했습니다.");
       }

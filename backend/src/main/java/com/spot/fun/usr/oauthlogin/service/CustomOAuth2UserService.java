@@ -61,6 +61,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
       User user = userOptional.get();
       log.info("Existing user found: {}", user.getEmail());
 
+      // 탈퇴된 회원인지 확인
+      if ("N".equals(user.getUseYn())) {
+        log.warn("Deactivated account attempted login: email={}", email);
+        throw new CustomOAuth2AuthenticationException("탈퇴된 회원입니다.");
+      }
+
       // provider가 다른 경우 예외 처리
       if (!registrationId.equalsIgnoreCase(user.getProvider())) {
         log.warn("Email {} already exists with a different provider: {} (current: {})",

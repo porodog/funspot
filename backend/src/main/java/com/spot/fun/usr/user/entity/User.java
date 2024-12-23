@@ -65,7 +65,7 @@ public class User implements UserDetails {
     private String useYn = "Y"; // 기본값: 활성 상태 ('Y' → 활성, 'N' → 비활성)
 
     // 회원 비활성화 메서드 추가
-    public void deactivate() {
+    public void deactivate(String n) {
         this.useYn = "N";
     }
 

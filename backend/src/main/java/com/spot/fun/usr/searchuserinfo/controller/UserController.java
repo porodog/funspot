@@ -1,6 +1,9 @@
 package com.spot.fun.usr.searchuserinfo.controller;
 
+import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
+  private final AuthTokenUtil authTokenUtil;
 
   @PostMapping("/search-id")
   public ResponseEntity<?> searchUserId(@RequestBody Map<String, String> searchDetails) {
@@ -50,13 +54,23 @@ public class UserController {
   }
 
   @PostMapping("/deactivate")
-  public ResponseEntity<?> deactivateUser(@RequestBody Long userIdx) {
+  public ResponseEntity<?> deactivateUser(@RequestBody Map<String, Long> request) {
     try {
-      userService.deactivateUser(userIdx);
+      Long userIdx = request.get("userIdx"); // JSON에서 userIdx 추출
+      if (userIdx == null) {
+        return ResponseEntity.badRequest().body(Map.of("message", "userIdx가 필요합니다."));
+      }
+
+      userService.deactivateUser(userIdx); // 회원 비활성화 처리
+
       return ResponseEntity.ok(Map.of("message", "회원 탈퇴가 완료되었습니다."));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "서버 오류가 발생했습니다."));
     }
   }
+
+
 
 }

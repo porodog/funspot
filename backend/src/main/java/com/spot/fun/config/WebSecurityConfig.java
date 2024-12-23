@@ -178,8 +178,9 @@ public class WebSecurityConfig {
         return (request, response, exception) -> {
             String errorMessage;
 
-            // OAuth2Error에서 에러 메시지 가져오기
-            if (exception instanceof OAuth2AuthenticationException) {
+            if (exception instanceof CustomOAuth2AuthenticationException) {
+                errorMessage = exception.getMessage(); // 커스텀 예외 메시지
+            } else if (exception instanceof OAuth2AuthenticationException) {
                 OAuth2Error error = ((OAuth2AuthenticationException) exception).getError();
                 errorMessage = error.getDescription();
             } else {
@@ -193,6 +194,7 @@ public class WebSecurityConfig {
                     URLEncoder.encode(errorMessage, "UTF-8"));
         };
     }
+
 
 
     // OAuth2 로그인 성공 핸들러

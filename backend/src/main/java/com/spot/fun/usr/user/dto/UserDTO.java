@@ -25,6 +25,7 @@ public class UserDTO {
     private String detaileAdd;     // 상세 주소
     private String provider;
     private UserRole userRole;
+    private String useYn;
 
     public static UserDTO fromEntity(User user) {
         return UserDTO.builder()
@@ -38,6 +39,7 @@ public class UserDTO {
                 .address(user.getAddress())
                 .detaileAdd(user.getDetaileAdd())
                 .provider(user.getProvider())
+                .provider(user.getUseYn())
                 .build();
     }
 
