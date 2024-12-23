@@ -39,7 +39,7 @@ public class UserDTO {
                 .address(user.getAddress())
                 .detaileAdd(user.getDetaileAdd())
                 .provider(user.getProvider())
-                .provider(user.getUseYn())
+                .useYn(user.getUseYn())
                 .build();
     }
 

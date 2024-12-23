@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
                 .address(user.getAddress())
                 .detaileAdd(user.getDetaileAdd())
                 .provider(user.getProvider())
+                .useYn(user.getUseYn())
                 .build();
     }
 
