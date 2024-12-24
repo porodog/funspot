@@ -14,5 +14,7 @@ public interface CustomService {
     void update(Long cno, CustomDTO customDTO);
 
     void delete(Long cno);
+
+    List<CustomDTO> listRecent(Long userIdx);
   
 }

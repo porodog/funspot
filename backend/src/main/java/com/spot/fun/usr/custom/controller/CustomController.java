@@ -48,4 +48,10 @@ public class CustomController {
       service.delete(cno);
       return ResponseEntity.ok("코스가 성공적으로 삭제되었습니다.");
    }
+
+   @GetMapping("/list/recent")
+   public ResponseEntity<List<CustomDTO>> listRecent(@RequestParam(required = false) Long userIdx) {
+      List<CustomDTO> customList = service.listRecent(userIdx);
+      return ResponseEntity.ok(customList);
+   }
 }

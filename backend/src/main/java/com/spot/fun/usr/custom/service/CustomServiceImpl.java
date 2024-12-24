@@ -156,5 +156,29 @@ public class CustomServiceImpl implements CustomService {
       customRepository.save(custom);
    }
 
+   @Override
+   public List<CustomDTO> listRecent(Long userIdx) {
+      List<Custom> customList = customRepository.findTop10ByDelYnOrderByCnoDesc("N");
+
+      return customList.stream().map(custom -> {
+         // 1️⃣ CustomDTO 생성
+         CustomDTO customDTO = modelMapper.map(custom, CustomDTO.class);
+
+         // 2️⃣ CustomPlace를 orderIndex 기준으로 정렬 후 PlaceDTO로 변환
+         List<PlaceDTO> placeDTOs = custom.getCustomPlaces().stream()
+                 .sorted(Comparator.comparing(CustomPlace::getOrderIndex)) // 🟢 orderIndex로 정렬
+                 .map(customPlace -> modelMapper.map(customPlace.getPlace(), PlaceDTO.class)) // 🔥 CustomPlace의 Place만 매핑
+                 .collect(Collectors.toList());
+
+         boolean isWishList = wishListRepository.existsByUserIdxAndCustomCno(userIdx, custom.getCno());
+
+         // 3️⃣ CustomDTO에 places 설정
+         customDTO.setPlaces(placeDTOs);
+         customDTO.setTags(custom.getTagList());
+         customDTO.setWishList(isWishList);
+         return customDTO;
+      }).collect(Collectors.toList());
+   }
+
 
 }
