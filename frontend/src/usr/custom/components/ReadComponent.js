@@ -109,9 +109,8 @@ const ReadComponent = () => {
                   justify-content: center;
                   transform: rotate(45deg); /* 회전 복구 */
                 ">
-                  <img src="${
-                    categoryIcons[place.category] || categoryIcons["기본"]
-                  }" alt="아이콘" style="
+                  <img src="${categoryIcons[place.category] || categoryIcons["기본"]
+              }" alt="아이콘" style="
                     width: 18px;
                     height: 18px;
                   "/>

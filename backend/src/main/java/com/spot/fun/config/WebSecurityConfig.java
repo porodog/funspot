@@ -79,7 +79,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
-                        .requestMatchers("/api/usr/datecourse/public", "api/usr/datecourse/user").permitAll()
+                        .requestMatchers("/api/usr/course/**").permitAll()
+                        .requestMatchers("/api/usr/places/**").permitAll()
                         .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
                         .requestMatchers("/api/boards/**").permitAll() // 게시판 관련 경로 인증 없이 허용
                         .requestMatchers("/uploads/**").permitAll() // 이미지 업로드 경로 인증 없이 허용

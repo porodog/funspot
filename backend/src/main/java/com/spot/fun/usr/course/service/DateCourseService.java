@@ -31,7 +31,7 @@ public class DateCourseService {
     }
 
     // 코스 정보 조회
-    public Optional<DateCourse> getCourseById(Long id) {
+    public Optional<DateCourse> getCourseById(Long id, Long loginUserid) {
         return dateCourseRepository.findById(id);
     }
 

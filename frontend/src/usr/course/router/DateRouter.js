@@ -17,7 +17,7 @@ const DateRouter = () => {
       ),
     },
     {
-      path: "course/:id",
+      path: "datecourses/:id",
       element: (
         <Suspense fallback={Loading}>
           <DetailPage />

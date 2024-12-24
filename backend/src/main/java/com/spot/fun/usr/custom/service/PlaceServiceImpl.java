@@ -19,6 +19,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepository placeRepository;
     private final ModelMapper modelMapper;
 
+
     @Override
     public List<PlaceDTO> searchPlaces(String address, String name) {
        List<Place> places;

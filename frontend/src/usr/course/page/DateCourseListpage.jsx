@@ -64,12 +64,13 @@ const DateCourseListPage = () => {
       filtered = filtered.filter(course => course.ageGroup === ageGroupFilter);
     }
 
-    if (locationFilter) {
-      filtered = filtered.filter(course => course.location.includes(locationFilter));
+    if (locationFilter && locationFilter.trim() !== "") {
+      filtered = filtered.filter(course => course.location && course.location.includes(locationFilter));
     }
 
-    setFilteredCourses(filtered); // 필터링된 코스 목록 상태 업데이트
+    setFilteredCourses(filtered);
   };
+
 
   // 새로운 코스 추가 페이지로 이동
   const navigateToAddCoursePage = () => {
