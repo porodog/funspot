@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Log4j2
 @RestController
@@ -29,5 +27,17 @@ public class AdminFeedController {
   public ResponseEntity<?> getDetail(AdminFeedRequestDTO adminFeedRequestDTO) {
     AdminFeedResponseDTO detail = adminFeedService.getDetail(adminFeedRequestDTO);
     return ResponseEntity.status(HttpStatus.OK).body(detail);
+  }
+
+  @PutMapping("/{idx}")
+  public ResponseEntity<?> putUpdate(AdminFeedRequestDTO adminFeedRequestDTO) {
+    AdminFeedResponseDTO update = adminFeedService.putUpdate(adminFeedRequestDTO);
+    return ResponseEntity.status(HttpStatus.OK).body(update);
+  }
+
+  @DeleteMapping("/{idx}")
+  public ResponseEntity<?> delete(AdminFeedRequestDTO adminFeedRequestDTO) {
+    AdminFeedResponseDTO delete = adminFeedService.delete(adminFeedRequestDTO);
+    return ResponseEntity.status(HttpStatus.OK).body(delete);
   }
 }
