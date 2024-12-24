@@ -147,9 +147,9 @@ const ReadComponent = () => {
             map: map,
             path: [pathCoords[i - 1], position],
             strokeColor: "#25E2B6", // 선 색상
-            strokeWeight: 3, // 선 두께
+            strokeWeight: 5, // 선 두께
             strokeOpacity: 1, // 선 투명도
-            strokeStyle: "dashed",
+            strokeStyle: "solid",
           });
         }
       }

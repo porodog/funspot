@@ -1,10 +1,13 @@
 package com.spot.fun.usr.custom.controller;
 
+import com.spot.fun.usr.custom.dto.CustomDTO;
 import com.spot.fun.usr.custom.dto.WishListDTO;
 import com.spot.fun.usr.custom.service.WishListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/usr/feed/wishlist")
@@ -30,6 +33,11 @@ public class WishListController {
    public ResponseEntity<?> getWishListByUser(@PathVariable Long userIdx, WishListDTO wishListDTO) {
       wishListDTO.setUserIdx(userIdx);
       return ResponseEntity.ok(wishListService.getFavoritesByUser(wishListDTO));
+   }
+
+   @GetMapping("/list/popular")
+   public List<CustomDTO> listPopular(@RequestParam(defaultValue = "10") int count) {
+      return wishListService.listPopular(count);
    }
 
 }
