@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const SliderComponent = ({ items }) => {
@@ -23,11 +23,16 @@ const SliderComponent = ({ items }) => {
           <div
             className="flex transition-transform duration-300"
             style={{
-              transform: `translateX(-${(currentIndex / itemsPerSlide) * 100}%)`,
+              transform: `translateX(-${
+                (currentIndex / itemsPerSlide) * 100
+              }%)`,
             }}
           >
             {items.map((item, index) => (
-              <div key={index} className="w-full sm:w-1/5 flex-shrink-0 p-2 relative">
+              <div
+                key={index}
+                className="w-full sm:w-1/5 flex-shrink-0 p-2 relative"
+              >
                 {/* 이미지 영역 */}
                 <div className="relative">
                   <img
@@ -36,7 +41,8 @@ const SliderComponent = ({ items }) => {
                     className="w-full h-auto rounded-lg object-contain shrink-0"
                   />
                   {/* 호버 시 나타나는 바로가기 버튼 */}
-                  <Link to={`/course/${item.title}`}
+                  <Link
+                    to={`/course/${item.title}`}
                     className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black p-2 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-300"
                   >
                     바로가기 &gt;
@@ -44,11 +50,15 @@ const SliderComponent = ({ items }) => {
                 </div>
                 <>
                   <h3 className="text-center mt-2">{item.title}</h3>
-                  <div className='flex justify-center '>
-                    <span className='text-start text-xs  text-gray-500'>{item.address}</span>
+                  <div className="flex justify-center ">
+                    <span className="text-start text-xs  text-gray-500">
+                      {item.address}
+                    </span>
                     {/* 위 수정 해야함 */}
                     {/* <span className="text-end text-sm ">{item.price}{item.time}{item.km}</span> */}
-                    <span className=" text-start text-xs text-gray-400">{item.price || item.time}&nbsp;{item.time}{item.km}</span>
+                    <span className=" text-start text-xs text-gray-400">
+                      {item.title}
+                    </span>
                   </div>
                 </>
               </div>

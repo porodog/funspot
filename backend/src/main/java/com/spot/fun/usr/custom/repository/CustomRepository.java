@@ -11,6 +11,7 @@ import com.spot.fun.usr.custom.domain.Custom;
 public interface CustomRepository extends JpaRepository<Custom, Long> {
    Optional<Custom> findById(Long cno);
    List<Custom> findAllByOrderByCnoDesc();
+   List<Custom> findTop10ByDelYnOrderByCnoDesc(String delYn);
 
 
 }

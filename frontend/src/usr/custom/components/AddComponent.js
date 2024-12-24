@@ -65,8 +65,12 @@ const AddComponent = () => {
   // 주소로 장소 검색
   const handleSearch = async () => {
     try {
-      const data = await searchPlaces(address, name);
-      setPlaces(data);
+      const data = await searchPlaces(address, name); // 🔥 주소로 장소 검색
+      // 🔥 이미 선택된 장소는 제외하는 필터 추가
+      const filteredData = data.filter(
+        (place) => !selectedPlaces.some((selected) => selected.id === place.id)
+      );
+      setPlaces(filteredData); // 선택된 장소가 제외된 목록만 추가
     } catch (error) {
       console.error("Error fetching places:", error);
       alert("Failed to fetch places. Please try again.");
@@ -85,8 +89,8 @@ const AddComponent = () => {
 
   // 장소 삭제
   const handleRemovePlace = (place) => {
-    setPlaces([...places, place]); // 장소 목록에 다시 추가
-    setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id)); // 선택된 장소에서 제거
+    // 선택된 장소에서 제거
+    setSelectedPlaces(selectedPlaces.filter((p) => p.id !== place.id));
   };
 
   // 태그 선택/해제 핸들러
