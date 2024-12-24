@@ -13,4 +13,5 @@ import java.util.List;
 public class AdminFeedResponseDTO {
   private List<FeedDTO> list;
   private FeedDTO detail;
+  private Long idx;
 }
