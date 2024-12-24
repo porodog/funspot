@@ -8,9 +8,11 @@ import ImageComponent from "../component/profile/ImageComponent";
 import NicknameComponent from "../component/profile/NicknameComponent";
 import DescriptionComponent from "../component/profile/DescriptionComponent";
 import initSrc from "../../../common/img/image_upload.jpg";
+import { useNavigate } from "react-router-dom";
 
 const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
   const { userIdx, description, uploadName, user } = mypageInfo;
+  const navigate = useNavigate();
 
   //이미지
   const useFileRef = useRef(null);
@@ -104,7 +106,10 @@ const ProfileModal = ({ mypageInfo, closeProfileModal }) => {
       const data = await putProfileApi(form);
       if (data) {
         window.alert("[프로필] 저장을 성공했습니다");
+        navigate(`/mypage/feed/${userIdx}`);
         window.location.reload();
+
+        //closeProfileModal();
       }
     } catch (err) {
       window.alert("[프로필] 저장을 실패했습니다");
