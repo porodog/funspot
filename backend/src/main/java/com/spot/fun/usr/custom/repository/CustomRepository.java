@@ -14,7 +14,7 @@ public interface CustomRepository extends JpaRepository<Custom, Long> {
    Optional<Custom> findById(Long cno);
    List<Custom> findAllByOrderByCnoDesc();
    List<Custom> findTop10ByDelYnOrderByCnoDesc(String delYn);
-   @Query("SELECT c FROM Custom c JOIN FETCH c.customPlaces cp JOIN FETCH cp.place WHERE c.cno IN :customIds")
+   @Query("SELECT c FROM Custom c JOIN FETCH c.customPlaces cp JOIN FETCH cp.place WHERE c.cno IN :customIds AND c.delYn = 'N'")
    List<Custom> findCustomsWithPlacesByIds(@Param("customIds") List<Long> customIds);
 
 
