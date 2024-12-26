@@ -22,6 +22,8 @@ public class CustomDTO {
     private List<String> tags;
    private String delYn = "N";
 
+   private Boolean hasNext;
+
     @Builder.Default
     private boolean wishList = false;
     

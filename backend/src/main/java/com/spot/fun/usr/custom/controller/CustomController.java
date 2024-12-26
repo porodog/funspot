@@ -2,6 +2,11 @@ package com.spot.fun.usr.custom.controller;
 
 import java.util.List;
 
+import com.spot.fun.paging.ScrollPagingUtil;
+import com.spot.fun.usr.custom.dto.CustomResponseDTO;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +31,16 @@ public class CustomController {
    }
 
    @GetMapping("/list")
-   public ResponseEntity<List<CustomDTO>> list(@RequestParam(required = false) Long userIdx) {
-      List<CustomDTO> customList = service.list(userIdx); // 🟢 서비스 호출
-      return ResponseEntity.ok(customList); // 🟢 조회된 목록을 JSON 형태로 반환
+   public ResponseEntity<CustomResponseDTO> list(
+           @RequestParam(defaultValue = "cno,desc") String sort,
+           @RequestParam(required = false) Long userIdx,
+           ScrollPagingUtil scrollPagingUtil
+           ) {
+      Pageable pageable = PageRequest.of(0, scrollPagingUtil.getPageSize(), Sort.by("cno").descending());
+      scrollPagingUtil.setPageSize(3);
+      CustomResponseDTO customDTOPage = service.list(userIdx, pageable, scrollPagingUtil);
+
+      return ResponseEntity.ok(customDTOPage);
    }
 
    @PostMapping("/")

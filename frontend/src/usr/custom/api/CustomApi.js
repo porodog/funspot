@@ -16,10 +16,12 @@ export const registerDateCourse = async (course) => {
   return response.data;
 };
 
-export const getCustomList = async (userIdx) => {
+export const getCustomList = async (userIdx, lastId, size = 3) => {
+  console.log("getCustomList >>");
   const response = await axios.get(`${API_BASE_URL}/api/usr/custom/list`, {
-    params: { userIdx },
+    params: { userIdx, lastId, pageSize: size }, // 🔥 페이지네이션 파라미터 추가
   });
+  console.log("response >>" + response);
   return response.data;
 };
 

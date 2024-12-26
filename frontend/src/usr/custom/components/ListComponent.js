@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useBasic } from "../../../common/context/BasicContext";
 import { getCustomList } from "../api/CustomApi";
 import { Link } from "react-router-dom";
 import Place from "../img/Place.png";
@@ -7,27 +8,75 @@ import locate from "../img/locate.png";
 
 const ListComponent = () => {
   const [customs, setCustoms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const { userInfo } = useBasic();
+  const loginUserIdx = userInfo?.userIdx || "";
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getCustomList();
-        const filteredData = data.filter((custom) => custom.delYn === "N"); // ✅ delYn이 N인 것만 남김
-        setCustoms(filteredData);
-      } catch (error) {
-        console.error("Failed to fetch custom list:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [hasNext, setHasNext] = useState(true);
+  const [lastId, setLastId] = useState(0);
 
+  const fetchData = async () => {
+    console.log("fetchData");
+    if (!hasNext || loading) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await getCustomList(loginUserIdx, lastId, 3); // 🔥 page와 size를 전달
+      const list = data.list || [];
+
+      console.log(list);
+      const filteredData = list.filter((custom) => custom.delYn === "N"); // ✅ delYn이 N인 것만 남김
+
+      setCustoms((prev) => [...prev, ...filteredData]); // 기존 데이터에 추가
+      setHasNext(data.hasNext);
+
+      if (list.length > 0) {
+        setLastId(parseInt(list[list.length - 1].cno));
+      }
+    } catch (error) {
+      console.error("Failed to fetch custom list:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 스크롤 위치
+  const [isBottom, setIsBottom] = useState(false);
+  const handleScrollEvent = () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const innerHeight = window.innerHeight;
+    const scrollHeight = document.documentElement.scrollHeight;
+
+    if (scrollTop + innerHeight >= scrollHeight - 1) {
+      setIsBottom(true);
+    } else {
+      setIsBottom(false);
+    }
+  };
+  // 최초 마운트
+  useEffect(() => {
     fetchData();
+    window.addEventListener("scroll", handleScrollEvent);
+    // window.addEventListener("resize", handleScrollEvent);
+    return () => {
+      window.removeEventListener("scroll", handleScrollEvent);
+      // window.removeEventListener("resize", handleScrollEvent);
+    };
   }, []);
 
-  if (loading) {
+  // 목록 조회
+  useEffect(() => {
+    if (isBottom && hasNext) {
+      fetchData();
+    }
+  }, [isBottom]);
+
+  if (loading && customs.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen text-lg">
         Loading...
@@ -51,7 +100,10 @@ const ListComponent = () => {
         <div className="p-4">
           <div className="grid grid-cols-1 gap-6">
             {customs.map((custom) => (
-              <div className="w-full bg-white rounded-lg shadow-md overflow-hidden relative">
+              <div
+                key={custom.cno}
+                className="w-full bg-white rounded-lg shadow-md overflow-hidden relative"
+              >
                 {/* 이미지 영역 */}
                 <div className="grid grid-cols-5 gap-1">
                   {custom.places.map((place, index) => (

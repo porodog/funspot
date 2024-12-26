@@ -5,8 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.spot.fun.paging.ScrollPagingUtil;
+import com.spot.fun.usr.custom.dto.CustomResponseDTO;
 import com.spot.fun.usr.custom.repository.WishListRepository;
+import org.apache.commons.lang3.ObjectUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.spot.fun.usr.custom.domain.Custom;
@@ -94,10 +98,10 @@ public class CustomServiceImpl implements CustomService {
    }
 
    @Override
-   public List<CustomDTO> list(Long userIdx) {
-      List<Custom> customList = customRepository.findAllByOrderByCnoDesc();
+   public CustomResponseDTO list(Long userIdx, Pageable pageable, ScrollPagingUtil scrollPagingUtil) {
+      List<Custom> customList = customRepository.findAllScrollPaging(scrollPagingUtil, pageable);
 
-      return customList.stream().map(custom -> {
+      List<CustomDTO> dtoList = customList.stream().map(custom -> {
          // 1️⃣ CustomDTO 생성
          CustomDTO customDTO = modelMapper.map(custom, CustomDTO.class);
 
@@ -115,6 +119,13 @@ public class CustomServiceImpl implements CustomService {
          customDTO.setWishList(isWishList);
          return customDTO;
       }).collect(Collectors.toList());
+
+      boolean hasNext = ((dtoList.size() == scrollPagingUtil.getPageSize()) && !ObjectUtils.isEmpty(dtoList));
+
+      return CustomResponseDTO.builder()
+              .list(dtoList)
+              .hasNext(hasNext)
+              .build();
    }
 
    @Override
