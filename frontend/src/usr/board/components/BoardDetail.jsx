@@ -5,14 +5,22 @@ import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정�
 import "./BoardDetail.css"; // CSS 파일 추가
 
 const BoardDetail = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
-    const [hasLiked, setHasLiked] = useState(false); // 추천 여부 확인
-    const [comments, setComments] = useState([]); // 댓글 목록
-    const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
-    const [replyContent, setReplyContent] = useState({}); // 대댓글 입력 상태
-    const {userInfo} = useBasic(); // 로그인된 사용자 정보 가져오기
+    const [hasLiked, setHasLiked] = useState(false);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [replyContent, setReplyContent] = useState({});
+    const { userInfo } = useBasic();
+    const [replyVisibility, setReplyVisibility] = useState({}); // 대댓글 입력창 표시 상태
+
+    const handleReplyToggle = (commentId) => {
+        setReplyVisibility((prev) => ({
+            ...prev,
+            [commentId]: !prev[commentId], // 토글 방식으로 입력창 표시 여부 변경
+        }));
+    };
 
     // 게시글 가져오기
     useEffect(() => {
@@ -97,22 +105,21 @@ const BoardDetail = () => {
     const fetchComments = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/comments/${id}`, {
-                withCredentials: true, // 쿠키 포함
+                withCredentials: true,
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 인증 토큰 추가
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
                 },
             });
-            console.log("Fetched Comments Data:", response.data);
-            setComments(Array.isArray(response.data) ? response.data : []);
+            setComments(
+                Array.isArray(response.data)
+                    ? response.data.map((comment) => ({
+                        ...comment,
+                        replies: comment.replies || [], // 기본값 설정
+                    }))
+                    : []
+            );
         } catch (error) {
-            if (error.response?.status === 401) {
-                console.error("Unauthorized: Please login again.");
-                alert("로그인이 필요합니다.");
-                // 필요 시 로그아웃 처리 및 로그인 페이지로 이동
-                // navigate("/login");
-            } else {
-                console.error("Error fetching comments:", error.response || error);
-            }
+            console.error("Error fetching comments:", error.response || error);
         }
     };
 
@@ -161,6 +168,8 @@ const BoardDetail = () => {
                 )
             );
             setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
+            setReplyVisibility((prev) => ({ ...prev, [parentCommentId]: false })); // 입력창 숨기기
+
         } catch (error) {
             console.error("Error posting reply:", error);
         }
@@ -287,31 +296,34 @@ const BoardDetail = () => {
                 <h2 className="text-xl font-semibold mb-4">댓글</h2>
                 {comments.map((comment) => (
                     <div key={comment.id} className="mb-4 p-3 border rounded-md">
-                        {/* 댓글 작성자, 내용, 작성일자를 한 줄로 배치 */}
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold mr-4">{comment.author}</span> {/* 작성자 */}
-                            <span className="text-gray-700 flex-1 mr-4 truncate">{comment.content}</span> {/* 댓글 내용 */}
-                            <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span> {/* 작성일자 */}
-                        </div>
-
-
-                        <div className="mt-2">
-                            <input
-                                type="text"
-                                value={replyContent[comment.id] || ""}
-                                onChange={(e) =>
-                                    setReplyContent((prev) => ({...prev, [comment.id]: e.target.value}))
-                                }
-                                className="border rounded-md px-3 py-1 w-full"
-                            />
-                            <button
-                                onClick={() => handleReplySubmit(comment.id)}
-                                className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                            <span className="text-sm font-semibold mr-4">{comment.author}</span>
+                            <span
+                                className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
+                                onClick={() => handleReplyToggle(comment.id)}
                             >
-                                대댓글 작성
-                            </button>
+                {comment.content}
+            </span>
+                            <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span>
                         </div>
-
+                        {replyVisibility[comment.id] && ( // 입력창 표시 여부 확인
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    value={replyContent[comment.id] || ""}
+                                    onChange={(e) =>
+                                        setReplyContent((prev) => ({ ...prev, [comment.id]: e.target.value }))
+                                    }
+                                    className="border rounded-md px-3 py-1 w-full"
+                                />
+                                <button
+                                    onClick={() => handleReplySubmit(comment.id)}
+                                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                                >
+                                    대댓글 작성
+                                </button>
+                            </div>
+                        )}
                         {comment.replies?.map((reply) => (
                             <div key={reply.id} className="mt-4 ml-6 p-3 border rounded-md">
                                 <p className="text-sm font-semibold">{reply.author}</p>
@@ -321,6 +333,7 @@ const BoardDetail = () => {
                         ))}
                     </div>
                 ))}
+
             </div>
 
             <div className="new-comment mt-6">
