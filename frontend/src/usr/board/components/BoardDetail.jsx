@@ -5,14 +5,14 @@ import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정�
 import "./BoardDetail.css"; // CSS 파일 추가
 
 const BoardDetail = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
     const [hasLiked, setHasLiked] = useState(false);
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState("");
     const [replyContent, setReplyContent] = useState({});
-    const { userInfo } = useBasic();
+    const {userInfo} = useBasic();
     const [replyVisibility, setReplyVisibility] = useState({}); // 대댓글 입력창 표시 상태
 
     const handleReplyToggle = (commentId) => {
@@ -65,15 +65,15 @@ const BoardDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                                // 게시글 데이터 가져오기
+                // 게시글 데이터 가져오기
                 const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
                 setBoard(boardResponse.data);
                 console.log(userInfo?.userIdx ?? 0);
                 // 조회수 증가 요청
 
-                    await axios.get(`http://localhost:8080/api/boards/${id}/view`, {
-                        params: {userIdx: userInfo?.userIdx ?? 0},
-                    });
+                await axios.get(`http://localhost:8080/api/boards/${id}/view`, {
+                    params: {userIdx: userInfo?.userIdx ?? 0},
+                });
 
             } catch (error) {
                 console.error("Error fetching board or incrementing view count:", error);
@@ -100,7 +100,6 @@ const BoardDetail = () => {
     useEffect(() => {
         fetchComments();
     }, [id]);
-    console.log("commentId" + id)
 
     const fetchComments = async () => {
         try {
@@ -137,7 +136,7 @@ const BoardDetail = () => {
                 `http://localhost:8080/api/comments/${id}`,
                 payload,
                 {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+                    headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
                 }
             );
 
@@ -156,25 +155,35 @@ const BoardDetail = () => {
         try {
             const payload = {
                 content,
-                userId: userInfo.userIdx,
+                author: userInfo.nickname, // 사용자 닉네임
                 parentCommentId,
             };
-            const response = await axios.post(`http://localhost:8080/api/boards/${id}/comments`, payload);
+
+            const response = await axios.post(
+                `http://localhost:8080/api/comments/${id}`, // 경로 확인
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 인증 토큰 추가
+                    },
+                }
+            );
+
+            // 댓글 상태 업데이트
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === parentCommentId
-                        ? { ...comment, replies: [...(comment.replies || []), response.data] }
+                        ? {...comment, replies: [...(comment.replies || []), response.data]}
                         : comment
                 )
             );
-            setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
-            setReplyVisibility((prev) => ({ ...prev, [parentCommentId]: false })); // 입력창 숨기기
 
+            setReplyContent((prev) => ({...prev, [parentCommentId]: ""}));
+            setReplyVisibility((prev) => ({...prev, [parentCommentId]: false})); // 입력창 숨기기
         } catch (error) {
             console.error("Error posting reply:", error);
         }
     };
-
 
     const handleEdit = () => {
         navigate(`/board/edit/${id}`); // 수정 화면으로 이동
@@ -189,8 +198,7 @@ const BoardDetail = () => {
                 `http://localhost:8080/api/boards/${id}/delete`,
                 {},
                 {
-                    headers: {
-                    },
+                    headers: {},
                 }
             );
             alert("게시글이 삭제되었습니다.");
@@ -294,55 +302,87 @@ const BoardDetail = () => {
 
             <div className="comments-section mt-8">
                 <h2 className="text-xl font-semibold mb-4">댓글</h2>
-                {comments.map((comment) => (
-                    <div key={comment.id} className="mb-4 p-3 border rounded-md">
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold mr-4">{comment.author}</span>
-                            <span
-                                className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
-                                onClick={() => handleReplyToggle(comment.id)}
-                            >
-                {comment.content}
-            </span>
-                            <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span>
-                        </div>
-                        {replyVisibility[comment.id] && ( // 입력창 표시 여부 확인
-                            <div className="mt-2">
-                                <input
-                                    type="text"
-                                    value={replyContent[comment.id] || ""}
-                                    onChange={(e) =>
-                                        setReplyContent((prev) => ({ ...prev, [comment.id]: e.target.value }))
-                                    }
-                                    className="border rounded-md px-3 py-1 w-full"
-                                />
-                                <button
-                                    onClick={() => handleReplySubmit(comment.id)}
-                                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                {comments.length > 0 ? (
+                    comments.map((comment) => (
+                        <div key={`comment-${comment.id}`} className="mb-4 p-3 border rounded-md">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-semibold mr-4">{comment.author}</span>
+                                <span
+                                    className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
+                                    onClick={() => handleReplyToggle(comment.id)}
                                 >
-                                    대댓글 작성
-                                </button>
+                        {comment.content}
+                    </span>
+                                <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span>
                             </div>
-                        )}
-                        {comment.replies?.map((reply) => (
-                            <div key={reply.id} className="mt-4 ml-6 p-3 border rounded-md">
-                                <p className="text-sm font-semibold">{reply.author}</p>
-                                <p className="text-gray-700">{reply.content}</p>
-                                <p className="text-xs text-gray-500">{formatDateTime(reply.createdAt)}</p>
-                            </div>
-                        ))}
-                    </div>
-                ))}
 
+                            {/* 대댓글 입력창 */}
+                            {replyVisibility[comment.id] && (
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        value={replyContent[comment.id] || ""}
+                                        onChange={(e) => {
+                                            const input = e.target.value;
+                                            setReplyContent((prev) => ({
+                                                ...prev,
+                                                [comment.id]: input.length <= 50 ? input : input.slice(0, 50),
+                                            }));
+                                        }}
+                                        placeholder="대댓글 입력 (최대 50자)"
+                                        className="border rounded-md px-3 py-1 w-full"
+                                    />
+                                    <button
+                                        onClick={() => handleReplySubmit(comment.id)}
+                                        className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                                    >
+                                        대댓글 작성
+                                    </button>
+                                </div>
+                            )}
+
+
+                            {/* 대댓글 렌더링 */}
+                            {comment.replies &&
+                                comment.replies.map((reply) => (
+                                    <div
+                                        key={`reply-${reply.id}`}
+                                        className="mt-4 ml-6 p-3 border rounded-md comment-replies" // 클래스 추가
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-semibold">{reply.author}</span>
+                                            <span className="text-gray-700 flex-1 ml-2">
+                                                {/* 댓글 내용 50자 제한 */}
+                                                {reply.content.length > 60
+                                                    ? `${reply.content.slice(0, 60)}...`
+                                                    : reply.content}
+                                            </span>
+                                            <span
+                                                className="text-xs text-gray-500">{formatDateTime(reply.createdAt)}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+
+
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-gray-500">댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
+                )}
             </div>
 
+
             <div className="new-comment mt-6">
-                <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다."
-                    className="w-full border rounded-md px-3 py-2"
-                />
+    <textarea
+        value={newComment}
+        onChange={(e) => {
+            const input = e.target.value;
+            setNewComment(input.length <= 50 ? input : input.slice(0, 50));
+        }}
+        placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
+        className="w-full border rounded-md px-3 py-2"
+    />
                 <button
                     onClick={handleCommentSubmit}
                     className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
@@ -350,6 +390,7 @@ const BoardDetail = () => {
                     댓글 작성
                 </button>
             </div>
+
 
             {/* 목록으로 버튼 */}
             <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}

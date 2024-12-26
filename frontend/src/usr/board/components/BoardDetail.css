@@ -88,3 +88,14 @@
     text-align: right; /* 우측 정렬 */
 }
 
+/* 대댓글 컨테이너 */
+.comment-replies {
+    text-align: left; /* 좌측 정렬 */
+    line-height: 1.5; /* 줄 간격 */
+}
+
+/* 대댓글 텍스트 */
+.comment-replies span {
+    display: block; /* 각 텍스트를 블록 요소로 */
+    text-align: left; /* 좌측 정렬 */
+}

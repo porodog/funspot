@@ -1,11 +1,13 @@
 package com.spot.fun.usr.board.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +30,8 @@ public class CommentEntity {
   private CommentEntity parent;
 
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<CommentEntity> replies;
+  @JsonIgnore // 순환 참조 방지
+  private List<CommentEntity> replies = new ArrayList<>();
 
   @Column(nullable = false)
   private String content;

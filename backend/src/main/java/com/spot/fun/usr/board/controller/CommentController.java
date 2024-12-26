@@ -16,23 +16,25 @@ public class CommentController {
 
   private final CommentService commentService;
 
-  // 댓글 추가
+  // 댓글 및 대댓글 추가
   @PostMapping("/{boardId}")
   public ResponseEntity<CommentEntity> addComment(
           @PathVariable Long boardId,
-          @RequestBody Map<String, Object> payload
+          @RequestBody Map<String, Object> payload,
+          @RequestHeader("Authorization") String authHeader // 인증 헤더 확인
   ) {
     String content = (String) payload.get("content");
-    String author = (String) payload.get("author"); // 닉네임
+    String author = (String) payload.get("author");
     Long parentId = payload.containsKey("parentCommentId")
             ? Long.valueOf(payload.get("parentCommentId").toString())
             : null;
 
+    // 댓글 및 대댓글 추가 처리
     CommentEntity comment = commentService.addComment(boardId, content, author, parentId);
     return ResponseEntity.ok(comment);
   }
 
-  // 댓글 조회
+  // 댓글 및 대댓글 조회
   @GetMapping("/{boardId}")
   public ResponseEntity<List<CommentEntity>> getComments(@PathVariable Long boardId) {
     List<CommentEntity> comments = commentService.getCommentsByBoardId(boardId);
@@ -44,5 +46,15 @@ public class CommentController {
   public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
     commentService.deleteComment(commentId);
     return ResponseEntity.noContent().build();
+  }
+
+  // 기타 예외 처리
+  @RestControllerAdvice
+  public class GlobalExceptionHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+      return ResponseEntity.badRequest().body(ex.getMessage());
+    }
   }
 }

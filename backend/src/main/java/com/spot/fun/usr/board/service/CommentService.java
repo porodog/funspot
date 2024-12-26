@@ -33,7 +33,10 @@ public class CommentService {
 
     if (parentId != null) {
       Optional<CommentEntity> parent = commentRepository.findById(parentId);
-      parent.ifPresent(comment::setParent);
+      if (parent.isEmpty()) {
+        throw new IllegalArgumentException("부모 댓글이 존재하지 않습니다.");
+      }
+      comment.setParent(parent.get());
     }
 
     return commentRepository.save(comment);
@@ -41,20 +44,37 @@ public class CommentService {
 
   // 댓글 조회
   public List<CommentEntity> getCommentsByBoardId(Long boardIdx) {
-    return commentRepository.findByBoard_IdxAndParentIsNullAndDelYn(boardIdx, "n");
+    List<CommentEntity> topLevelComments = commentRepository.findByBoard_IdxAndParentIsNullAndDelYn(boardIdx, "n");
+
+    for (CommentEntity comment : topLevelComments) {
+      setReplies(comment); // 대댓글 설정
+    }
+
+    return topLevelComments;
   }
 
+  private void setReplies(CommentEntity comment) {
+    List<CommentEntity> replies = commentRepository.findByParentIdAndDelYn(comment.getId(), "n");
+    comment.setReplies(replies);
+    for (CommentEntity reply : replies) {
+      setReplies(reply); // 재귀적으로 하위 대댓글 설정
+    }
+  }
 
   // 댓글 삭제 (논리 삭제)
   @Transactional
   public void deleteComment(Long commentId) {
-    Optional<CommentEntity> comment = commentRepository.findById(commentId);
-    if (comment.isEmpty()) {
-      throw new IllegalArgumentException("댓글을 찾을 수 없습니다.");
-    }
+    CommentEntity comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+    comment.setDelYn("y");
+    commentRepository.save(comment);
 
-    CommentEntity existingComment = comment.get();
-    existingComment.setDelYn("y"); // 논리적 삭제 처리
-    commentRepository.save(existingComment);
+    // 하위 대댓글도 논리 삭제
+    List<CommentEntity> replies = commentRepository.findByParentIdAndDelYn(commentId, "n");
+    for (CommentEntity reply : replies) {
+      reply.setDelYn("y");
+      commentRepository.save(reply);
+    }
   }
+
 }
