@@ -1,11 +1,15 @@
 package com.spot.fun.usr.board.service;
 
+import com.spot.fun.usr.board.dto.BoardDTO;
 import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.entity.BoardLikeEntity;
 import com.spot.fun.usr.board.entity.BoardViewEntity;
 import com.spot.fun.usr.board.repository.BoardLikeRepository;
 import com.spot.fun.usr.board.repository.BoardRepository;
 import com.spot.fun.usr.board.repository.BoardViewRepository;
+import com.spot.fun.usr.board.util.BoardUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,8 @@ public class BoardService {
   private final BoardRepository boardRepository;
   private final BoardLikeRepository boardLikeRepository;
   private final BoardViewRepository boardViewRepository;
+  private final BoardUtil boardUtil;
+
 
   // 모든 게시글 조회 (최신순 정렬)
   public Page<BoardEntity> getAllBoards(Pageable pageable) {
@@ -105,28 +111,34 @@ public class BoardService {
     boardRepository.save(board);
   }
   @Transactional
-  public BoardEntity incrementViewCount(Long boardIdx, Long userIdx) {
-    // 이미 조회한 기록이 있는지 확인
-    boolean alreadyViewed = boardViewRepository.existsByBoardIdxAndUserIdx(boardIdx, userIdx);
+  public BoardEntity incrementViewCount(Long boardIdx, Long userIdx , HttpServletRequest request, HttpServletResponse response) {
 
-    if (!alreadyViewed) {
-      // 조회 기록 추가
-      BoardEntity board = boardRepository.findById(boardIdx)
-              .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+    if (userIdx == 0) {
+      boardUtil.readCount(boardIdx, request, response);
+    } else {
+      // 이미 조회한 기록이 있는지 확인
+      boolean alreadyViewed = boardViewRepository.existsByBoardIdxAndUserIdx(boardIdx, userIdx);
 
-      BoardViewEntity boardView = BoardViewEntity.builder()
-              .board(board)
-              .userIdx(userIdx)
-              .viewDate(LocalDateTime.now())
-              .build();
-      boardViewRepository.save(boardView);
+      if (!alreadyViewed) {
+        // 조회 기록 추가
+        BoardEntity board = boardRepository.findById(boardIdx)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
-      // 조회수 증가
-      board.setViewCount(board.getViewCount() + 1);
-      boardRepository.save(board);
+        BoardViewEntity boardView = BoardViewEntity.builder()
+                .board(board)
+                .userIdx(userIdx)
+                .viewDate(LocalDateTime.now())
+                .build();
+        boardViewRepository.save(boardView);
+
+        // 조회수 증가
+        board.setViewCount(board.getViewCount() + 1);
+        boardRepository.save(board);
+      }
     }
 
     return boardRepository.findById(boardIdx)
             .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
   }
+
 }

@@ -18,17 +18,16 @@ const BoardList = () => {
 
     const fetchBoards = async (page, type, keyword) => {
         try {
-            const token = localStorage.getItem("authToken");
-            const response = await axios.get("http://localhost:8080/api/boards/search", {
+            const response = await axios.get("http://localhost:8080/api/boards", {
                 params: { page, size: pageSize, type, keyword },
-                headers: { Authorization: `Bearer ${token}` },
             });
-            setBoards(response.data.content);
+            setBoards(response.data.content); // 댓글 수 포함
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error("게시글을 불러오는 중 문제가 발생했습니다:", error);
         }
     };
+
 
     const handleSearch = () => {
         setSearchQuery({ type: searchType, keyword }); // 검색 버튼 클릭 시 쿼리 업데이트
@@ -134,7 +133,7 @@ const BoardList = () => {
                                 {truncateText(stripHtmlTags(board.content), 60)} {/* HTML 제거 후 내용 60자 제한 */}
                             </p>
                             <div className="text-xs text-gray-400">
-                                조회수: {board.viewCount} | 추천수: {board.likeCount}
+                                 추천수: {board.likeCount} | 댓글수: {board.commentCount} | 조회수: {board.viewCount}
                             </div>
                         </li>
                     </Link>

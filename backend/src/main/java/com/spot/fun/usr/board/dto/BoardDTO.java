@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,4 +14,5 @@ public class BoardDTO {
   private String nickname;
   private String regDate; // 포맷팅된 등록일
   private String modDate; // 포맷팅된 수정일
+  private Long commentCount; // 댓글 수
 }

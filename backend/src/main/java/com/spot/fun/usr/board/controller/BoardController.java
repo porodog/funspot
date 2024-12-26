@@ -1,10 +1,13 @@
 package com.spot.fun.usr.board.controller;
 
+import com.spot.fun.usr.board.dto.BoardDTO;
 import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.repository.BoardLikeRepository;
 import com.spot.fun.usr.board.repository.BoardRepository;
 import com.spot.fun.usr.board.service.BoardService;
 import com.sun.security.auth.UserPrincipal;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -103,9 +106,11 @@ public class BoardController {
   @GetMapping("/{boardIdx}/view")
   public ResponseEntity<Void> incrementViewCount(
           @PathVariable Long boardIdx,
-          @RequestParam Long userIdx
+          @RequestParam Long userIdx,
+          HttpServletRequest request,
+          HttpServletResponse response
   ) {
-    boardService.incrementViewCount(boardIdx, userIdx);
+    boardService.incrementViewCount(boardIdx, userIdx, request, response);
     return ResponseEntity.ok().build();
   }
 

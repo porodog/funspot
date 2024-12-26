@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import Header from "../../common/component/Header";
-import Footer from "../../common/component/Footer";
+import BasicLayout from "../../../src/common/layout/BasicLayout";
 import { useBasic } from "../../common/context/BasicContext"; // 로그인 정보 가져오기
 
 function BoardIndex() {
@@ -16,7 +15,7 @@ function BoardIndex() {
 
     return (
         <div>
-            <Header />
+            <BasicLayout>
 
             <div className="container mx-auto p-4">
                 <div className="flex justify-between items-center mb-4">
@@ -40,7 +39,7 @@ function BoardIndex() {
                 <Outlet />
             </div>
 
-            <Footer />
+            </BasicLayout>
         </div>
     );
 }

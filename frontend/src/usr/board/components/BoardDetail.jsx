@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useParams, useNavigate} from "react-router-dom";
 import axios from "axios";
-import { useBasic } from "../../../common/context/BasicContext"; // 로그인 정보 가져오기
+import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정보 가져오기
 import "./BoardDetail.css"; // CSS 파일 추가
 
 const BoardDetail = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
     const [hasLiked, setHasLiked] = useState(false); // 추천 여부 확인
-    const { userInfo } = useBasic(); // 로그인된 사용자 정보 가져오기
+    const [comments, setComments] = useState([]); // 댓글 목록
+    const [newComment, setNewComment] = useState(""); // 댓글 입력 상태
+    const [replyContent, setReplyContent] = useState({}); // 대댓글 입력 상태
+    const {userInfo} = useBasic(); // 로그인된 사용자 정보 가져오기
 
     // 게시글 가져오기
     useEffect(() => {
@@ -27,7 +30,6 @@ const BoardDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("authToken");
 
                 // 게시글 데이터 가져오기
                 const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
@@ -38,8 +40,7 @@ const BoardDetail = () => {
                     const likeResponse = await axios.get(
                         `http://localhost:8080/api/boards/${id}/has-liked`,
                         {
-                            headers: { Authorization: `Bearer ${token}` },
-                            params: { userIdx: userInfo.userIdx }, // userIdx 전달
+                            params: {userIdx: userInfo?.userIdx}, // userIdx 전달
                         }
                     );
                     setHasLiked(likeResponse.data.hasLiked); // 서버에서 반환된 true/false 값 설정
@@ -56,19 +57,16 @@ const BoardDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem("authToken");
-
-                // 게시글 데이터 가져오기
+                                // 게시글 데이터 가져오기
                 const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
                 setBoard(boardResponse.data);
-
+                console.log(userInfo?.userIdx ?? 0);
                 // 조회수 증가 요청
-                if (userInfo?.userIdx) {
+
                     await axios.get(`http://localhost:8080/api/boards/${id}/view`, {
-                        headers: { Authorization: `Bearer ${token}` },
-                        params: { userIdx: userInfo.userIdx },
+                        params: {userIdx: userInfo?.userIdx ?? 0},
                     });
-                }
+
             } catch (error) {
                 console.error("Error fetching board or incrementing view count:", error);
             }
@@ -90,6 +88,85 @@ const BoardDetail = () => {
         return new Intl.DateTimeFormat("ko-KR", options).format(date);
     };
 
+    // 댓글 가져오기
+    useEffect(() => {
+        fetchComments();
+    }, [id]);
+    console.log("commentId" + id)
+
+    const fetchComments = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/comments/${id}`, {
+                withCredentials: true, // 쿠키 포함
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 인증 토큰 추가
+                },
+            });
+            console.log("Fetched Comments Data:", response.data);
+            setComments(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            if (error.response?.status === 401) {
+                console.error("Unauthorized: Please login again.");
+                alert("로그인이 필요합니다.");
+                // 필요 시 로그아웃 처리 및 로그인 페이지로 이동
+                // navigate("/login");
+            } else {
+                console.error("Error fetching comments:", error.response || error);
+            }
+        }
+    };
+
+    const handleCommentSubmit = async () => {
+        if (!newComment.trim()) return;
+
+        try {
+            const payload = {
+                content: newComment,
+                author: userInfo.nickname, // 사용자 닉네임
+            };
+            console.log("Sending Payload:", payload);
+
+            const response = await axios.post(
+                `http://localhost:8080/api/comments/${id}`,
+                payload,
+                {
+                    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+                }
+            );
+
+            console.log("Response Data:", response.data); // 응답 데이터 확인
+            setNewComment("");
+            fetchComments(); // 댓글 새로고침
+        } catch (error) {
+            console.error("Error posting comment:", error.response || error);
+        }
+    };
+
+    const handleReplySubmit = async (parentCommentId) => {
+        const content = replyContent[parentCommentId]?.trim();
+        if (!content) return;
+
+        try {
+            const payload = {
+                content,
+                userId: userInfo.userIdx,
+                parentCommentId,
+            };
+            const response = await axios.post(`http://localhost:8080/api/boards/${id}/comments`, payload);
+            setComments((prevComments) =>
+                prevComments.map((comment) =>
+                    comment.id === parentCommentId
+                        ? { ...comment, replies: [...(comment.replies || []), response.data] }
+                        : comment
+                )
+            );
+            setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
+        } catch (error) {
+            console.error("Error posting reply:", error);
+        }
+    };
+
+
     const handleEdit = () => {
         navigate(`/board/edit/${id}`); // 수정 화면으로 이동
     };
@@ -98,15 +175,12 @@ const BoardDetail = () => {
         const confirmDelete = window.confirm("정말로 이 게시글을 삭제하시겠습니까?");
         if (!confirmDelete) return;
 
-        const token = localStorage.getItem("authToken");
-
         try {
             await axios.patch(
                 `http://localhost:8080/api/boards/${id}/delete`,
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -121,14 +195,12 @@ const BoardDetail = () => {
     const handleLike = async () => {
         if (hasLiked) return; // 이미 추천한 경우 실행 방지
 
-        const token = localStorage.getItem("authToken");
         try {
             await axios.post(
                 `http://localhost:8080/api/boards/${id}/like`,
                 null,
                 {
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { userIdx: userInfo.userIdx }, // userIdx 전달
+                    params: {userIdx: userInfo?.userIdx}, // userIdx 전달
                 }
             );
 
@@ -211,8 +283,63 @@ const BoardDetail = () => {
                 </div>
             )}
 
+            <div className="comments-section mt-8">
+                <h2 className="text-xl font-semibold mb-4">댓글</h2>
+                {comments.map((comment) => (
+                    <div key={comment.id} className="mb-4 p-3 border rounded-md">
+                        {/* 댓글 작성자, 내용, 작성일자를 한 줄로 배치 */}
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold mr-4">{comment.author}</span> {/* 작성자 */}
+                            <span className="text-gray-700 flex-1 mr-4 truncate">{comment.content}</span> {/* 댓글 내용 */}
+                            <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span> {/* 작성일자 */}
+                        </div>
+
+
+                        <div className="mt-2">
+                            <input
+                                type="text"
+                                value={replyContent[comment.id] || ""}
+                                onChange={(e) =>
+                                    setReplyContent((prev) => ({...prev, [comment.id]: e.target.value}))
+                                }
+                                className="border rounded-md px-3 py-1 w-full"
+                            />
+                            <button
+                                onClick={() => handleReplySubmit(comment.id)}
+                                className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                            >
+                                대댓글 작성
+                            </button>
+                        </div>
+
+                        {comment.replies?.map((reply) => (
+                            <div key={reply.id} className="mt-4 ml-6 p-3 border rounded-md">
+                                <p className="text-sm font-semibold">{reply.author}</p>
+                                <p className="text-gray-700">{reply.content}</p>
+                                <p className="text-xs text-gray-500">{formatDateTime(reply.createdAt)}</p>
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+
+            <div className="new-comment mt-6">
+                <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다."
+                    className="w-full border rounded-md px-3 py-2"
+                />
+                <button
+                    onClick={handleCommentSubmit}
+                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                >
+                    댓글 작성
+                </button>
+            </div>
+
             {/* 목록으로 버튼 */}
-            <div className="text-center">
+            <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}
                 <button
                     onClick={() => navigate("/board")}
                     className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
@@ -221,6 +348,7 @@ const BoardDetail = () => {
                     목록으로
                 </button>
             </div>
+
         </div>
     );
 };
