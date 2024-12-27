@@ -26,17 +26,26 @@ const PopularCourses = () => {
   const itemsPerSlide = 5; // 한 슬라이드에 표시할 이미지 수
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // 다음 슬라이드로 이동
   const nextSlide = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex + itemsPerSlide) % customs.length
-    );
+    setCurrentIndex((prevIndex) => {
+      // 현재 인덱스가 마지막 슬라이드라면 이동하지 않음
+      if (prevIndex + itemsPerSlide >= customs.length) {
+        return prevIndex;
+      }
+      return prevIndex + itemsPerSlide;
+    });
   };
 
+  // 이전 슬라이드로 이동
   const prevSlide = () => {
-    setCurrentIndex(
-      (prevIndex) =>
-        (prevIndex - itemsPerSlide + customs.length) % customs.length
-    );
+    setCurrentIndex((prevIndex) => {
+      // 현재 인덱스가 첫 번째 슬라이드라면 이동하지 않음
+      if (prevIndex <= 0) {
+        return prevIndex;
+      }
+      return prevIndex - itemsPerSlide;
+    });
   };
 
   useEffect(() => {

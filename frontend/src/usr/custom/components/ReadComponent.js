@@ -109,8 +109,9 @@ const ReadComponent = () => {
                   justify-content: center;
                   transform: rotate(45deg); /* 회전 복구 */
                 ">
-                  <img src="${categoryIcons[place.category] || categoryIcons["기본"]
-              }" alt="아이콘" style="
+                  <img src="${
+                    categoryIcons[place.category] || categoryIcons["기본"]
+                  }" alt="아이콘" style="
                     width: 18px;
                     height: 18px;
                   "/>
@@ -203,20 +204,46 @@ const ReadComponent = () => {
   if (error) return <div>Error: {error}</div>;
   if (!custom) return <div>No detail found.</div>;
 
-  console.log(custom);
-
   return (
     <div>
       <div
-        ref={mapElement}
         style={{
+          position: "relative", // 부모 요소를 relative로 설정
           width: "1150px",
           height: "400px",
           border: "0",
           borderRadius: "25px",
           marginBottom: "10px",
         }}
-      />
+      >
+        {/* 지도 */}
+        <div
+          ref={mapElement}
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "25px",
+          }}
+        />
+
+        {/* 코스 설명 텍스트 */}
+        <div
+          style={{
+            position: "absolute", // 텍스트를 지도의 좌측 상단에 배치
+            top: "10px",
+            left: "10px",
+            backgroundColor: "rgba(0, 0, 0, 0.6)", // 반투명 검정 배경
+            color: "white",
+            padding: "8px 12px",
+            borderRadius: "8px",
+            fontSize: "14px",
+            zIndex: "10", // 텍스트가 지도 위에 표시되도록 설정
+          }}
+        >
+          {custom.description}
+        </div>
+      </div>
+
       <div className="flex items-center justify-between mb-2">
         {/* 제목 */}
         <h1 className="text-2xl font-bold">{custom.title}</h1>
@@ -267,7 +294,7 @@ const ReadComponent = () => {
 
       <div className="flex space-x-2 mb-4">
         {custom.tags.map((tag) => (
-          <span class="px-4 py-1 text-sm font-semibold text-custom-cyan border border-custom-cyan rounded-full">
+          <span className="px-4 py-1 text-sm font-semibold text-custom-cyan border border-custom-cyan rounded-full">
             {tag}
           </span>
         ))}
@@ -285,7 +312,7 @@ const ReadComponent = () => {
                 <img
                   src={Place}
                   alt={place.name}
-                  className="w-full h-40 object-cover"
+                  className="w-full h-48 object-cover"
                 />
 
                 {/* 왼쪽 상단에 아이콘과 추가 텍스트 */}
@@ -307,7 +334,7 @@ const ReadComponent = () => {
                 </p>
 
                 {/* 하단 오른쪽에 길찾기 버튼 */}
-                <div className="absolute bottom-2 right-2">
+                <div className="absolute bottom-6 right-2">
                   <button
                     onClick={() =>
                       window.open(
