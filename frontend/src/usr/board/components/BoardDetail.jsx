@@ -237,6 +237,46 @@ const BoardDetail = () => {
         return <p>Loading...</p>;
     }
 
+    const handleDeleteComment = async (commentId) => {
+        const isParentComment = comments.some((comment) => comment.id === commentId);
+        const targetComment = isParentComment
+            ? comments.find((comment) => comment.id === commentId)
+            : comments
+                .flatMap((comment) => comment.replies)
+                .find((reply) => reply.id === commentId);
+
+        if (!targetComment) {
+            alert("삭제하려는 댓글을 찾을 수 없습니다.");
+            return;
+        }
+
+        if (targetComment.author !== userInfo.nickname) {
+            alert("댓글 작성자만 삭제할 수 있습니다.");
+            return;
+        }
+
+        try {
+            // 서버에 삭제 요청
+            await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+                headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+            });
+
+            // 상태 업데이트
+            setComments((prevComments) =>
+                prevComments
+                    .filter((comment) => comment.id !== commentId) // 상위 댓글 제거
+                    .map((comment) => ({
+                        ...comment,
+                        replies: comment.replies.filter((reply) => reply.id !== commentId), // 대댓글 제거
+                    }))
+            );
+        } catch (error) {
+            console.error("Failed to delete comment:", error.response || error);
+        }
+    };
+
+
+
     return (
         <div
             className="container mx-auto p-4 border rounded-md shadow-sm bg-white"
@@ -313,7 +353,18 @@ const BoardDetail = () => {
                                 >
                         {comment.content}
                     </span>
-                                <span className="text-xs text-gray-500">{formatDateTime(comment.createdAt)}</span>
+                                <div className="flex items-center">
+                                    <span
+                                        className="text-xs text-gray-500 mr-2">{formatDateTime(comment.createdAt)}</span>
+                                    {comment.author === userInfo.nickname && (
+                                        <button
+                                            className="text-red-500 text-sm font-bold"
+                                            onClick={() => handleDeleteComment(comment.id)}
+                                        >
+                                            X
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             {/* 대댓글 입력창 */}
@@ -341,29 +392,34 @@ const BoardDetail = () => {
                                 </div>
                             )}
 
-
                             {/* 대댓글 렌더링 */}
                             {comment.replies &&
                                 comment.replies.map((reply) => (
                                     <div
                                         key={`reply-${reply.id}`}
-                                        className="mt-4 ml-6 p-3 border rounded-md comment-replies" // 클래스 추가
+                                        className="mt-4 ml-6 p-3 border rounded-md comment-replies"
                                     >
                                         <div className="flex items-center justify-between">
                                             <span className="text-sm font-semibold">{reply.author}</span>
                                             <span className="text-gray-700 flex-1 ml-2">
-                                                {/* 댓글 내용 50자 제한 */}
-                                                {reply.content.length > 60
-                                                    ? `${reply.content.slice(0, 60)}...`
-                                                    : reply.content}
-                                            </span>
-                                            <span
-                                                className="text-xs text-gray-500">{formatDateTime(reply.createdAt)}</span>
+                    {reply.content.length > 60
+                        ? `${reply.content.slice(0, 60)}...`
+                        : reply.content}
+                </span>
+                                            <div className="flex items-center">
+                                                <span className="text-xs text-gray-500 mr-2">{formatDateTime(reply.createdAt)}</span>
+                                                {reply.author === userInfo.nickname && (
+                                                    <button
+                                                        className="text-red-500 text-sm font-bold"
+                                                        onClick={() => handleDeleteComment(reply.id)}
+                                                    >
+                                                        X
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                ))
-                            }
-
+                                ))}
 
                         </div>
                     ))

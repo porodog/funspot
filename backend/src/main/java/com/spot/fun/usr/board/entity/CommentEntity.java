@@ -1,6 +1,8 @@
 package com.spot.fun.usr.board.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +29,11 @@ public class CommentEntity {
 
   @ManyToOne
   @JoinColumn(name = "parent_id")
+  @JsonBackReference
   private CommentEntity parent;
 
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIgnore // 순환 참조 방지
+  @JsonManagedReference
   private List<CommentEntity> replies = new ArrayList<>();
 
   @Column(nullable = false)

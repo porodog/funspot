@@ -17,19 +17,15 @@ const BoardList = () => {
     }, [page, searchQuery]);
 
     const fetchBoards = async (page, type, keyword) => {
-        try {
-            const response = await axios.get("http://localhost:8080/api/boards", {
-                params: { page, size: pageSize, type, keyword },
-            });
-            setBoards(response.data.content); // 댓글 수 포함
-            setTotalPages(response.data.totalPages);
-        } catch (error) {
-            console.error("게시글을 불러오는 중 문제가 발생했습니다:", error);
-        }
+        const response = await axios.get("http://localhost:8080/api/boards/search", {
+            params: { page, size: pageSize, type, keyword },
+        });
+        setBoards(response.data.content);
+        setTotalPages(response.data.totalPages);
     };
 
-
     const handleSearch = () => {
+        console.log("Searching with type and keyword:", { type: searchType, keyword }); // 디버깅용
         setSearchQuery({ type: searchType, keyword }); // 검색 버튼 클릭 시 쿼리 업데이트
         setPage(0); // 검색 시 페이지를 0으로 초기화
     };

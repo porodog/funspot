@@ -43,14 +43,8 @@ public class CommentService {
   }
 
   // 댓글 조회
-  public List<CommentEntity> getCommentsByBoardId(Long boardIdx) {
-    List<CommentEntity> topLevelComments = commentRepository.findByBoard_IdxAndParentIsNullAndDelYn(boardIdx, "n");
-
-    for (CommentEntity comment : topLevelComments) {
-      setReplies(comment); // 대댓글 설정
-    }
-
-    return topLevelComments;
+  public List<CommentEntity> getCommentsByBoardId(Long boardId) {
+    return commentRepository.findParentCommentsWithReplies(boardId);
   }
 
   private void setReplies(CommentEntity comment) {
@@ -67,13 +61,15 @@ public class CommentService {
     CommentEntity comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
     comment.setDelYn("y");
-    commentRepository.save(comment);
+    commentRepository.save(comment); // 논리 삭제 처리
 
     // 하위 대댓글도 논리 삭제
     List<CommentEntity> replies = commentRepository.findByParentIdAndDelYn(commentId, "n");
-    for (CommentEntity reply : replies) {
-      reply.setDelYn("y");
-      commentRepository.save(reply);
+    if (replies != null && !replies.isEmpty()) {
+      replies.forEach(reply -> {
+        reply.setDelYn("y");
+        commentRepository.save(reply);
+      });
     }
   }
 
