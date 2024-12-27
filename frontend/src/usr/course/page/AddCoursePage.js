@@ -29,8 +29,8 @@ const AddCoursePage = () => {
       }
     };
 
-    if (id) fetchDetail();
-  }, [id]);
+    fetchDetail();
+  }, []);
 
   // 장소 선택 핸들러
   const handlePlaceSelection = (id) => {
@@ -80,7 +80,7 @@ const AddCoursePage = () => {
               placeholder="코스 이름을 입력하세요"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
             />
           </div>
 
@@ -91,7 +91,7 @@ const AddCoursePage = () => {
               placeholder="코스에 대한 설명을 입력하세요"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
             />
           </div>
 
@@ -103,7 +103,7 @@ const AddCoursePage = () => {
                 <label
                   key={age}
                   className={`px-4 py-2 rounded-lg cursor-pointer ${ageGroup === age
-                    ? "bg-blue-500 text-white"
+                    ? "bg-custom-cyan text-white"
                     : "bg-gray-100 text-gray-700"
                     }`}
                 >
@@ -127,7 +127,7 @@ const AddCoursePage = () => {
                 type="checkbox"
                 checked={fixed}
                 onChange={() => setFixed((prev) => !prev)}
-                className="h-5 w-5 text-blue-500"
+                className="h-5 w-5 text-custom-cyan"
               />
               <span className="ml-2 text-gray-700 font-semibold">고정 여부</span>
             </label>
@@ -141,15 +141,15 @@ const AddCoursePage = () => {
               placeholder="장소 위치를 입력하세요"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
             />
           </div>
 
-          {/* 이미지 추가 */}
+          {/* 이미지 추가
           <div className="mb-6">
             <label className="block text-gray-700 font-semibold mb-2">이미지 추가</label>
 
-          </div>
+          </div> */}
           {/* 장소 선택 */}
           <div className="mb-6">
             <h3 className="text-gray-700 font-semibold mb-2">장소 선택 (최소 2개)</h3>
@@ -158,7 +158,7 @@ const AddCoursePage = () => {
                 <label
                   key={place.id}
                   className={`flex items-center p-2 rounded-lg border cursor-pointer ${selectedPlaces.includes(place.id)
-                    ? "bg-blue-100 border-blue-500"
+                    ? "bg-blue-100 border-custom-cyan"
                     : "hover:bg-gray-100"
                     }`}
                 >
@@ -177,7 +177,7 @@ const AddCoursePage = () => {
           {/* 저장 버튼 */}
           <button
             onClick={saveCourse}
-            className="w-full py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition"
+            className="w-full py-3 bg-custom-cyan text-white font-bold rounded-lg hover:bg-emerald-600 transition"
           >
             코스 저장 🚀
           </button>
