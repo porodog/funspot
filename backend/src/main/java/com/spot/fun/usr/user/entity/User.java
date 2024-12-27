@@ -113,6 +113,27 @@ public class User implements UserDetails {
         this.nickname = nickname;
     }
 
+    // 상태(useYn) 변경 메서드
+    public User changeUseYn(String newUseYn) {
+        if (!"Y".equals(newUseYn) && !"N".equals(newUseYn)) {
+            throw new IllegalArgumentException("유효하지 않은 상태 값입니다. 'Y' 또는 'N'만 허용됩니다.");
+        }
+
+        this.useYn = newUseYn; // this를 통해 private 필드에 안전하게 접근
+        return this; // 변경된 객체를 반환
+    }
+
+    // 권한(userRole) 변경 메서드
+    public User changeUserRole(UserRole newUserRole) {
+        if (newUserRole == null) {
+            throw new IllegalArgumentException("유효하지 않은 역할입니다.");
+        }
+
+        this.userRole = newUserRole; // this를 통해 private 필드에 안전하게 접근
+        return this; // 변경된 객체를 반환
+    }
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //      return List.of(new SimpleGrantedAuthority("user"));
