@@ -14,8 +14,8 @@ public class PlacesService {
   @Autowired
   private DatePlaceRepository datePlaceRepository;
 
-  public List<DatePlaces> getPlacesByIds(List<Long> placeIds) {
-    return datePlaceRepository.findAllById(placeIds);
+  public List<DatePlaces> getPlacesByIds(List<Long> placeid) {
+    return datePlaceRepository.findAllById(placeid);
   }
 
   public List<DatePlaces> getAllPlaces() {
@@ -23,13 +23,15 @@ public class PlacesService {
   }
 
   public DatePlaces savePlace(DatePlaces place) {
-    return null;
+    return datePlaceRepository.save(place);
   }
 
-
+  public List<DatePlaces> findPlacesByCourseId(Long courseId) {
+    return datePlaceRepository.findByCourseId(courseId);
 //  public List<DatePlaces> getPlaces(Double latMin, Double latMax, Double lngMin, Double lngMax) {
 //    return datePlaceRepository.f(latMin, latMax, lngMin, lngMax);
 
 //  }
 
+  }
 }

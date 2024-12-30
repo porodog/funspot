@@ -1,59 +1,47 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import MapSection from "../components/map/MapSection";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom"; // URL에서 courseId 추출
 import BasicLayout from "../../../common/layout/BasicLayout";
 import GoBackButton from "../../../common/hook/useBackbutton";
+import MapSection from "../components/map/MapSection";
 import CourseSection from "../components/map/CourseSection";
+import axios from "axios";
+
+export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.withCredentials = true;
 
 const DateCourseDetailPage = () => {
-  const { id } = useParams(); // URL에서 코스 ID 추출
-  const [selectedCourse, setSelectedCourse] = useState(null); // 코스 데이터
-  const [allPlaces, setAllPlaces] = useState([]); // 전체 장소 데이터
-  const [filteredPlaces, setFilteredPlaces] = useState([]); // 선택된 장소
+  const { courseId } = useParams(); // URL에서 courseId 가져오기
+  const [course, setCourse] = useState(null); // 코스 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
 
+  // 코스 데이터를 받아오는 함수
   useEffect(() => {
-    // 코스 데이터와 장소 데이터 병렬 요청
-    const fetchCourseAndPlaces = async () => {
+    const fetchCourse = async () => {
       try {
-        // 코스 데이터 가져오기
-        const courseResponse = await fetch(`http://localhost:8080/api/usr/course/${id}`);
-        if (!courseResponse.ok) throw new Error(`코스 요청 실패: ${courseResponse.status}`);
-        const courseData = await courseResponse.json();
+        const response = await fetch(`/tailwind.config.jsapi/usr/course/datecourses/${courseId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch course: ${response.status}`);
+        }
 
-        // 장소 데이터 가져오기
-        const placesResponse = await fetch("http://localhost:8080/api/usr/places");
-        if (!placesResponse.ok) throw new Error(`장소 요청 실패: ${placesResponse.status}`);
-        const placesData = await placesResponse.json();
-
-        // 코스와 연관된 장소 필터링
-        const filtered = placesData.filter((place) => {
-          if (!Array.isArray(courseData.placeIds)) {
-            console.error("placeIds가 배열이 아닙니다:", courseData.placeIds);
-            return false;
-          }
-          // `placeIds` 리스트에서 `place.id`가 포함되어 있는지 확인
-          return courseData.placeIds.some((id) => id === place.id);
-        });
-
-        // 상태 업데이트
-        setSelectedCourse(courseData);
-        console.log("Course Data:", courseData);
-
-        setAllPlaces(placesData);
-        setFilteredPlaces(filtered);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
+        const data = await response.json();
+        console.log("Fetched course data:", data); // 디버깅용 로그
+        setCourse(data); // 코스 데이터 저장
+      } catch (error) {
+        console.error("데이터 로드 실패:", error);
         setError("데이터를 불러오는 데 실패했습니다.");
-        setLoading(false);
+      } finally {
+        setLoading(false); // 로딩 상태 해제
       }
     };
 
-    fetchCourseAndPlaces();
-  }, [id]);
+    if (courseId) {
+      fetchCourse();
+    }
+  }, [courseId]);
 
+  // 로딩 상태 처리
   if (loading) {
     return (
       <BasicLayout>
@@ -63,6 +51,7 @@ const DateCourseDetailPage = () => {
     );
   }
 
+  // 에러 상태 처리
   if (error) {
     return (
       <BasicLayout>
@@ -72,7 +61,8 @@ const DateCourseDetailPage = () => {
     );
   }
 
-  if (!selectedCourse || filteredPlaces.length === 0) {
+  // 코스 데이터가 없는 경우
+  if (!course) {
     return (
       <BasicLayout>
         <GoBackButton />
@@ -81,20 +71,29 @@ const DateCourseDetailPage = () => {
     );
   }
 
+  // 렌더링
   return (
     <BasicLayout>
       <GoBackButton />
       <div className="flex flex-col items-center mt-3">
         {/* 지도 섹션 */}
         <div className="w-full h-[400px] mb-8">
-          <MapSection places={filteredPlaces} />
+          {course.places && course.places.length > 0 ? (
+            <MapSection places={course.places} />
+          ) : (
+            <p className="text-gray-500">장소 데이터를 불러올 수 없습니다.</p>
+          )}
         </div>
 
         {/* 코스 섹션 */}
         <div className="w-full max-w-6xl px-4">
-          <h2 className="text-2xl font-bold mb-4">{selectedCourse.name}</h2>
-          <p className="text-gray-600 mb-8">{selectedCourse.description}</p>
-          <CourseSection places={filteredPlaces} />
+          <h2 className="text-2xl font-bold mb-4">{course.name}</h2>
+          <p className="text-gray-600 mb-8">{course.description}</p>
+          {course.places && course.places.length > 0 ? (
+            <CourseSection places={course.places} />
+          ) : (
+            <p className="text-gray-500">장소 데이터가 없습니다.</p>
+          )}
         </div>
       </div>
     </BasicLayout>

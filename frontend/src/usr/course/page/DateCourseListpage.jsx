@@ -23,10 +23,10 @@ const DateCourseListPage = () => {
     const verifyLoginStatus = () => {
       if (userInfo?.token) {
         setIsLoggedIn(true); // 로그인 상태 업데이트
-        fetchCourses(userInfo.token); // 로그인 상태에서 코스 목록 가져오기
+        fetchCourses(userInfo.token).then(r => r); // 로그인 상태에서 코스 목록 가져오기
       } else {
         setIsLoggedIn(false); // 비로그인 상태
-        fetchCourses(); // 비로그인 상태에서 코스 목록 가져오기
+        fetchCourses().then(r => r); // 비로그인 상태에서 코스 목록 가져오기
       }
     };
 
@@ -84,7 +84,7 @@ const DateCourseListPage = () => {
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">데이트 코스 목록</h1>
 
         <div className="mb-8 text-center">
-          {userInfo && (
+          {userInfo != null && (
             <button
               onClick={navigateToAddCoursePage}
               className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer"
