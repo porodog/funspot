@@ -19,6 +19,7 @@ const ListPage = () => {
       {/* 좌측영역 - 검색, 목록 */}
       <LeftSideComponent
         spotList={spotList}
+        setSpotList={setSpotList}   // 추가
         setSearchParameter={setSearchParameter}
         setSpotSelected={setSpotSelected}
       />

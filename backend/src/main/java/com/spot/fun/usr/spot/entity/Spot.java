@@ -33,6 +33,7 @@ public class Spot {
   @Column(name = "cat2", nullable = false)
   private String cat2;    // 중분류
 
+
   @Column(name = "cat3")
   private String cat3;    // 소분류
 

@@ -1,15 +1,23 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { FaSearch } from "react-icons/fa";
 
 const SearchInputComponent = ({ handleParameterEvent, useInputRef }) => {
   // 검색어
   const [searchValue, setSearchValue] = useState("");
   const handleSearchValueEvent = (e) => {
+    // 엔터키 입력 시 검색 실행
     if (e.key === "Enter") {
       handleParameterEvent(searchValue);
     }
     setSearchValue(e.target.value);
   };
+
+  // useEffect를 추가하여 input 값 동기화
+  useEffect(() => {
+    if (useInputRef.current) {
+      useInputRef.current.value = searchValue;
+    }
+  }, [searchValue]);
 
   return (
     <>
@@ -32,7 +40,7 @@ const SearchInputComponent = ({ handleParameterEvent, useInputRef }) => {
           text-xl
           transform -translate-y-1/2
           hover:text-emerald-400"
-          onClick={handleParameterEvent}
+          onClick={() => handleParameterEvent()}
         >
           <FaSearch />
         </button>

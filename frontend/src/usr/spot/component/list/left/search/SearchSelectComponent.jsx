@@ -1,20 +1,28 @@
-const SearchSelectComponent = ({
-  select: { id, title, optionList },
-  useSelectRef,
-}) => {
+const SearchSelectComponent = ({select, useSelectRef, onSelectChange}) => {
+    // select 변경 이벤트 처리
+    const handleChange = (e) => {
+        // area가 변경될 때만 부모 컴포넌트에 알림
+        if (select.id === 'area' && onSelectChange) {
+            onSelectChange(select.id, e.target.value);
+        }
+    };
+
   return (
     <>
       <select
-        id={id}
+        // id={select.id}
         ref={useSelectRef}
         className="w-1/4 p-2 
         text-sm font-light
         border-2 bg-white rounded-3xl 
         focus:outline-none focus:ring-1 focus:border-emerald-500"
+        onChange={handleChange}
+        // 시군구이면서 옵션 목록이 비어있을 때 비활성화
+        disabled={select.id === 'sigungu' && !select.optionList.length}
       >
-        <option value="">{title}</option>
-        {optionList.map((option, index) => (
-          <option key={index} value={option.value}>
+        <option selected disabled hidden>{select.title}</option>
+        {select.optionList.map((option) => (
+          <option key={option.key} value={option.value}>
             {option.name}
           </option>
         ))}
