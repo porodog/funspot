@@ -115,6 +115,7 @@ public class BoardController {
     return ResponseEntity.ok().build();
   }
 
+  //댓글+대댓글
   @GetMapping("/boards")
   public ResponseEntity<List<BoardDTO>> getBoards() {
     List<BoardDTO> boardList = boardService.getBoardList();

@@ -307,20 +307,25 @@ const BoardDetail = () => {
             />
 
             {/* 추천 버튼 */}
-            <div className="flex justify-between mb-6">
-                <button
-                    onClick={handleLike}
-                    disabled={hasLiked} // 추천 완료 시 비활성화
-                    className={`px-4 py-2 rounded-md transition ${
-                        hasLiked
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : "bg-green-500 text-white hover:bg-green-600"
-                    }`}
-                >
-                    {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
-                </button>
-            </div>
-
+            {userInfo ? (
+                <div className="flex justify-between mb-6">
+                    <button
+                        onClick={handleLike}
+                        disabled={hasLiked}
+                        className={`px-4 py-2 rounded-md transition ${
+                            hasLiked
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-green-500 text-white hover:bg-green-600"
+                        }`}
+                    >
+                        {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
+                    </button>
+                </div>
+            ) : (
+                <p className="text-red-500 text-sm mt-4">
+                    로그인 후 추천 기능을 이용하실 수 있습니다.
+                </p>
+            )}
 
             {/* 수정/삭제 버튼 */}
             {userInfo?.nickname === board.nickname && (
@@ -346,17 +351,20 @@ const BoardDetail = () => {
                     comments.map((comment) => (
                         <div key={`comment-${comment.id}`} className="mb-4 p-3 border rounded-md">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-semibold mr-4">{comment.author}</span>
+          <span className="text-sm font-semibold mr-4">
+            {comment.author || "익명"}
+          </span>
                                 <span
                                     className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
                                     onClick={() => handleReplyToggle(comment.id)}
                                 >
-                        {comment.content}
-                    </span>
+            {comment.content}
+          </span>
                                 <div className="flex items-center">
-                                    <span
-                                        className="text-xs text-gray-500 mr-2">{formatDateTime(comment.createdAt)}</span>
-                                    {comment.author === userInfo.nickname && (
+            <span className="text-xs text-gray-500 mr-2">
+              {formatDateTime(comment.createdAt)}
+            </span>
+                                    {userInfo?.nickname === comment.author && (
                                         <button
                                             className="text-red-500 text-sm font-bold"
                                             onClick={() => handleDeleteComment(comment.id)}
@@ -368,7 +376,7 @@ const BoardDetail = () => {
                             </div>
 
                             {/* 대댓글 입력창 */}
-                            {replyVisibility[comment.id] && (
+                            {replyVisibility[comment.id] && userInfo && (
                                 <div className="mt-2">
                                     <input
                                         type="text"
@@ -400,15 +408,19 @@ const BoardDetail = () => {
                                         className="mt-4 ml-6 p-3 border rounded-md comment-replies"
                                     >
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm font-semibold">{reply.author}</span>
+                <span className="text-sm font-semibold">
+                  {reply.author || "익명"}
+                </span>
                                             <span className="text-gray-700 flex-1 ml-2">
-                    {reply.content.length > 60
-                        ? `${reply.content.slice(0, 60)}...`
-                        : reply.content}
+                  {reply.content.length > 60
+                      ? `${reply.content.slice(0, 60)}...`
+                      : reply.content}
                 </span>
                                             <div className="flex items-center">
-                                                <span className="text-xs text-gray-500 mr-2">{formatDateTime(reply.createdAt)}</span>
-                                                {reply.author === userInfo.nickname && (
+                  <span className="text-xs text-gray-500 mr-2">
+                    {formatDateTime(reply.createdAt)}
+                  </span>
+                                                {userInfo?.nickname === reply.author && (
                                                     <button
                                                         className="text-red-500 text-sm font-bold"
                                                         onClick={() => handleDeleteComment(reply.id)}
@@ -420,32 +432,40 @@ const BoardDetail = () => {
                                         </div>
                                     </div>
                                 ))}
-
                         </div>
                     ))
                 ) : (
                     <p className="text-gray-500">댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
                 )}
-            </div>
 
-            <div className="new-comment mt-6">
-    <textarea
-        value={newComment}
-        onChange={(e) => {
-            const input = e.target.value;
-            setNewComment(input.length <= 50 ? input : input.slice(0, 50));
-        }}
-        placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
-        className="w-full border rounded-md px-3 py-2"
-    />
-                <button
-                    onClick={handleCommentSubmit}
-                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
-                >
-                    댓글 작성
-                </button>
-            </div>
+                {/* 로그인 안내문구 */}
+                {!userInfo && (
+                    <p className="text-red-500 text-sm mt-4">
+                        로그인 후 추천 및 댓글 작성 기능을 이용하실 수 있습니다.
+                    </p>
+                )}
 
+                {/* 댓글 입력 필드 및 버튼 */}
+                {userInfo && (
+                    <div className="new-comment mt-6">
+      <textarea
+          value={newComment}
+          onChange={(e) => {
+              const input = e.target.value;
+              setNewComment(input.length <= 50 ? input : input.slice(0, 50));
+          }}
+          placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
+          className="w-full border rounded-md px-3 py-2"
+      />
+                        <button
+                            onClick={handleCommentSubmit}
+                            className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                        >
+                            댓글 작성
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* 목록으로 버튼 */}
             <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}
