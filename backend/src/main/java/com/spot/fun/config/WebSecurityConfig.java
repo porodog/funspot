@@ -77,7 +77,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
                         .requestMatchers("/api/usr/course/**").permitAll()

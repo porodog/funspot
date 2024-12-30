@@ -39,10 +39,26 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
 
+//    public String getUserRole(Long idx) {
+//        return userRepository.findByIdx(idx)
+//                .orElseThrow(IllegalArgumentException::new)
+//                .toDTO().getUserRole().getRole();
+//    }
+
     public String getUserRole(Long idx) {
-        return userRepository.findByIdx(idx)
-                .orElseThrow(IllegalArgumentException::new)
-                .toDTO().getUserRole().getRole();
+        User user = userRepository.findByIdx(idx)
+                .orElseThrow(() -> new IllegalArgumentException("User not found for ID: " + idx));
+
+        String role = user.getUserRole().getRole();
+
+        // 관리자 권한 확인
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            log.info("Admin access granted for user: {}", user.getUserId());
+        } else {
+            log.info("User role is not ADMIN. Role: {}", role);
+        }
+
+        return role;
     }
 
 }

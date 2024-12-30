@@ -39,8 +39,18 @@ const DateCourseDetailPage = lazy(() =>
 );
 const SpotIndexPage = lazy(() => import("../../usr/spot/page/IndexPage"));
 
+const AdminPage = lazy(() => import("../../admin/dashboard/AdminDashboard"));
+
 const rootRouter = createBrowserRouter(
   [
+    {
+      path: "admin",
+      element: (
+        <Suspense fallback={Loading}>
+          <AdminPage />
+        </Suspense>
+      ),
+    },
     {
       path: "",
       element: (
