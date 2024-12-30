@@ -11,5 +11,6 @@ public interface WishListService {
    void removeWishList(Long userIdx, Long customCno); // 찜 취소
    WishListDTO getFavoritesByUser(WishListDTO wishListDTO); // 사용자 찜 목록 조회
    List<CustomDTO> listPopular(int topCount);
+   List<CustomDTO> listPopularAll(Long userIdx);
 
 }

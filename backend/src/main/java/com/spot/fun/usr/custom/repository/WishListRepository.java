@@ -22,4 +22,6 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
    boolean existsByUserIdxAndCustomCno(Long userIdx, Long customCno);
    @Query("SELECT w.custom.cno FROM WishList w GROUP BY w.custom.cno ORDER BY COUNT(w.custom.cno) DESC")
    List<Long> findTopCustomIds(Pageable pageable);
+   @Query("SELECT w.custom.cno FROM WishList w GROUP BY w.custom.cno ORDER BY COUNT(w.custom.cno) DESC")
+   List<Long> findAllCustomIds(Long userIdx);
 }

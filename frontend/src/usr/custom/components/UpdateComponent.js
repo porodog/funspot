@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { searchPlaces, updateCustom, getCustomDetail } from "../api/CustomApi";
 import { useParams, useNavigate } from "react-router-dom";
+import { useBasic } from "../../../common/context/BasicContext";
 import Place from "../img/Place.png";
 import regions from "../data/regions";
 import locate from "../img/locate.png";
@@ -45,6 +46,9 @@ const UpdateComponent = () => {
   const selectedCity = address.split(" ")[0];
   const selectedDistrict = address.split(" ")[1] || "";
   const districts = selectedCity ? regions[selectedCity] : [];
+  const { userInfo } = useBasic();
+
+  const loginNickName = userInfo?.nickname || "";
 
   // 수정할 데이터 가져오기
   useEffect(() => {
@@ -347,7 +351,7 @@ const UpdateComponent = () => {
                 <input
                   className="w-full border-b-2 border-custom-cyan text-lg text-gray-400 placeholder-gray-300 focus:outline-none focus:border-custom-cyan"
                   type="text"
-                  placeholder="ex) 여의도 봄나들이"
+                  placeholder={loginNickName + "님의 코스"}
                   maxLength="20"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -366,7 +370,7 @@ const UpdateComponent = () => {
                 {/* 텍스트 에어리어 */}
                 <textarea
                   className="w-full px-2 pb-1 text-gray-500 border-b-2 border-custom-cyan placeholder-gray-300 text-lg focus:outline-none focus:ring-0 focus:border-custom-cyan resize-none"
-                  placeholder="ex) 여의도에서 시작해 한강변을 따라 걸으며 봄 풍경을 즐길 수 있는 코스입니다."
+                  placeholder={loginNickName + "님의 코스입니다."}
                   rows="4"
                   maxLength={200}
                   value={description}
@@ -396,7 +400,7 @@ const UpdateComponent = () => {
                     />
                     <label
                       htmlFor={`checkbox-${tag}`}
-                      className=" peer-checked:text-custom-cyan peer-checked:border-custom-cyan text-gray-300 border border-gray-300 px-4 py-2 rounded-full cursor-pointer text-center block transition"
+                      className=" peer-checked:text-custom-cyan peer-checked:border-custom-cyan text-gray-300 border border-gray-300 px-4 py-2 rounded-full cursor-pointer text-center block transition font-semibold"
                     >
                       {tag}
                     </label>
@@ -422,7 +426,7 @@ const UpdateComponent = () => {
                     />
                     <label
                       htmlFor={`checkbox-${tag}`}
-                      className=" peer-checked:text-custom-cyan peer-checked:border-custom-cyan text-gray-300 border border-gray-300 px-4 py-2 rounded-full cursor-pointer text-center block transition"
+                      className=" peer-checked:text-custom-cyan peer-checked:border-custom-cyan text-gray-300 border border-gray-300 px-4 py-2 rounded-full cursor-pointer text-center block transition font-semibold"
                     >
                       {tag}
                     </label>

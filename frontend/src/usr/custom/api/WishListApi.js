@@ -35,3 +35,11 @@ export const getCustomPopularList = async (count) => {
   );
   return response.data;
 };
+
+export const getCustomPopularListAll = async () => {
+  const response = await axios.get(
+    `${API_BASE_URL}/api/usr/feed/wishlist/list/popular/all`
+  );
+
+  return response.data;
+};

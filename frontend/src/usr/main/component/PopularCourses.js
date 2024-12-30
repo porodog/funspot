@@ -76,7 +76,7 @@ const PopularCourses = () => {
     <section className="container mx-auto p-4 font-bold">
       <span className="text-xl font-bold mb-4 text-custom-cyan">Fun</span>
       <span className="text-base pl-1 pr-1">인기코스</span>
-      <Link to="/custom" className="text-xl text-gray-400">
+      <Link to="/custom/popular" className="text-xl text-gray-400">
         <span className="bg-gray-200 rounded-3xl pl-2 pr-2 pb-1">&gt;</span>
       </Link>
       <div className="relative group">

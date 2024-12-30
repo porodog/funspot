@@ -91,4 +91,31 @@ public class WishListServiceImpl implements WishListService {
               })
               .collect(Collectors.toList());
    }
+
+   public List<CustomDTO> listPopularAll(Long userIdx) {
+      List<Long> popularCustomIds = wishListRepository.findAllCustomIds(userIdx); // 🔥 모든 ID를 가져오는 새로운 메서드
+
+      // Custom과 연결된 Place 정보 가져오기
+      List<Custom> customs = customRepository.findCustomsWithPlacesByIds(popularCustomIds);
+
+      // DTO 변환 및 정렬 (customId 순서대로)
+      return customs.stream()
+              .sorted(Comparator.comparing(custom -> popularCustomIds.indexOf(custom.getCno())))
+              .map(custom -> {
+                 CustomDTO customDTO = modelMapper.map(custom, CustomDTO.class);
+
+                 List<PlaceDTO> placeDTOs = custom.getCustomPlaces().stream()
+                         .sorted(Comparator.comparing(CustomPlace::getOrderIndex))
+                         .map(cp -> modelMapper.map(cp.getPlace(), PlaceDTO.class))
+                         .collect(Collectors.toList());
+
+                 boolean isWishList = wishListRepository.existsByUserIdxAndCustomCno(userIdx, custom.getCno());
+
+                 customDTO.setPlaces(placeDTOs);
+                 customDTO.setTags(custom.getTagList());
+                 customDTO.setWishList(isWishList);
+                 return customDTO;
+              })
+              .collect(Collectors.toList());
+   }
 }

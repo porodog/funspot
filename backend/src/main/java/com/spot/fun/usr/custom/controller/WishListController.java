@@ -40,4 +40,10 @@ public class WishListController {
       return wishListService.listPopular(count);
    }
 
+   @GetMapping("/list/popular/all")
+   public ResponseEntity<List<CustomDTO>> getAllPopularCustoms(@RequestParam(required = false) Long userIdx) {
+      List<CustomDTO> popularCustoms = wishListService.listPopularAll(userIdx);
+      return ResponseEntity.ok(popularCustoms);
+   }
+
 }

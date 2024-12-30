@@ -6,6 +6,7 @@ const ListPage = lazy(() => import("../page/ListPage"));
 const AddPage = lazy(() => import("../page/AddPage"));
 const ReadPage = lazy(() => import("../page/ReadPage"));
 const UpdatePage = lazy(() => import("../page/UpdatePage"));
+const PopularPage = lazy(() => import("../page/PopularPage"));
 
 const customRouter = () => {
   return [
@@ -42,6 +43,14 @@ const customRouter = () => {
       element: (
         <Suspense fallback={Loading}>
           <UpdatePage />
+        </Suspense>
+      ),
+    },
+    {
+      path: "popular",
+      element: (
+        <Suspense fallback={Loading}>
+          <PopularPage />
         </Suspense>
       ),
     },
