@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useBasic } from "../../../common/context/BasicContext";
+import { useNavigate } from 'react-router-dom';
 
 const ButtonComponent = ({
   openProfileModal,
@@ -9,6 +10,7 @@ const ButtonComponent = ({
   const { userIdx } = useParams();
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
+  const navigate = useNavigate();
 
   return (
     <>
@@ -42,7 +44,7 @@ const ButtonComponent = ({
               className="border-gray-200 bg-white text-gray-600  
                   py-3 px-6 rounded-full border-2
                   text-base font-semibold hover:bg-emerald-500 hover:border-white hover:text-white"
-              onClick={null}
+              onClick={()=>navigate(`/chat/${userIdx}`)}
             >
               메시지
             </button>
