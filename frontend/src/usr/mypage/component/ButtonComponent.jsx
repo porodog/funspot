@@ -16,23 +16,30 @@ const ButtonComponent = ({
     <>
       <div className="flex space-x-10 w-full items-center justify-center">
         {parseInt(userIdx) === parseInt(loginUserIdx) ? (
-          <>
-            <button
-              className="py-3 px-6 border-2 border-emerald-400 bg-emerald-400 text-white rounded-full 
+            <>
+              <button
+                  className="py-3 px-6 border-2 border-emerald-400 bg-emerald-400 text-white rounded-full
               text-base font-semibold hover:bg-emerald-500"
-              onClick={openProfileModal}
-            >
-              프로필 편집
-            </button>
-          </>
+                  onClick={openProfileModal}
+              >
+                프로필 편집
+              </button>
+              <button
+                  className="py-3 px-6 border-2 border-emerald-400 bg-emerald-400 text-white rounded-full
+              text-base font-semibold hover:bg-emerald-500"
+                  onClick={()=>navigate(`/chat/`)}
+              >
+                내 채팅방
+              </button>
+            </>
         ) : (
-          <>
-            <button
-              className={`
+            <>
+              <button
+                  className={`
                   ${
-                    followStatus
-                      ? "border-emerald-400 bg-emerald-400 text-white "
-                      : "border-gray-200 bg-white text-gray-600 hover:border-white hover:text-white"
+                      followStatus
+                          ? "border-emerald-400 bg-emerald-400 text-white "
+                          : "border-gray-200 bg-white text-gray-600 hover:border-white hover:text-white"
                   }
                   py-3 px-6 rounded-full border-2
                   text-base font-semibold hover:bg-emerald-500`}
