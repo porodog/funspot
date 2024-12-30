@@ -174,7 +174,7 @@ const IndexPage = () => {
             className="p-4 sticky top-0 mx-1
             border-b-2 border-b-gray-200 
             bg-white
-            z-50"
+            z-40"
           >
             <div className="flex space-x-2">
               {menuList.map((menu) => (
