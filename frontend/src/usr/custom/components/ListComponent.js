@@ -89,13 +89,14 @@ const ListComponent = () => {
       <h1 className="text-3xl font-bold text-center mb-8">
         최근 유저들이 만든 코스에요
       </h1>
-      <button
-        onClick={() => navigate("/custom/add")}
-        className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer mb-4"
-      >
-        코스 만들기
-      </button>
-
+      {userInfo != null && (
+        <button
+          onClick={() => navigate("/custom/add")}
+          className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer mb-4"
+        >
+          코스 만들기
+        </button>
+      )}
       {customs.length > 0 ? (
         <div className="p-4">
           <div className="grid grid-cols-1 gap-6">
