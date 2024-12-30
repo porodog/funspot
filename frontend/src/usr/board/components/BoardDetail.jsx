@@ -103,17 +103,16 @@ const BoardDetail = () => {
 
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/comments/${id}`, {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-                },
-            });
+            const response = await axios.get(`http://localhost:8080/api/comments/${id}`);
             setComments(
                 Array.isArray(response.data)
                     ? response.data.map((comment) => ({
                         ...comment,
-                        replies: comment.replies || [], // 기본값 설정
+                        author: comment?.author || "익명",
+                        replies: comment?.replies?.map((reply) => ({
+                            ...reply,
+                            author: reply?.author || "익명", // 대댓글에도 기본값 설정
+                        })) || [],
                     }))
                     : []
             );
@@ -121,6 +120,7 @@ const BoardDetail = () => {
             console.error("Error fetching comments:", error.response || error);
         }
     };
+
 
     const handleCommentSubmit = async () => {
         if (!newComment.trim()) return;
@@ -427,7 +427,6 @@ const BoardDetail = () => {
                     <p className="text-gray-500">댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
                 )}
             </div>
-
 
             <div className="new-comment mt-6">
     <textarea

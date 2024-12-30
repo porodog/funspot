@@ -33,12 +33,13 @@ public class BoardController {
 
   // 모든 게시글 조회
   @GetMapping
-  public Page<BoardEntity> getAllBoards(
+  public Page<BoardDTO> getAllBoards(
           @RequestParam(value = "page", defaultValue = "0") int page,
           @RequestParam(value = "size", defaultValue = "10") int size) {
     Pageable pageable = PageRequest.of(page, size, Sort.by("regDate").descending());
-    return boardService.getAllBoards(pageable);
+    return boardService.getAllBoards(pageable); // 이제 타입이 일치
   }
+
 
   // 특정 게시글 조회
   @GetMapping("/{id}")
@@ -113,6 +114,17 @@ public class BoardController {
     boardService.incrementViewCount(boardIdx, userIdx, request, response);
     return ResponseEntity.ok().build();
   }
+
+  @GetMapping("/boards")
+  public ResponseEntity<List<BoardDTO>> getBoards() {
+    List<BoardDTO> boardList = boardService.getBoardList();
+
+    // 디버깅: 반환 데이터 로그 출력
+    boardList.forEach(board -> System.out.println("BoardDTO: " + board));
+
+    return ResponseEntity.ok(boardList);
+  }
+
 
 }
 

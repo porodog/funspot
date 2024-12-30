@@ -12,11 +12,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +34,28 @@ public class BoardService {
 
 
   // 모든 게시글 조회 (최신순 정렬)
-  public Page<BoardEntity> getAllBoards(Pageable pageable) {
-    return boardRepository.findByDelYn("N", pageable); // 페이징된 결과 반환
+  public Page<BoardDTO> getAllBoards(Pageable pageable) {
+    Page<BoardEntity> boardEntities = boardRepository.findByDelYn("N", pageable);
+
+    // 댓글, 추천, 조회 수 포함
+    List<BoardDTO> boardDTOs = boardEntities.stream().map(board -> {
+      long commentCount = boardRepository.getCommentCountByBoardId(board.getIdx());
+      return BoardDTO.builder()
+              .idx(board.getIdx())
+              .title(board.getTitle())
+              .content(board.getContent())
+              .nickname(board.getNickname())
+              .regDate(board.getRegDate().toString())
+              .modDate(board.getModDate() != null ? board.getModDate().toString() : null)
+              .commentCount(commentCount)
+              .likeCount(board.getLikeCount()) // 추천 수 추가
+              .viewCount(board.getViewCount()) // 조회 수 추가
+              .build();
+    }).collect(Collectors.toList());
+
+    return new PageImpl<>(boardDTOs, pageable, boardEntities.getTotalElements());
   }
+
 
   // 게시글 작성
   public BoardEntity createBoard(BoardEntity board) {
@@ -140,5 +164,32 @@ public class BoardService {
     return boardRepository.findById(boardIdx)
             .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
   }
+
+  public List<BoardDTO> getBoardList() {
+    List<Object[]> results = boardRepository.getBoardListWithCommentCount();
+    // 디버깅: 쿼리 결과 로그 출력
+    System.out.println("Query Results: " + results);
+
+    return results.stream()
+            .map(result -> {
+              BoardEntity board = (BoardEntity) result[0];
+              long commentCount = result[1] != null ? (Long) result[1] : 0L; // 댓글 수를 long으로 처리
+
+              // 디버깅: 각 결과 로그 출력
+              System.out.println("Board: " + board.getIdx() + ", CommentCount: " + commentCount);
+
+              return BoardDTO.builder()
+                      .idx(board.getIdx())
+                      .title(board.getTitle())
+                      .content(board.getContent())
+                      .nickname(board.getNickname())
+                      .regDate(board.getRegDate().toString())
+                      .modDate(board.getModDate() != null ? board.getModDate().toString() : null)
+                      .commentCount(commentCount) // 댓글 수 추가
+                      .build();
+            })
+            .collect(Collectors.toList());
+  }
+
 
 }

@@ -56,4 +56,9 @@ public class CommentEntity {
   public void preUpdate() {
     this.updatedAt = LocalDateTime.now();
   }
+
+  public String getAuthorNickname() {
+    return this.author != null ? this.author : "익명";
+  }
+
 }

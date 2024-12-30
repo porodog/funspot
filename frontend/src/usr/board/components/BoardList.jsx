@@ -16,16 +16,24 @@ const BoardList = () => {
         fetchBoards(page, searchQuery.type, searchQuery.keyword); // 페이지 또는 검색 쿼리가 변경될 때 게시글 불러오기
     }, [page, searchQuery]);
 
+    useEffect(() => {
+        console.log("Fetched boards:", boards); // 데이터 구조 확인
+    }, [boards]);
+
     const fetchBoards = async (page, type, keyword) => {
-        const response = await axios.get("http://localhost:8080/api/boards/search", {
-            params: { page, size: pageSize, type, keyword },
-        });
-        setBoards(response.data.content);
-        setTotalPages(response.data.totalPages);
+        try {
+            const response = await axios.get("http://localhost:8080/api/boards", {
+                params: { page, size: pageSize, type, keyword },
+            });
+            setBoards(response.data.content); // 댓글 수 포함
+            setTotalPages(response.data.totalPages);
+        } catch (error) {
+            console.error("게시글을 불러오는 중 문제가 발생했습니다:", error);
+        }
     };
 
+
     const handleSearch = () => {
-        console.log("Searching with type and keyword:", { type: searchType, keyword }); // 디버깅용
         setSearchQuery({ type: searchType, keyword }); // 검색 버튼 클릭 시 쿼리 업데이트
         setPage(0); // 검색 시 페이지를 0으로 초기화
     };
@@ -92,7 +100,7 @@ const BoardList = () => {
                 <button
                     onClick={handleSearch}
                     className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
-                    style={{ backgroundColor: "#25E2B6" }}
+                    style={{backgroundColor: "#25E2B6"}}
                 >
                     검색
                 </button>
@@ -110,7 +118,7 @@ const BoardList = () => {
                     <Link to={`/board/detail/${board.idx}`} key={board.idx}>
                         <li
                             className="mb-4 p-4 border rounded-md shadow-sm transition duration-300"
-                            style={{ borderColor: "#25E2B6" }}
+                            style={{borderColor: "#25E2B6"}}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.backgroundColor = "rgba(37, 226, 182, 0.2)";
                             }}
@@ -129,12 +137,13 @@ const BoardList = () => {
                                 {truncateText(stripHtmlTags(board.content), 60)} {/* HTML 제거 후 내용 60자 제한 */}
                             </p>
                             <div className="text-xs text-gray-400">
-                                 추천수: {board.likeCount} | 댓글수: {board.commentCount} | 조회수: {board.viewCount}
+                                추천수: {board.likeCount} | 댓글수: {board.commentCount || 0} | 조회수: {board.viewCount}
                             </div>
                         </li>
                     </Link>
                 ))}
             </ul>
+
 
             {/* 페이지 네비게이션 */}
             <div className="flex justify-center items-center mt-4 gap-2">
@@ -152,7 +161,7 @@ const BoardList = () => {
                 >
                     &lt;
                 </button>
-                {Array.from({ length: groupEnd - groupStart }, (_, idx) => groupStart + idx).map(
+                {Array.from({length: groupEnd - groupStart}, (_, idx) => groupStart + idx).map(
                     (pageNum) => (
                         <button
                             key={pageNum}

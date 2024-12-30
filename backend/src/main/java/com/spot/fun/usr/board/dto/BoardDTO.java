@@ -14,5 +14,7 @@ public class BoardDTO {
   private String nickname;
   private String regDate; // 포맷팅된 등록일
   private String modDate; // 포맷팅된 수정일
-  private Long commentCount; // 댓글 수
+  private long commentCount; // 댓글 수
+  private long likeCount; // 추천 수
+  private long viewCount; // 조회 수
 }

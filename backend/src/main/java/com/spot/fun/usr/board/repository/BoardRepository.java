@@ -6,7 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
@@ -25,4 +28,18 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
 
   @Query("SELECT b FROM BoardEntity b WHERE b.delYn = 'N' AND b.nickname LIKE %:keyword% ORDER BY b.regDate DESC")
   Page<BoardEntity> searchByNickname(String keyword, Pageable pageable);
+
+  @Query("SELECT b, COUNT(c.id) " +
+          "FROM BoardEntity b " +
+          "LEFT JOIN CommentEntity c ON b.idx = c.board.idx AND c.delYn = 'n' " +
+          "WHERE b.delYn = 'N' " +
+          "GROUP BY b")
+  List<Object[]> getBoardListWithCommentCount();
+
+  @Query("SELECT COUNT(c.id) FROM CommentEntity c WHERE c.board.idx = :boardId AND c.delYn = 'N'")
+  long getCommentCountByBoardId(@Param("boardId") Long boardId);
+
+
+
+
 }
