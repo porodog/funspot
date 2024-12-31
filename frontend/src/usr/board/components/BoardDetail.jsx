@@ -244,6 +244,10 @@ const BoardDetail = () => {
     }
 
     const handleDeleteComment = async (commentId) => {
+        // 확인 창 표시
+        const confirmDelete = window.confirm("정말로 이 댓글을 삭제하시겠습니까?");
+        if (!confirmDelete) return;
+
         const isParentComment = comments.some((comment) => comment.id === commentId);
         const targetComment = isParentComment
             ? comments.find((comment) => comment.id === commentId)
@@ -280,8 +284,6 @@ const BoardDetail = () => {
             console.error("Failed to delete comment:", error.response || error);
         }
     };
-
-
 
     return (
         <div
