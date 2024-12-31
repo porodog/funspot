@@ -121,9 +121,11 @@ const BoardDetail = () => {
         }
     };
 
-
     const handleCommentSubmit = async () => {
-        if (!newComment.trim()) return;
+        if (!newComment.trim()) {
+            alert("댓글 내용을 입력해주세요."); // 경고 알림
+            return;
+        }
 
         try {
             const payload = {
@@ -136,7 +138,7 @@ const BoardDetail = () => {
                 `http://localhost:8080/api/comments/${id}`,
                 payload,
                 {
-                    headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
+                    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
                 }
             );
 
@@ -150,7 +152,10 @@ const BoardDetail = () => {
 
     const handleReplySubmit = async (parentCommentId) => {
         const content = replyContent[parentCommentId]?.trim();
-        if (!content) return;
+        if (!content) {
+            alert("대댓글 내용을 입력해주세요."); // 경고 알림
+            return;
+        }
 
         try {
             const payload = {
@@ -173,17 +178,18 @@ const BoardDetail = () => {
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === parentCommentId
-                        ? {...comment, replies: [...(comment.replies || []), response.data]}
+                        ? { ...comment, replies: [...(comment.replies || []), response.data] }
                         : comment
                 )
             );
 
-            setReplyContent((prev) => ({...prev, [parentCommentId]: ""}));
-            setReplyVisibility((prev) => ({...prev, [parentCommentId]: false})); // 입력창 숨기기
+            setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
+            setReplyVisibility((prev) => ({ ...prev, [parentCommentId]: false })); // 입력창 숨기기
         } catch (error) {
             console.error("Error posting reply:", error);
         }
     };
+
 
     const handleEdit = () => {
         navigate(`/board/edit/${id}`); // 수정 화면으로 이동
@@ -448,7 +454,7 @@ const BoardDetail = () => {
                 {/* 댓글 입력 필드 및 버튼 */}
                 {userInfo && (
                     <div className="new-comment mt-6">
-      <textarea
+      <input
           value={newComment}
           onChange={(e) => {
               const input = e.target.value;
