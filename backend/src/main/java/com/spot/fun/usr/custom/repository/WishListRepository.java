@@ -1,5 +1,6 @@
 package com.spot.fun.usr.custom.repository;
 
+import com.spot.fun.usr.custom.domain.Custom;
 import com.spot.fun.usr.custom.domain.WishList;
 import com.spot.fun.usr.custom.dto.WishListDTO;
 import com.spot.fun.usr.mypage.dto.CommentRequestDTO;
@@ -22,6 +23,7 @@ public interface WishListRepository extends JpaRepository<WishList, Long> {
    boolean existsByUserIdxAndCustomCno(Long userIdx, Long customCno);
    @Query("SELECT w.custom.cno FROM WishList w GROUP BY w.custom.cno ORDER BY COUNT(w.custom.cno) DESC")
    List<Long> findTopCustomIds(Pageable pageable);
-   @Query("SELECT w.custom.cno FROM WishList w GROUP BY w.custom.cno ORDER BY COUNT(w.custom.cno) DESC")
-   List<Long> findAllCustomIds(Long userIdx);
+   @Query("SELECT w.custom FROM WishList w WHERE w.custom.delYn = 'N' GROUP BY w.custom ORDER BY COUNT(w.custom.cno) DESC")
+   List<Custom> findAllCustoms(Long userIdx);
+
 }
