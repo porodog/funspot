@@ -30,67 +30,67 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final AuthTokenUtil authTokenUtil;
 
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//
-//        String requestUri = request.getRequestURI();
-//
-//        // PERMITTED_PATHS에 포함된 경로는 JWT 토큰 검사 건너뛰기
-//        if (isPermittedPath(requestUri)) {
-////            log.info("Skipping JWT validation for permitted path: {}", requestUri);
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
-//        // 토큰 가져오기
-//        String accessToken = authTokenUtil.getTokenValue(request, "access_token");
-//
-//        // 토큰이 존재하고 유효한 경우 인증 설정
-//        if (accessToken != null && jwtTokenProvider.validToken(accessToken)) {
-//            log.info("Valid token found for request URI: {}", requestUri);
-//            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        } else {
-//            log.warn("Invalid or missing token for request URI: {}", requestUri);
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         String requestUri = request.getRequestURI();
 
-        if (isPermittedPath(requestUri)) {
+        // PERMITTED_PATHS에 포함된 경로는 JWT 토큰 검사 건너뛰기
+        if (!requestUri.startsWith("/api") || isPermittedPath(requestUri)) {
+//            log.info("Skipping JWT validation for permitted path: {}", requestUri);
             filterChain.doFilter(request, response);
             return;
         }
 
+        // 토큰 가져오기
         String accessToken = authTokenUtil.getTokenValue(request, "access_token");
 
+        // 토큰이 존재하고 유효한 경우 인증 설정
         if (accessToken != null && jwtTokenProvider.validToken(accessToken)) {
+            log.info("Valid token found for request URI: {}", requestUri);
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // 관리자 권한 확인
-            String role = authentication.getAuthorities().stream()
-                    .findFirst()
-                    .map(Object::toString)
-                    .orElse("UNKNOWN");
-
-            if ("ADMIN".equalsIgnoreCase(role)) {
-                log.info("Admin access granted for request URI: {}", requestUri);
-            } else {
-                log.info("Non-admin user access for request URI: {}", requestUri);
-            }
         } else {
             log.warn("Invalid or missing token for request URI: {}", requestUri);
         }
 
         filterChain.doFilter(request, response);
     }
+
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//        String requestUri = request.getRequestURI();
+//
+//        if (isPermittedPath(requestUri)) {
+//            filterChain.doFilter(request, response);
+//            return;
+//        }
+//
+//        String accessToken = authTokenUtil.getTokenValue(request, "access_token");
+//
+//        if (accessToken != null && jwtTokenProvider.validToken(accessToken)) {
+//            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+//
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//            // 관리자 권한 확인
+//            String role = authentication.getAuthorities().stream()
+//                    .findFirst()
+//                    .map(Object::toString)
+//                    .orElse("UNKNOWN");
+//
+//            if ("ADMIN".equalsIgnoreCase(role)) {
+//                log.info("Admin access granted for request URI: {}", requestUri);
+//            } else {
+//                log.info("Non-admin user access for request URI: {}", requestUri);
+//            }
+//        } else {
+//            log.warn("Invalid or missing token for request URI: {}", requestUri);
+//        }
+//
+//        filterChain.doFilter(request, response);
+//    }
 
 
 

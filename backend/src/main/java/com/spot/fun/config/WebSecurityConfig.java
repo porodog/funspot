@@ -10,7 +10,6 @@ import com.spot.fun.usr.oauthlogin.utill.CustomOAuth2AuthenticationException;
 import com.spot.fun.usr.oauthlogin.utill.CustomRequestEntityConverter;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
-import com.spot.fun.usr.user.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -58,6 +56,7 @@ import java.util.Optional;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+
     private final JwtTokenFilter jwtTokenFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final UserRepository userRepository;
@@ -65,58 +64,55 @@ public class WebSecurityConfig {
     private final AuthTokenUtil authTokenUtil;
     private final AuthTokenRepository authTokenRepository;
 
-    @Value("${security.check.path.none}")
-    private String[] PERMITTED_PATHS;
+//    @Value("${security.check.path.none}")
+//    private String[] PERMITTED_PATHS;
 
+    @Value("${server.host.url}")
+    private String serverUrl;
+//    private String serverUrl="http://localhost:3000"; // 로컬에서 테스트할때 사용 (oauth 로그인 리디렉트)
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception  {
         return http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
+                        // 여기서 쓰면 안됨
+//                        .requestMatchers("/api/usr/course/**").permitAll()
+//                        .requestMatchers("/api/usr/places/**").permitAll()
+//                        .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
+//                        .requestMatchers("/api/boards/**", "/api/comments").permitAll() // 게시판 관련 경로 인증 없이 허용
+//                        .requestMatchers("/api/boards/**").permitAll()
+//                        .requestMatchers("/api/comments/**").permitAll() // 게시판 관련 경로 인증 없이 허용
+//                        .requestMatchers("/uploads/**").permitAll() // 이미지 업로드 경로 인증 없이 허용
+                        //
+                        .requestMatchers("/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정
                 .csrf(csrf -> csrf.disable())  // CSRF 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션방식 -> JWT 사용
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
-                        .requestMatchers("/api/usr/course/**").permitAll()
-                        .requestMatchers("/api/usr/places/**").permitAll()
-                        .requestMatchers("/api/usr/oauth/get-oauth-session").permitAll()
-                        .requestMatchers("/api/boards/**").permitAll()
-                        .requestMatchers("/api/comments/**").permitAll() // 게시판 관련 경로 인증 없이 허용
-                        .requestMatchers("/uploads/**").permitAll() // 이미지 업로드 경로 인증 없이 허용
-                        .requestMatchers(PERMITTED_PATHS).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .cors((auth) -> auth
-                        .configurationSource(corsConfigurationSource())
-                )
-                .csrf((auth) -> auth
-                        .disable()
-                )
-                .sessionManagement((auth) -> auth // 세션방식 -> jwt 사용
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth/login/**")
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))  // OAuth2 로그인 설정
                         .tokenEndpoint(tokenEndpoint -> tokenEndpoint
                                 .accessTokenResponseClient(accessTokenResponseClient()) // Kakao 토큰 요청 처리
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler())  // 로그인 성공 시 동작
                         .failureHandler(oAuth2AuthenticationFailureHandler()))  // 로그인 실패 시 동작
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
 
-
-    // CORS 설정
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 허용하는 Origin 설정
         configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:3001");
+        configuration.addAllowedOrigin(serverUrl);
 
         // 허용할 HTTP 메서드 추가 (PATCH, DELETE, OPTIONS 등)
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -134,13 +130,11 @@ public class WebSecurityConfig {
         return source;
     }
 
-    // BCryptPasswordEncoder Bean 설정
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // AuthenticationManager Bean 설정
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -192,8 +186,7 @@ public class WebSecurityConfig {
             log.error("OAuth2 Authentication failed: {}", errorMessage);
 
             // URL 파라미터로 에러 메시지 전달
-            response.sendRedirect("http://localhost:3000/login?error_message=" +
-                    URLEncoder.encode(errorMessage, "UTF-8"));
+            response.sendRedirect(serverUrl+"/login?error_message=" + URLEncoder.encode(errorMessage, "UTF-8"));
         };
     }
 
@@ -212,7 +205,7 @@ public class WebSecurityConfig {
 
                 if (email == null) {
                     log.error("OAuth2 Success Handler - Email is null, redirecting to error page.");
-                    response.sendRedirect("http://localhost:3000/login-error");
+                    response.sendRedirect(serverUrl+"/login-error");
                     return;
                 }
 
@@ -246,15 +239,13 @@ public class WebSecurityConfig {
 
                     log.info("프론트엔드의 login-success 페이지로 리다이렉트...");
                     log.info("Redirecting to login-success");
-                    response.sendRedirect("http://localhost:3000/login-success");
+                    response.sendRedirect(serverUrl+"/login-success");
                 } else {
                     // 비회원: 회원가입 페이지로 리다이렉트
                     log.info("Redirecting to social-signup for new user: {}", email);
-                    response.sendRedirect("http://localhost:3000/social-signup");
+                    response.sendRedirect(serverUrl+"/social-signup");
                 }
             }
         };
     }
-
-
 }
