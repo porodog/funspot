@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { FaUser } from "react-icons/fa";
 import ImageComponent from "../../mypage/component/profile/ImageComponent";
 
 
@@ -28,8 +29,30 @@ const BoardList = () => {
             const response = await axios.get("http://localhost:8080/api/boards", {
                 params: { page, size: pageSize },
             });
-            setBoards(response.data.content || []);
-            setTotalPages(response.data.totalPages || 0); // 총 페이지 수 설정
+
+            // 게시글 데이터 가져오기
+            const boardsData = response.data.content || [];
+
+            // 각 게시글 작성자의 프로필 정보 가져오기
+            const boardsWithProfile = await Promise.all(
+                boardsData.map(async (board) => {
+                    try {
+                        const profileResponse = await axios.get(`http://localhost:8080/api/usr/profile`, {
+                            params: { userIdx: board.authorIdx }
+                        });
+                        return {
+                            ...board,
+                            profileImage: profileResponse.data.uploadName
+                        };
+                    } catch (error) {
+                        console.error("프로필 정보 가져오기 실패:", error);
+                        return board;
+                    }
+                })
+            );
+
+            setBoards(boardsWithProfile);
+            setTotalPages(response.data.totalPages || 0);
         } catch (error) {
             console.error("게시글 불러오기 실패:", error);
         }
@@ -156,17 +179,31 @@ const BoardList = () => {
 
                                 <div className="flex items-center mb-2">
                                     <Link to={`/mypage/feed/${board.authorIdx}`}>
-                                        <img
-                                            src={
-                                                board.profileImage
-                                                    ? `http://localhost:8080/api/usr/profile/image/${board.profileImage}`
-                                                    : '/default-profile.png'
-                                            }
-                                            alt="Profile"
-                                            className="w-10 h-10 rounded-full mr-2"
-                                        />
+                                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center">
+                                            {console.log('프로필 이미지 데이터:', board.profileImage)} {/* 디버깅용 로그 */}
+                                            {board.profileImage ? (
+                                                <img
+                                                    src={`http://localhost:8080/api/usr/profile/image/${board.profileImage}`}
+                                                    alt="프로필 이미지"
+                                                    className="w-full h-full object-contain rounded-full"
+                                                    onError={(e) => {
+                                                        console.log('이미지 로드 에러:', e); // 디버깅용 로그
+                                                        e.target.style.display = 'none';
+                                                        e.target.parentElement.innerHTML = `
+                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                            <FaUser className="text-gray-400 text-lg" />
+                        </div>
+                    `;
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <FaUser className="text-gray-400 text-lg" />
+                                                </div>
+                                            )}
+                                        </div>
                                     </Link>
-                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-blue-500">
+                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-black-500 font-bold">
                                         {board.nickname}
                                     </Link>
                                 </div>
