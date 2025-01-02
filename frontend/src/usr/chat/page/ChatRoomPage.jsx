@@ -87,7 +87,8 @@ const ChatRoomPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col justify-center min-h-screen py-5 bg-white">
+        {/*<div className="flex flex-col h-screen">*/}
             {/* 채팅방 헤더 */}
             <div className="p-4 border-b">
                 <h2 className="text-lg font-medium"><b>{roomInfo?.otherNickname}</b>님과의 대화방</h2>
