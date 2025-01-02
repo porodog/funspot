@@ -4,17 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
-@Builder
-@AllArgsConstructor
-public class BoardDTO {
-  private Long idx;
-  private String title;
-  private String content;
-  private String nickname;
-  private String regDate; // 포맷팅된 등록일
-  private String modDate; // 포맷팅된 수정일
-  private long commentCount; // 댓글 수
-  private long likeCount; // 추천 수
-  private long viewCount; // 조회 수
-}
+  @Data
+  @Builder
+  @AllArgsConstructor
+  public class BoardDTO {
+    private Long idx;
+    private String title;
+    private String content;
+    private String nickname;
+    private Long authorIdx; // 작성자 userIdx
+    private String profileImage; // 프로필 이미지
+    private String regDate;
+    private String modDate;
+    private Long commentCount;
+    private Long likeCount;
+    private Long viewCount;
+  }

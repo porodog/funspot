@@ -7,10 +7,16 @@ import com.spot.fun.usr.board.entity.BoardViewEntity;
 import com.spot.fun.usr.board.repository.BoardLikeRepository;
 import com.spot.fun.usr.board.repository.BoardRepository;
 import com.spot.fun.usr.board.repository.BoardViewRepository;
+import com.spot.fun.usr.board.repository.CommentRepository;
 import com.spot.fun.usr.board.util.BoardUtil;
+import com.spot.fun.usr.user.entity.User;
+import com.spot.fun.usr.user.repository.UserRepository;
+import com.spot.fun.usr.user.repository.profile.UserProfileRepository;
+import com.spot.fun.usr.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -31,35 +38,60 @@ public class BoardService {
   private final BoardLikeRepository boardLikeRepository;
   private final BoardViewRepository boardViewRepository;
   private final BoardUtil boardUtil;
-
+  private final UserRepository userRepository;
+  private final CommentRepository commentRepository;
+  private final UserProfileRepository userProfileRepository;
 
   // 모든 게시글 조회 (최신순 정렬)
   public Page<BoardDTO> getAllBoards(Pageable pageable) {
-    Page<BoardEntity> boardEntities = boardRepository.findByDelYn("N", pageable);
+    List<Object[]> results = boardRepository.findAllWithAuthorIdx(pageable);
 
-    // 댓글, 추천, 조회 수 포함
-    List<BoardDTO> boardDTOs = boardEntities.stream().map(board -> {
-      long commentCount = boardRepository.getCommentCountByBoardId(board.getIdx());
+    List<BoardDTO> boardDTOs = results.stream().map(result -> {
+      BoardEntity board = (BoardEntity) result[0];
+      Long authorIdx = (Long) result[1];
+
+
+      // 댓글 수 조회
+      long commentCount = commentRepository.countByBoardIdxAndDelYn(board.getIdx(), "N");
+
       return BoardDTO.builder()
               .idx(board.getIdx())
               .title(board.getTitle())
               .content(board.getContent())
               .nickname(board.getNickname())
+              .authorIdx(authorIdx)
               .regDate(board.getRegDate().toString())
               .modDate(board.getModDate() != null ? board.getModDate().toString() : null)
-              .commentCount(commentCount)
-              .likeCount(board.getLikeCount()) // 추천 수 추가
-              .viewCount(board.getViewCount()) // 조회 수 추가
+              .likeCount(board.getLikeCount())
+              .viewCount(board.getViewCount())
+              .commentCount(commentCount) // 댓글 수 추가
               .build();
     }).collect(Collectors.toList());
 
-    return new PageImpl<>(boardDTOs, pageable, boardEntities.getTotalElements());
+    long totalElements = boardRepository.countByDelYn("N");
+
+    return new PageImpl<>(boardDTOs, pageable, totalElements);
   }
 
 
   // 게시글 작성
   public BoardEntity createBoard(BoardEntity board) {
-    return boardRepository.save(board);
+    log.info("저장 전 BoardEntity: {}", board);
+
+    // 닉네임으로 User 조회
+    User user = userRepository.findByNickname(board.getNickname());
+    if (user == null) {
+      log.error("해당 닉네임을 가진 사용자를 찾을 수 없습니다: {}", board.getNickname());
+      throw new RuntimeException("해당 닉네임을 가진 사용자를 찾을 수 없습니다: " + board.getNickname());
+    }
+
+    board.setAuthorIdx(user.getIdx());
+    board.setRegDate(LocalDateTime.now());
+
+    BoardEntity savedBoard = boardRepository.save(board);
+    log.info("저장된 BoardEntity: {}", savedBoard);
+
+    return savedBoard;
   }
 
   // 특정 게시글 조회
@@ -190,6 +222,5 @@ public class BoardService {
             })
             .collect(Collectors.toList());
   }
-
 
 }

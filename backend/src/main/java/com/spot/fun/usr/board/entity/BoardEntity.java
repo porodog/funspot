@@ -39,8 +39,11 @@ public class BoardEntity {
   private LocalDateTime modDate;
 
   @Column(name = "view_count", nullable = false)
-  private int viewCount = 0;
+  private long viewCount = 0;
 
   @Column(name = "like_count", nullable = false)
-  private int likeCount = 0;
+  private long likeCount = 0;
+
+  @Column(name = "author_idx", nullable = false)
+  private Long authorIdx; // 작성자의 userIdx
 }

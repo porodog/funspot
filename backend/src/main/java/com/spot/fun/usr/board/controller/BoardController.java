@@ -50,8 +50,13 @@ public class BoardController {
 
   // 게시글 작성
   @PostMapping
-  public BoardEntity createBoard(@RequestBody BoardEntity board) {
-    return boardService.createBoard(board);
+  public ResponseEntity<?> createBoard(@RequestBody BoardEntity board) {
+    try {
+      BoardEntity createdBoard = boardService.createBoard(board);
+      return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시글 생성에 실패했습니다: " + e.getMessage());
+    }
   }
 
   // 게시글 수정

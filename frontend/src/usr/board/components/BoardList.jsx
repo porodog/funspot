@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ImageComponent from "../../mypage/component/profile/ImageComponent";
+
+
 
 const BoardList = () => {
     const [boards, setBoards] = useState([]); // 게시글 데이터
+    const [userIds, setUserIds] = useState({}); // nickname -> userIdx 매핑
     const [page, setPage] = useState(0); // 현재 페이지
     const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
     const [searchType, setSearchType] = useState("titleContent"); // 검색 유형
@@ -18,15 +22,25 @@ const BoardList = () => {
         }
     }, [page, isSearchMode]);
 
-    const fetchBoards = async (page) => {
+    const fetchBoards = async () => {
         try {
-            const response = await axios.get("http://localhost:8080/api/boards", {
-                params: { page, size: pageSize },
-            });
-            setBoards(response.data.content); // 댓글 수 포함
-            setTotalPages(response.data.totalPages);
+            const response = await axios.get("http://localhost:8080/api/boards");
+            setBoards(response.data.content);
+
+            // 모든 nickname에 대해 userIdx 조회
+            const nicknameSet = [...new Set(response.data.content.map((board) => board.nickname))];
+            const userIdMap = {};
+            await Promise.all(
+                nicknameSet.map(async (nickname) => {
+                    const userResponse = await axios.get(
+                        `http://localhost:8080/api/usr/profile/user-id-by-nickname/${nickname}`
+                    );
+                    userIdMap[nickname] = userResponse.data;
+                })
+            );
+            setUserIds(userIdMap);
         } catch (error) {
-            console.error("게시글을 불러오는 중 문제가 발생했습니다:", error);
+            console.error("게시글 불러오기 실패:", error);
         }
     };
 
@@ -132,7 +146,7 @@ const BoardList = () => {
                         <Link to={`/board/detail/${board.idx}`} key={board.idx}>
                             <li
                                 className="mb-4 p-4 border rounded-md shadow-sm transition duration-300"
-                                style={{ borderColor: "#25E2B6" }}
+                                style={{borderColor: "#25E2B6"}}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.backgroundColor =
                                         "rgba(37, 226, 182, 0.2)";
@@ -141,19 +155,37 @@ const BoardList = () => {
                                     e.currentTarget.style.backgroundColor = "transparent";
                                 }}
                             >
-                                <div className="flex items-center justify-between text-sm text-gray-500">
-                                    <span>{board.nickname}</span>
-                                    <span>{formatDate(board.regDate)}</span>
+
+                                <div className="flex items-center mb-2">
+                                    <Link to={`/mypage/feed/${board.authorIdx}`}>
+                                        <img
+                                            src={
+                                                board.profileImage
+                                                    ? `http://localhost:8080/api/usr/profile/image/${board.profileImage}`
+                                                    : '/default-profile.png'
+                                            }
+                                            alt="Profile"
+                                            className="w-10 h-10 rounded-full mr-2"
+                                        />
+                                    </Link>
+                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-blue-500">
+                                        {board.nickname}
+                                    </Link>
                                 </div>
+
                                 <h2 className="text-lg font-semibold mt-2">
                                     {truncateText(board.title, 40)}
                                 </h2>
                                 <p className="text-sm text-gray-600 mt-1">
                                     {truncateText(stripHtmlTags(board.content), 60)}
                                 </p>
-                                <div className="text-xs text-gray-400">
-                                    추천수: {board.likeCount} | 댓글수: {board.commentCount || 0} | 조회수:{" "}
-                                    {board.viewCount}
+                                <div className="flex justify-between text-xs text-gray-400">
+                                    {/* 추천수, 댓글수, 조회수 */}
+                                    <div>
+                                        추천수: {board.likeCount} | 댓글수: {board.commentCount || 0} | 조회수: {board.viewCount}
+                                    </div>
+                                    {/* 작성일자 */}
+                                    <span>{formatDate(board.regDate)}</span>
                                 </div>
                             </li>
                         </Link>

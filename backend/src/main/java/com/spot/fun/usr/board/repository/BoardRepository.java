@@ -39,6 +39,11 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
   @Query("SELECT COUNT(c.id) FROM CommentEntity c WHERE c.board.idx = :boardId AND c.delYn = 'N'")
   long getCommentCountByBoardId(@Param("boardId") Long boardId);
 
+  @Query("SELECT b, u.idx FROM BoardEntity b JOIN User u ON b.nickname = u.nickname WHERE b.delYn = 'N'")
+  List<Object[]> findAllWithAuthorIdx(Pageable pageable);
+
+  @Query("SELECT COUNT(b) FROM BoardEntity b WHERE b.delYn = :delYn")
+  long countByDelYn(@Param("delYn") String delYn);
 
 
 
