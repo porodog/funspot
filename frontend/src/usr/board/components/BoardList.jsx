@@ -18,27 +18,18 @@ const BoardList = () => {
 
     useEffect(() => {
         if (!isSearchMode) {
-            fetchBoards(page); // 페이지가 변경될 때마다 게시글 불러오기
+            fetchBoards(page); // 현재 페이지를 전달
         }
     }, [page, isSearchMode]);
 
-    const fetchBoards = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/api/boards");
-            setBoards(response.data.content);
 
-            // 모든 nickname에 대해 userIdx 조회
-            const nicknameSet = [...new Set(response.data.content.map((board) => board.nickname))];
-            const userIdMap = {};
-            await Promise.all(
-                nicknameSet.map(async (nickname) => {
-                    const userResponse = await axios.get(
-                        `http://localhost:8080/api/usr/profile/user-id-by-nickname/${nickname}`
-                    );
-                    userIdMap[nickname] = userResponse.data;
-                })
-            );
-            setUserIds(userIdMap);
+    const fetchBoards = async (page) => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/boards", {
+                params: { page, size: pageSize },
+            });
+            setBoards(response.data.content || []);
+            setTotalPages(response.data.totalPages || 0); // 총 페이지 수 설정
         } catch (error) {
             console.error("게시글 불러오기 실패:", error);
         }
@@ -77,6 +68,13 @@ const BoardList = () => {
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
             setPage(newPage);
+            if (isSearchMode) {
+                // 검색 모드일 때는 searchBoards 호출
+                searchBoards(searchType, keyword, newPage);
+            } else {
+                // 일반 모드일 때는 fetchBoards 호출
+                fetchBoards(newPage);
+            }
         }
     };
 
@@ -249,5 +247,6 @@ const BoardList = () => {
         </div>
     );
 };
+
 
 export default BoardList;
