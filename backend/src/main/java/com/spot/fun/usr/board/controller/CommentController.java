@@ -19,7 +19,7 @@ public class CommentController {
   // 댓글 및 대댓글 추가
   @PostMapping("/{boardId}")
   public ResponseEntity<CommentEntity> addComment(
-          @PathVariable Long boardId,
+          @PathVariable("boardId") Long boardId,
           @RequestBody Map<String, Object> payload,
           @RequestHeader("Authorization") String authHeader // 인증 헤더 확인
   ) {
@@ -36,14 +36,14 @@ public class CommentController {
 
   // 댓글 및 대댓글 조회
   @GetMapping("/{boardId}")
-  public ResponseEntity<List<CommentEntity>> getComments(@PathVariable Long boardId) {
+  public ResponseEntity<List<CommentEntity>> getComments(@PathVariable("boardId") Long boardId) {
     List<CommentEntity> comments = commentService.getCommentsByBoardId(boardId);
     return ResponseEntity.ok(comments);
   }
 
   // 댓글 삭제
   @DeleteMapping("/{commentId}")
-  public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+  public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long commentId) {
     commentService.deleteComment(commentId);
     return ResponseEntity.noContent().build();
   }

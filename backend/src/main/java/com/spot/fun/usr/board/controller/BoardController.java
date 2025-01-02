@@ -43,7 +43,7 @@ public class BoardController {
 
   // 특정 게시글 조회
   @GetMapping("/{id}")
-  public ResponseEntity<BoardEntity> getBoardById(@PathVariable Long id) {
+  public ResponseEntity<BoardEntity> getBoardById(@PathVariable("id") Long id) {
     BoardEntity board = boardService.getBoardById(id);
     return ResponseEntity.ok(board);
   }
@@ -61,13 +61,13 @@ public class BoardController {
 
   // 게시글 수정
   @PutMapping("/{id}")
-  public BoardEntity updateBoard(@PathVariable Long id, @RequestBody BoardEntity updatedBoard) {
+  public BoardEntity updateBoard(@PathVariable("id") Long id, @RequestBody BoardEntity updatedBoard) {
     return boardService.updateBoard(id, updatedBoard);
   }
 
   // 게시글 삭제 (논리 삭제)
   @PatchMapping("/{id}/delete")
-  public void deleteBoardByPatch(@PathVariable Long id) {
+  public void deleteBoardByPatch(@PathVariable("id") Long id) {
     boardService.deleteBoard(id);
   }
 
@@ -93,8 +93,8 @@ public class BoardController {
   // 게시글 추천 상태 확인
   @GetMapping("/{boardIdx}/has-liked")
   public ResponseEntity<Map<String, Boolean>> hasLiked(
-          @PathVariable Long boardIdx,
-          @RequestParam Long userIdx
+          @PathVariable("boardIdx") Long boardIdx,
+          @RequestParam(value = "userIdx") Long userIdx
   ) {
     boolean hasLiked = boardLikeRepository.existsByBoardIdxAndUserIdx(boardIdx, userIdx);
     Map<String, Boolean> response = new HashMap<>();
@@ -104,15 +104,15 @@ public class BoardController {
 
   // 게시글 추천
   @PostMapping("/{boardIdx}/like")
-  public ResponseEntity<Void> likeBoard(@PathVariable Long boardIdx, @RequestParam Long userIdx) {
+  public ResponseEntity<Void> likeBoard(@PathVariable(name = "boardIdx") Long boardIdx, @RequestParam(value = "userIdx") Long userIdx) {
     boardService.likeBoard(boardIdx, userIdx);
     return ResponseEntity.ok().build();
   }
   // 게시글 조회수 중복 카운팅 방지
   @GetMapping("/{boardIdx}/view")
   public ResponseEntity<Void> incrementViewCount(
-          @PathVariable Long boardIdx,
-          @RequestParam Long userIdx,
+          @PathVariable("boardIdx") Long boardIdx,
+          @RequestParam(value = "userIdx") Long userIdx,
           HttpServletRequest request,
           HttpServletResponse response
   ) {
