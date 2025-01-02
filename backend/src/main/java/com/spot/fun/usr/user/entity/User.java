@@ -58,6 +58,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole userRole = UserRole.ROLE_USER;
 
+
     @Column
     private String provider;
 

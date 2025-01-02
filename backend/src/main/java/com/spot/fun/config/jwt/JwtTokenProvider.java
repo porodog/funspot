@@ -69,6 +69,7 @@ public class JwtTokenProvider {
                     .claim("idx", user.getIdx())
                     .claim("nickname", user.getNickname())
                     .claim("email", user.getEmail()) // email은 null이어도 문제 없음
+                    .claim("roles", user.getUserRole().getRole()) // 권한 포함
                     .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecretKey())
                     .compact();
     }
@@ -93,11 +94,19 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        //Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
+        String userRole = claims.get("roles", String.class);
+        if (userRole == null || userRole.isEmpty()) {
+            log.error("권한 정보가 누락되었습니다. 클레임: {}", claims);
+            throw new IllegalArgumentException("권한 정보가 누락되었습니다.");
+        }
+        log.debug("Extracted userRole from token: {}", userRole);
 
-        Long idx = claims.get("idx", Long.class);
-        String userRole = customUserDetailsService.getUserRole(idx);
+//        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
         Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(userRole));
+
+//        Long idx = claims.get("idx", Long.class);
+//        String userRole = customUserDetailsService.getUserRole(idx);
+//        Set<SimpleGrantedAuthority> authorities = Collections.singleton(new SimpleGrantedAuthority(userRole));
 
         return new UsernamePasswordAuthenticationToken(
                 new org.springframework.security.core.userdetails.User(claims.getSubject(), "", authorities),

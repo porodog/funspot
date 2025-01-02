@@ -13,6 +13,8 @@ const { createBrowserRouter } = require("react-router-dom");
 
 const Loading = <div>Loading....</div>;
 
+const userRole = "ROLE_ADMIN";
+
 const MainPage = lazy(() => import("../../usr/main/page/MainPage"));
 const LoginPage = lazy(() => import("../../usr/login/page/LoginPage"));
 const LoginSuccessPage = lazy(() =>

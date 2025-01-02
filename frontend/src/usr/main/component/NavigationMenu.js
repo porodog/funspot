@@ -10,9 +10,9 @@ import { Link } from "react-router-dom";
 
 // Fun Menu
 const categories = [
-  { name: "맛집", img: <FoodFork />, path: "/restaurant" },
-  { name: "관광", img: <HomeState />, path: "/spot" },
-  { name: "숙소", img: <Pack />, path: "/accommodation" },
+  // { name: "맛집", img: <FoodFork />, path: "/restaurant" },
+  { name: "명소", img: <HomeState />, path: "/spot" },
+  // { name: "숙소", img: <Pack />, path: "/accommodation" },
   { name: "펀추천코스", img: <LikeSpot />, path: "/datecourses" },
   { name: "코스만들기", img: <MakeCourse />, path: "/custom" },
   { name: "피드", img: <Feed />, path: "/feed" },
@@ -22,7 +22,7 @@ const categories = [
 
 const NavigationMenu = () => {
   return (
-    <nav className="bg-gray-100 p-4 px-5 mt-4">
+    <nav className="bg-gray-100 p-4 px-10 mt-4">
       <div className="container mx-auto flex justify-between">
         <div className="text-center justify-center p-3 font-bold">
           <span className="text-custom-cyan font-bold">Fun </span>Menu

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const Footer = () => {
+const Footer = ({ userRole }) => {
     const [isVisible, setIsVisible] = useState(false); // 푸터 표시 상태 관리
 
     useEffect(() => {
@@ -32,14 +33,19 @@ const Footer = () => {
                 <footer className="bg-gray-500 text-white p-4 w-3/5 text-center fixed bottom-0">
                     <div className="container mx-auto flex justify-between items-center">
                         {/* 로고 이미지를 왼쪽에 배치 */}
-                        <div className="flex items-center">
-                            <img src="/img/FunSpot.png" alt="FunSpot Logo" className="h-8" /> {/* 로고 크기 조정 */}
-                        </div>
+                        {/* <div className="flex items-center">
+                            <img src="/img/FunSpot.png" alt="FunSpot Logo" className="h-8" /> 
+                        </div> */}
                         {/* 텍스트는 중앙으로 배치 */}
-                        <div className="text-center flex-grow">
+                        <div className="text-center items-center flex-grow">
                             <span>&copy; Copyright 2024 ㈜FunSpot All Rights Reserved</span>
                             <p>Designed by Mingbbu | Implement by Codyssey</p>
                         </div>
+                        {/* {userRole === 'ROLE_ADMIN' && (
+                            <div className='text-center text-custom-cyan'>
+                                <Link to={"/admin"}>관리자페이지</Link>
+                            </div>
+                        )} */}
                     </div>
                 </footer>
             )}

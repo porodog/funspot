@@ -15,4 +15,6 @@ public interface UserService {
     UserDTO findUserProfile(String userId);
     void deactivateUser(Long userIdx);
     Optional<User> getCurrentUser();
+
+    void grantAdminRole(Long userId);
 }

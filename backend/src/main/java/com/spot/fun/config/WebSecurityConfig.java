@@ -77,6 +77,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/usr/mypage/**").hasAuthority("USER")
+
                         // 여기서 쓰면 안됨
 //                        .requestMatchers("/api/usr/course/**").permitAll()
 //                        .requestMatchers("/api/usr/places/**").permitAll()

@@ -2,14 +2,13 @@ package com.spot.fun.usr.course.controller;//package com.spot.fun.usr.course.con
 
 import com.spot.fun.token.util.AuthTokenUtil;
 import com.spot.fun.usr.course.dto.DateCourseDTO;
-import com.spot.fun.usr.course.dto.DatePlacesDTO;
 import com.spot.fun.usr.course.model.DateCourse;
 import com.spot.fun.usr.course.model.DatePlaces;
+import com.spot.fun.usr.course.repository.DateCourseRepository;
+import com.spot.fun.usr.course.repository.DatePlaceRepository;
 import com.spot.fun.usr.course.service.DateCourseService;
 import com.spot.fun.usr.course.service.PlacesService;
-import com.spot.fun.usr.user.dto.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -28,20 +27,31 @@ public class DateCourseController {
     private final DateCourseService dateCourseService;
     private final PlacesService placesService;
     private final AuthTokenUtil authTokenUtil;
+    private final DateCourseRepository dateCourseRepository;
+    private final DatePlaceRepository datePlaceRepository;
 
-    // 코스 추가
     @PostMapping("/addcourse")
-    @PreAuthorize("hasRole('ADMIN')") // ROLE_ADMIN만 접근 가능
-    public ResponseEntity<String> addCourse(@RequestBody DateCourseDTO dateCourseDTO) {
-        dateCourseService.addCourse(dateCourseDTO);
-        return ResponseEntity.ok("Course added successfully");
+    public ResponseEntity<?> addCourse(@RequestBody DateCourseDTO dateCourseDTO) {
+        try {
+            // 서비스 계층에서 코스 저장
+            DateCourse savedCourse = dateCourseService.addCourse(dateCourseDTO);
+            return ResponseEntity.ok(savedCourse);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("코스 저장 중 문제가 발생했습니다.");
+        }
     }
 
-    @GetMapping("datecourses/{id}")
-    public ResponseEntity<DateCourseDTO> getCourseWithPlaces(@PathVariable Long courseId) {
-        DateCourseDTO courseDTO = dateCourseService.getCourseWithPlaces(courseId);
-        return ResponseEntity.ok(courseDTO);
+
+    @GetMapping("/datecourses/{id}")
+    public ResponseEntity<?> getCourseDetails(@PathVariable Long id) {
+
+            DateCourseDTO courseDTO = dateCourseService.getCourseWithPlaces(id);
+            return ResponseEntity.ok(courseDTO);
+
     }
+
 
     // 특정 코스 조회 + 장소 데이터 포함
 //    @GetMapping("/datecourses/{id}")
@@ -88,12 +98,12 @@ public class DateCourseController {
 
     // 모든 코스 목록 조회
     @GetMapping("/datecourses")
-    public ResponseEntity<List<DateCourse>> getPagedCourses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<List<DateCourse>> getAllCourses() {
         List<DateCourse> courses = dateCourseService.getAllCourses();
         return ResponseEntity.ok(courses);
     }
+
+
 
     // 특정 코스의 지도 경로 조회
     @GetMapping("/{id}/map")
@@ -108,11 +118,7 @@ public class DateCourseController {
     }
 
     // 검색 및 필터링
-    @GetMapping("/datecourses/search")
-    public ResponseEntity<List<DateCourse>> searchCourses(@RequestParam String keyword) {
-        List<DateCourse> courses = dateCourseService.searchCourses(keyword);
-        return ResponseEntity.ok(courses);
-    }
+
 }
 
 

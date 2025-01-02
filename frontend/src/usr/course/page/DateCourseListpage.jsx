@@ -18,15 +18,17 @@ const DateCourseListPage = () => {
   const [locationFilter, setLocationFilter] = useState(""); // 지역 필터 상태
   const navigate = useNavigate();
 
+  const userRole = userInfo?.role?.toUpperCase() || ""; // Context에서 userRole 가져오기
+
   // 로그인 상태 확인 및 코스 목록 불러오기
   useEffect(() => {
     const verifyLoginStatus = () => {
       if (userInfo?.token) {
         setIsLoggedIn(true); // 로그인 상태 업데이트
-        fetchCourses(userInfo.token).then(r => r); // 로그인 상태에서 코스 목록 가져오기
+        fetchCourses(userInfo.token).then((r) => r); // 로그인 상태에서 코스 목록 가져오기
       } else {
         setIsLoggedIn(false); // 비로그인 상태
-        fetchCourses().then(r => r); // 비로그인 상태에서 코스 목록 가져오기
+        fetchCourses().then((r) => r); // 비로그인 상태에서 코스 목록 가져오기
       }
     };
 
@@ -48,9 +50,9 @@ const DateCourseListPage = () => {
         response = await axios.get("/api/usr/course/datecourses");
       }
 
-      console.log("Fetched courses: ", response.data); // 데이터 확인
       setDateCourses(response.data); // 코스 목록 상태 업데이트
       setFilteredCourses(response.data); // 필터링된 목록 초기화
+      console.log("Fetched courses: ", response.data); // 데이터 확인
     } catch (error) {
       console.error("Error fetching date courses:", error);
     }
@@ -61,20 +63,23 @@ const DateCourseListPage = () => {
     let filtered = datecourses;
 
     if (ageGroupFilter) {
-      filtered = filtered.filter(course => course.ageGroup === ageGroupFilter);
+      filtered = filtered.filter((course) => course.ageGroup === ageGroupFilter);
     }
 
     if (locationFilter && locationFilter.trim() !== "") {
-      filtered = filtered.filter(course => course.location && course.location.includes(locationFilter));
+      filtered = filtered.filter(
+        (course) => course.location && course.location.includes(locationFilter)
+      );
     }
 
     setFilteredCourses(filtered);
   };
 
-
   // 새로운 코스 추가 페이지로 이동
   const navigateToAddCoursePage = () => {
-    navigate("/addcourse"); // 로그인된 상태면 코스 추가 페이지로 이동
+
+    navigate("/addcourse"); // 관리자만 추가 페이지로 이동
+
   };
 
   return (
@@ -97,7 +102,9 @@ const DateCourseListPage = () => {
         {/* 필터 UI 추가 */}
         <div className="flex justify-between mb-6">
           <div className="flex items-center">
-            <label htmlFor="ageGroupFilter" className="mr-2">연령대:</label>
+            <label htmlFor="ageGroupFilter" className="mr-2">
+              연령대:
+            </label>
             <select
               id="ageGroupFilter"
               value={ageGroupFilter}
@@ -111,7 +118,9 @@ const DateCourseListPage = () => {
             </select>
           </div>
           <div className="flex items-center">
-            <label htmlFor="locationFilter" className="mr-2">지역:</label>
+            <label htmlFor="locationFilter" className="mr-2">
+              지역:
+            </label>
             <select
               id="locationFilter"
               value={locationFilter}
@@ -121,7 +130,8 @@ const DateCourseListPage = () => {
               <option value="">전체</option>
               <option value="경기">경기</option>
               <option value="서울">서울</option>
-              <option value="대구">대구</option>
+              <option value="부산">부산</option>
+              <option value="제주">제주</option>
             </select>
           </div>
           <button
@@ -139,10 +149,16 @@ const DateCourseListPage = () => {
               {filteredCourses.map((course) => (
                 <li key={course.id} className="border-b pb-4">
                   <Link to={`/datecourses/${course.id}`}>{course.name}</Link>
-                  <p className="text-gray-700">장소 : {course.location}</p>
-                  <p className="text-gray-700">연령대 : {course.ageGroup}</p>
                   <p className="text-gray-600">설명 : {course.description}</p>
+                  <p className="text-gray-700">연령대 : {course.ageGroup}</p>
                   <p className="text-gray-500">{course.fixed ? "고정된 코스" : "변동 가능한 코스"}</p>
+                  {/* {Array.isArray(course.places) && course.places.length > 0 ? (
+                    <p className="text-gray-600">
+                      설명: {course.places.map((place) => place.name).join(", ")}
+                    </p>
+                  ) : (
+                    <p className="text-gray-600">설명: 장소 정보가 없습니다.</p>
+                  )} */}
                 </li>
               ))}
             </ul>

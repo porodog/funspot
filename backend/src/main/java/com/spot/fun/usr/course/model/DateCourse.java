@@ -1,6 +1,7 @@
 package com.spot.fun.usr.course.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.spot.fun.usr.course.dto.DatePlacesDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Builder
+
 @Entity
 @Getter
 @Setter
@@ -25,15 +26,14 @@ public class DateCourse {
     private String description;     // 설명
     private String ageGroup;        // 나이 그룹
     private boolean fixed;          // 고정된 코스 여부
-    private double latitude;        // 위도
-    private double longitude;       // 경도
 
-    @Builder.Default
-    @OneToMany
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<DatePlaces> places = new ArrayList<>();
-
 }
+
+
 
 
 //@Entity

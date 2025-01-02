@@ -1,6 +1,7 @@
 package com.spot.fun.usr.user.service;
 
 import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.dto.UserRole;
 import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -189,5 +190,13 @@ public class UserServiceImpl implements UserService {
         log.info("회원 정보 수정 완료: userId={}", userId);
     }
 
+@Override
+    public void grantAdminRole(Long userId){
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+    user.changeUserRole(UserRole.ROLE_ADMIN);
+
+    userRepository.save(user); // 권한 변경 후 저장
+}
 }
 

@@ -20,12 +20,13 @@ public class DatePlaces {
   private String description;  // 설명
   private Double latitude;     // 위도
   private Double longitude;    // 경도
+  private String location;
   private String cost;         // 예상 가격
   private String time;         // 소요 시간
 
 
   @ManyToOne
-  @JoinColumn(name = "course_id", nullable = false)
+  @JoinColumn(name = "course_id")
   @JsonBackReference
   private DateCourse course;
 

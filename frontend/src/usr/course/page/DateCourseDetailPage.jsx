@@ -11,7 +11,7 @@ axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.withCredentials = true;
 
 const DateCourseDetailPage = () => {
-  const { courseId } = useParams(); // URL에서 courseId 가져오기
+  const { id } = useParams(); // URL에서 courseId 가져오기
   const [course, setCourse] = useState(null); // 코스 데이터 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
@@ -20,14 +20,8 @@ const DateCourseDetailPage = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await fetch(`/tailwind.config.jsapi/usr/course/datecourses/${courseId}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch course: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Fetched course data:", data); // 디버깅용 로그
-        setCourse(data); // 코스 데이터 저장
+        const response = await axios.get(`/api/usr/course/datecourses/${id}`);
+        setCourse(response.data); // 코스 데이터를 상태에 저장
       } catch (error) {
         console.error("데이터 로드 실패:", error);
         setError("데이터를 불러오는 데 실패했습니다.");
@@ -36,10 +30,10 @@ const DateCourseDetailPage = () => {
       }
     };
 
-    if (courseId) {
+    if (id) {
       fetchCourse();
     }
-  }, [courseId]);
+  }, [id]);
 
   // 로딩 상태 처리
   if (loading) {
