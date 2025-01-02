@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBasic } from "../../../common/context/BasicContext";
 import { searchPlaces, registerDateCourse } from "../api/CustomApi";
-import Place from "../img/Place.png";
 import regions from "../data/regions";
 import locate from "../img/locate.png";
 
@@ -260,7 +259,7 @@ const AddComponent = () => {
 
                     {/* 원형 이미지 */}
                     <img
-                      src={Place}
+                      src={place.image}
                       alt={place.name}
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-md"
                     />
@@ -285,7 +284,7 @@ const AddComponent = () => {
                     {/* 이미지 컨테이너 */}
                     <div className="relative">
                       <img
-                        src={Place}
+                        src={place.image}
                         alt="user"
                         className="w-full h-40 object-cover"
                       />

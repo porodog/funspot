@@ -1,23 +1,7 @@
 // 펀 인기 코스
 import React, { useEffect, useState } from "react";
 import { getCustomPopularList } from "../../custom/api/WishListApi";
-//import SliderComponent from './SliderComponent';
 import { Link } from "react-router-dom";
-
-const image = "https://via.placeholder.com/150";
-
-// const popularCourses = [
-//   { title: '제목을 입력해주세요', image: 'https://via.placeholder.com/150', price: '34,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 2', image: 'https://via.placeholder.com/150', price: '44,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 3', image: 'https://via.placeholder.com/150', price: '54,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 4', image: 'https://via.placeholder.com/150', price: '64,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 5', image: 'https://via.placeholder.com/150', price: '74,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 6', image: 'https://via.placeholder.com/150', price: '84,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 7', image: 'https://via.placeholder.com/150', price: '94,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 8', image: 'https://via.placeholder.com/150', price: '14,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 9', image: 'https://via.placeholder.com/150', price: '24,000원 외', address: '서울시 구로구' },
-//   { title: '인기 코스 10', image: 'https://via.placeholder.com/150', price: '4,000원 외', address: '서울시 구로구' },
-// ];
 
 const PopularCourses = () => {
   const [customs, setCustoms] = useState([]);
@@ -98,7 +82,7 @@ const PopularCourses = () => {
                 {/* 이미지 영역 */}
                 <div className="relative">
                   <img
-                    src={image}
+                    src={custom.places[0].image}
                     alt={custom.title}
                     className="w-64 h-auto rounded-lg object-contain shrink-0"
                   />

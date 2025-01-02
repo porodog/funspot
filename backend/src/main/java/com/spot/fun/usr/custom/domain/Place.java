@@ -40,6 +40,7 @@ public class Place {
   private Integer durationMinutes;
   private String category;
   private String simpleAddress;
+  private String image;
 
   @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomPlace> customPlaces = new ArrayList<>();

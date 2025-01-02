@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { searchPlaces, updateCustom, getCustomDetail } from "../api/CustomApi";
 import { useParams, useNavigate } from "react-router-dom";
 import { useBasic } from "../../../common/context/BasicContext";
-import Place from "../img/Place.png";
 import regions from "../data/regions";
 import locate from "../img/locate.png";
 
@@ -277,7 +276,7 @@ const UpdateComponent = () => {
 
                     {/* 원형 이미지 */}
                     <img
-                      src={Place}
+                      src={place.image}
                       alt={place.name}
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-300 shadow-md"
                     />
@@ -301,7 +300,7 @@ const UpdateComponent = () => {
                   <div class="bg-white shadow-lg rounded-lg overflow-hidden max-w-sm">
                     <div className="relative">
                       <img
-                        src={Place}
+                        src={place.image}
                         alt="user"
                         className="w-full h-40 object-cover"
                       />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getCustomPopularListAll } from "../api/WishListApi";
 import { Link } from "react-router-dom";
-import Place from "../img/Place.png";
+
 import locate from "../img/locate.png";
 
 const PopularComponent = () => {
@@ -51,7 +51,7 @@ const PopularComponent = () => {
                     >
                       {/* 이미지 */}
                       <img
-                        src={Place}
+                        src={place.image}
                         alt={place.name}
                         className="w-full h-32 object-cover rounded-lg"
                       />
@@ -69,12 +69,12 @@ const PopularComponent = () => {
                       </div>
 
                       {/* 번호 */}
-                      <div className="absolute bottom-6 left-4 text-white text-xl font-bold">
+                      <div className="absolute bottom-6 left-4 text-white text-xl font-bold bg-black/60 px-1 rounded">
                         {index + 1}
                       </div>
 
                       {/* 장소 이름 */}
-                      <p className="absolute bottom-2 left-4 text-white text-sm font-semibold">
+                      <p className="absolute bottom-2 left-4 text-white text-sm font-semibold bg-black/60 px-1 rounded">
                         {place.name}
                       </p>
                     </div>

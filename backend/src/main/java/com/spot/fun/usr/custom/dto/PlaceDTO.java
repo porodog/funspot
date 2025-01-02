@@ -22,5 +22,6 @@ public class PlaceDTO {
   private Integer durationMinutes;
   private String category;
   private String simpleAddress;
+  private String image;
   
 }

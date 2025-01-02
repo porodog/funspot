@@ -12,7 +12,6 @@ import walk from "../img/Walk.png";
 import basic from "../img/Basic.png";
 import addwish from "../img/addWish.png";
 import removewish from "../img/removeWish.png";
-import Place from "../img/Place.png";
 
 const ReadComponent = () => {
   const mapElement = useRef(null);
@@ -310,7 +309,7 @@ const ReadComponent = () => {
               {/* 이미지 */}
               <div className="relative">
                 <img
-                  src={Place}
+                  src={place.image}
                   alt={place.name}
                   className="w-full h-48 object-cover"
                 />
@@ -324,12 +323,12 @@ const ReadComponent = () => {
                 </div>
 
                 {/* 번호 */}
-                <div className="absolute bottom-6 left-2 text-white text-xl font-bold">
+                <div className="absolute bottom-6 left-2 text-white text-xl font-bold bg-black/60 px-1 rounded">
                   {index + 1}
                 </div>
 
                 {/* 장소 이름 */}
-                <p className="absolute bottom-2 left-2 text-white text-sm font-semibold">
+                <p className="absolute bottom-2 left-2 text-white text-sm font-semibold bg-black/60 px-1 rounded">
                   {place.name}
                 </p>
 

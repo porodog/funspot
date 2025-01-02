@@ -1,29 +1,8 @@
 // 사용자가 만든 데이트코스
 import React, { useEffect, useState } from "react";
 import { getCustomNewList } from "../../custom/api/CustomApi";
-//import SliderComponent from "./SliderComponent";
+
 import { Link } from "react-router-dom";
-
-const image = "https://via.placeholder.com/150";
-
-// const newUserCourses = [
-//   {
-//     title: "아라밍뿌님 코스",
-//     image: "https://via.placeholder.com/150",
-//     price: "28,500원",
-//     time: "3시간 40분",
-//     km: "4.4km",
-//   },
-//   { title: "유저 코스 2", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 3", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 4", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 5", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 6", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 7", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 8", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 9", image: "https://via.placeholder.com/150" },
-//   { title: "유저 코스 10", image: "https://via.placeholder.com/150" },
-// ];
 
 const NewUserCourses = () => {
   const [customs, setCustoms] = useState([]);
@@ -95,7 +74,7 @@ const NewUserCourses = () => {
                 {/* 이미지 영역 */}
                 <div className="relative">
                   <img
-                    src={image}
+                    src={custom.places[0].image}
                     alt={custom.title}
                     className="w-64 h-auto rounded-lg object-contain shrink-0"
                   />
