@@ -1,31 +1,30 @@
-import React, {useState, useEffect} from "react";
-import {useParams, useNavigate, Link} from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정보 가져오기
 import "./BoardDetail.css"; // CSS 파일 추가
-import { FaUser } from "react-icons/fa";
+import {FaUser} from "react-icons/fa";
 
 // 프로필 이미지 렌더링 컴포넌트
-const ProfileImage = ({ profileImage, size = "w-10 h-10" }) => (
+const ProfileImage = ({profileImage, size = "w-10 h-10"}) => (
     <div
         className={`${size} rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center bg-gray-100`}
     >
-        {profileImage ? (
+        {profileImage?.uploadName ? (
             <img
-                src={`http://localhost:8080/api/usr/profile/image/${profileImage}?t=${new Date().getTime()}`}
+                src={`http://localhost:8080/api/usr/profile/image/${profileImage.uploadName}?t=${new Date().getTime()}`}
                 alt="프로필"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                     e.target.style.display = 'none';
-                    e.target.parentElement.innerHTML = '<FaUser className="text-gray-400 text-lg" />';
+                    e.target.innerHTML = '<FaUser className="text-gray-400 text-lg" />';
                 }}
             />
         ) : (
-            <FaUser className="text-gray-400 text-lg" />
+            <FaUser className="text-gray-400 text-lg"/>
         )}
     </div>
 );
-
 
 
 const BoardDetail = () => {
@@ -58,13 +57,15 @@ const BoardDetail = () => {
 
                 // 게시글 작성자의 프로필 이미지 가져오기
                 const boardProfileResponse = await axios.get(`/api/usr/profile`, {
-                    params: { userIdx: boardResponse.data.authorIdx }
+                    params: {userIdx: boardResponse.data.authorIdx}
                 });
 
                 // 게시글 데이터에 프로필 이미지 추가
                 const boardWithProfile = {
                     ...boardResponse.data,
-                    profileImage: boardProfileResponse.data.uploadName // uploadName 사용
+                    profileImage: {
+                        uploadName:boardProfileResponse.data.uploadName // uploadName 사용
+                    }
                 };
 
                 // 댓글과 대댓글에 프로필 이미지 추가
@@ -112,7 +113,7 @@ const BoardDetail = () => {
                 console.log('Comments with profiles:', commentsWithProfiles); // 디버깅용
 
                 setBoard(boardWithProfile);
-                setComments(commentsWithProfiles);
+                //setComments(commentsWithProfiles);
             } catch (error) {
                 console.error("데이터 로딩 실패:", error);
             }
@@ -120,6 +121,8 @@ const BoardDetail = () => {
 
         fetchData();
     }, [id]);
+
+    console.log(board);
 
     // 게시글 추천 관리
     useEffect(() => {
@@ -239,7 +242,7 @@ const BoardDetail = () => {
                 `http://localhost:8080/api/comments/${id}`,
                 payload,
                 {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+                    headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
                 }
             );
 
@@ -281,18 +284,17 @@ const BoardDetail = () => {
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === parentCommentId
-                        ? { ...comment, replies: [...comment.replies, newReply] }
+                        ? {...comment, replies: [...comment.replies, newReply]}
                         : comment
                 )
             );
 
-            setReplyContent((prev) => ({ ...prev, [parentCommentId]: "" }));
-            setReplyVisibility((prev) => ({ ...prev, [parentCommentId]: false })); // 입력창 숨기기
+            setReplyContent((prev) => ({...prev, [parentCommentId]: ""}));
+            setReplyVisibility((prev) => ({...prev, [parentCommentId]: false})); // 입력창 숨기기
         } catch (error) {
             console.error("Error posting reply:", error);
         }
     };
-
 
 
     const handleEdit = () => {
@@ -372,7 +374,7 @@ const BoardDetail = () => {
         try {
             // 서버에 삭제 요청
             await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+                headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
             });
 
             // 상태 업데이트
@@ -408,7 +410,7 @@ const BoardDetail = () => {
             {/* 작성자 정보 영역 */}
             <div className="flex items-center mb-4">
                 <Link to={`/mypage/feed/${board.authorIdx}`}>
-                    <ProfileImage profileImage={board.profileImage} />
+                    <ProfileImage profileImage={board.profileImage}/>
                 </Link>
                 <Link to={`/mypage/feed/${board.authorIdx}`}>
                     <span className="ml-2 font-bold text-black hover:text-emerald-500 transition-colors">
@@ -435,7 +437,7 @@ const BoardDetail = () => {
 
             {/* 추천 버튼 */}
             {userInfo ? (
-                <div className="flex justify-between mb-6">
+                <div className="flex justify-center mb-6">
                     <button
                         onClick={handleLike}
                         disabled={hasLiked}
@@ -449,10 +451,11 @@ const BoardDetail = () => {
                     </button>
                 </div>
             ) : (
-                <p className="text-red-500 text-sm mt-4">
+                <p className="text-red-500 text-sm mt-4 text-center">
                     로그인 후 추천 기능을 이용하실 수 있습니다.
                 </p>
             )}
+
 
             {/* 수정/삭제 버튼 */}
             {userInfo?.nickname === board.nickname && (
@@ -479,12 +482,15 @@ const BoardDetail = () => {
                         <div key={`comment-${comment.id}`} className="mb-4 p-3 border rounded-md">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center">
-                                    <Link to={`/mypage/feed/${comment.authorIdx}`}>
-                                        <ProfileImage profileImage={comment.profileImage} size="w-8 h-8" />
+                                    <Link to={`/mypage/feed/${comment.profileImage.userIdx}`}>
+                                        <ProfileImage profileImage={comment.profileImage} size="w-8 h-8"/>
                                     </Link>
-                                    <span className="text-sm font-semibold ml-2 mr-4">
-                                        {comment.author || "익명"}
-                                    </span>
+                                    <span className="text-sm font-semibold ml-2 cursor-pointer">
+    <Link to={`/mypage/feed/${comment.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
+        {comment.author || "익명"}
+    </Link>
+</span>
+
                                     <span className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
                                           onClick={() => handleReplyToggle(comment.id)}>
                                         {comment.content}
@@ -511,12 +517,16 @@ const BoardDetail = () => {
                                      className="mt-4 ml-6 p-3 border rounded-md comment-replies">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center">
-                                            <Link to={`/mypage/feed/${reply.authorIdx}`}>
-                                                <ProfileImage profileImage={reply.profileImage} size="w-6 h-6" />
+                                            <Link to={`/mypage/feed/${reply.profileImage.userIdx}`}>
+                                                <ProfileImage profileImage={reply.profileImage} size="w-6 h-6"/>
                                             </Link>
-                                            <span className="text-sm font-semibold ml-2">
-                                                {reply.author || "익명"}
-                                            </span>
+                                            <span className="text-sm font-semibold ml-2 cursor-pointer">
+    <Link to={`/mypage/feed/${reply.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
+        {reply.author || "익명"}
+    </Link>
+</span>
+
+
                                             <span className="text-gray-700 ml-2">
                                                 {reply.content}
                                             </span>
@@ -541,26 +551,29 @@ const BoardDetail = () => {
                             {/* 대댓글 입력창 */}
                             {replyVisibility[comment.id] && userInfo && (
                                 <div className="mt-2 ml-6">
-                                    <input
-                                        type="text"
-                                        value={replyContent[comment.id] || ""}
-                                        onChange={(e) => {
-                                            const input = e.target.value;
-                                            setReplyContent((prev) => ({
-                                                ...prev,
-                                                [comment.id]: input.length <= 50 ? input : input.slice(0, 50),
-                                            }));
-                                        }}
-                                        placeholder="대댓글 입력 (최대 50자)"
-                                        className="border rounded-md px-3 py-1 w-full"
-                                    />
-                                    <button
-                                        onClick={() => handleReplySubmit(comment.id)}
-                                        className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
-                                    >
-                                        대댓글 작성
-                                    </button>
+                                    <div className="flex items-center justify-end">
+                                        <input
+                                            type="text"
+                                            value={replyContent[comment.id] || ""}
+                                            onChange={(e) => {
+                                                const input = e.target.value;
+                                                setReplyContent((prev) => ({
+                                                    ...prev,
+                                                    [comment.id]: input.length <= 50 ? input : input.slice(0, 50),
+                                                }));
+                                            }}
+                                            placeholder="대댓글 입력 (최대 50자)"
+                                            className="border rounded-md px-3 py-1 flex-grow mr-2"
+                                        />
+                                        <button
+                                            onClick={() => handleReplySubmit(comment.id)}
+                                            className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                        >
+                                            대댓글 작성
+                                        </button>
+                                    </div>
                                 </div>
+
                             )}
                         </div>
                     ))
@@ -576,21 +589,47 @@ const BoardDetail = () => {
                 {/* 댓글 입력 필드 및 버튼 */}
                 {userInfo && (
                     <div className="new-comment mt-6">
-                        <input
-                            value={newComment}
-                            onChange={(e) => {
-                                const input = e.target.value;
-                                setNewComment(input.length <= 50 ? input : input.slice(0, 50));
-                            }}
-                            placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
-                            className="border rounded-md px-3 py-2 w-full"
-                        />
-                        <button
-                            onClick={handleCommentSubmit}
-                            className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
-                        >
-                            댓글 작성
-                        </button>
+                        {/* 추천 버튼 */}
+                        {userInfo ? (
+                            <div className="flex justify-center mb-6">
+                                <button
+                                    onClick={handleLike}
+                                    disabled={hasLiked}
+                                    className={`px-4 py-2 rounded-md transition ${
+                                        hasLiked
+                                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                            : "bg-green-500 text-white hover:bg-green-600"
+                                    }`}
+                                >
+                                    {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
+                                </button>
+                            </div>
+                        ) : (
+                            <p className="text-red-500 text-sm mt-4 text-center">
+                                로그인 후 추천 기능을 이용하실 수 있습니다.
+                            </p>
+                        )}
+
+                        <div className="new-comment mt-6">
+                            <div className="flex items-center">
+                                <input
+                                    value={newComment}
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        setNewComment(input.length <= 50 ? input : input.slice(0, 50));
+                                    }}
+                                    placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
+                                    className="border rounded-md px-3 py-2 flex-grow"
+                                />
+                                <button
+                                    onClick={handleCommentSubmit}
+                                    className="ml-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                                >
+                                    댓글 작성
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 )}
             </div>
@@ -604,8 +643,8 @@ const BoardDetail = () => {
                     목록으로
                 </button>
             </div>
-        </div>
-    );
-};
+                    </div>
+                );
+                };
 
-export default BoardDetail;
+                export default BoardDetail;

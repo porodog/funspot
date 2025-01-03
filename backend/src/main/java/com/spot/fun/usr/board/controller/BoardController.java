@@ -9,6 +9,10 @@ import com.spot.fun.usr.user.dto.UserDTO;
 import com.spot.fun.usr.user.dto.profile.UserProfileDTO;
 import com.spot.fun.usr.user.dto.profile.UserProfileRequestDTO;
 import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
+import com.spot.fun.usr.user.entity.User;
+import com.spot.fun.usr.user.entity.profile.UserProfile;
+import com.spot.fun.usr.user.repository.UserRepository;
+import com.spot.fun.usr.user.repository.profile.UserProfileRepository;
 import com.spot.fun.usr.user.service.profile.UserProfileService;
 import com.sun.security.auth.UserPrincipal;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/boards")
@@ -37,6 +42,8 @@ public class BoardController {
   private final BoardRepository boardRepository;
   private final BoardLikeRepository boardLikeRepository;
   private final UserProfileService userProfileService;
+  private final UserRepository userRepository;
+  private final UserProfileRepository userProfileRepository;
 
   // 모든 게시글 조회
   @GetMapping
@@ -139,21 +146,27 @@ public class BoardController {
   }
 
   @GetMapping("/profile/by-nickname/{nickname}")
-  public ResponseEntity<String> getUserProfileByNickname(@PathVariable("nickname") String nickname) {
+  public ResponseEntity<Map<String, Object>> getUserProfileByNickname(@PathVariable("nickname") String nickname) {
     try {
-      // UserProfileService를 사용하여 프로필 정보를 가져옵니다.
-      UserProfileResponseDTO userProfile = userProfileService.getProfileByNickname(nickname);
-
-      // 프로필 이미지의 업로드 이름을 반환합니다.
-      if (userProfile != null && userProfile.getUploadName() != null) {
-        return ResponseEntity.ok(userProfile.getUploadName());
-      } else {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile image not found");
+      User user = userRepository.findByNickname(nickname);
+      if (user == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
       }
-    } catch (EntityNotFoundException e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+
+      Optional<UserProfile> userProfileOptional = userProfileRepository.findByUserIdx(user.getIdx());
+      if (userProfileOptional.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Profile not found"));
+      }
+
+      UserProfile userProfile = userProfileOptional.get();
+
+      Map<String, Object> response = new HashMap<>();
+      response.put("userIdx", user.getIdx());
+      response.put("uploadName", userProfile.getUploadName());
+
+      return ResponseEntity.ok(response);
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An error occurred"));
     }
   }
 
