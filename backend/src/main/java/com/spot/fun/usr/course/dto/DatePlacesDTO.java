@@ -2,6 +2,8 @@ package com.spot.fun.usr.course.dto;
 
 import lombok.*;
 
+import javax.validation.constraints.Size;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,5 +17,8 @@ public class DatePlacesDTO {
     private Double longitude;
     private String cost;
     private String time;
+
+    @Size(max = 1024)
+    private String image;
 
 }
