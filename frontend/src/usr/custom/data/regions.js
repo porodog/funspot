@@ -65,6 +65,7 @@ const regions = {
     "강화군",
     "옹진군",
   ],
+  제주특별자치도: ["서귀포시", "제주시"],
 };
 
 export default regions;
