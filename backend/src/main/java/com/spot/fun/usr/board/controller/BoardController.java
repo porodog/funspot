@@ -5,7 +5,13 @@ import com.spot.fun.usr.board.entity.BoardEntity;
 import com.spot.fun.usr.board.repository.BoardLikeRepository;
 import com.spot.fun.usr.board.repository.BoardRepository;
 import com.spot.fun.usr.board.service.BoardService;
+import com.spot.fun.usr.user.dto.UserDTO;
+import com.spot.fun.usr.user.dto.profile.UserProfileDTO;
+import com.spot.fun.usr.user.dto.profile.UserProfileRequestDTO;
+import com.spot.fun.usr.user.dto.profile.UserProfileResponseDTO;
+import com.spot.fun.usr.user.service.profile.UserProfileService;
 import com.sun.security.auth.UserPrincipal;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +36,7 @@ public class BoardController {
   private final BoardService boardService;
   private final BoardRepository boardRepository;
   private final BoardLikeRepository boardLikeRepository;
+  private final UserProfileService userProfileService;
 
   // 모든 게시글 조회
   @GetMapping
@@ -129,6 +136,25 @@ public class BoardController {
     boardList.forEach(board -> System.out.println("BoardDTO: " + board));
 
     return ResponseEntity.ok(boardList);
+  }
+
+  @GetMapping("/profile/by-nickname/{nickname}")
+  public ResponseEntity<String> getUserProfileByNickname(@PathVariable("nickname") String nickname) {
+    try {
+      // UserProfileService를 사용하여 프로필 정보를 가져옵니다.
+      UserProfileResponseDTO userProfile = userProfileService.getProfileByNickname(nickname);
+
+      // 프로필 이미지의 업로드 이름을 반환합니다.
+      if (userProfile != null && userProfile.getUploadName() != null) {
+        return ResponseEntity.ok(userProfile.getUploadName());
+      } else {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profile image not found");
+      }
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+    }
   }
 
 

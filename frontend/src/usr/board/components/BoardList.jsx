@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import ImageComponent from "../../mypage/component/profile/ImageComponent";
 
-
+const API_BASE_URL = process.env.REACT_APP_API_ROOT;
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.withCredentials = true;
 
 const BoardList = () => {
     const [boards, setBoards] = useState([]); // 게시글 데이터
@@ -26,7 +27,7 @@ const BoardList = () => {
 
     const fetchBoards = async (page) => {
         try {
-            const response = await axios.get("http://localhost:8080/api/boards", {
+            const response = await axios.get("/api/boards", {
                 params: { page, size: pageSize },
             });
 
@@ -37,7 +38,7 @@ const BoardList = () => {
             const boardsWithProfile = await Promise.all(
                 boardsData.map(async (board) => {
                     try {
-                        const profileResponse = await axios.get(`http://localhost:8080/api/usr/profile`, {
+                        const profileResponse = await axios.get(`/api/usr/profile`, {
                             params: { userIdx: board.authorIdx }
                         });
                         return {
@@ -60,37 +61,60 @@ const BoardList = () => {
 
     const searchBoards = async (type, keyword, page = 0) => {
         try {
-            const response = await axios.get("http://localhost:8080/api/boards/search", {
+            // 검색 결과 가져오기
+            const response = await axios.get("/api/boards/search", {
                 params: { type, keyword, page, size: pageSize },
             });
-            setBoards(response.data.content || []); // 검색 결과를 boards에 저장
-            setTotalPages(response.data.totalPages || 0); // 페이지 수 업데이트
-            setPage(0); // 검색 시 페이지를 초기화
-            setIsSearchMode(true); // 검색 모드 활성화
+
+            // 검색된 게시글 데이터
+            const searchedBoards = response.data.content || [];
+
+            // 각 게시글 작성자의 프로필 정보 가져오기
+            const boardsWithProfile = await Promise.all(
+                searchedBoards.map(async (board) => {
+                    try {
+                        const profileResponse = await axios.get(`/api/usr/profile`, {
+                            params: { userIdx: board.authorIdx }
+                        });
+                        return {
+                            ...board,
+                            profileImage: profileResponse.data.uploadName
+                        };
+                    } catch (error) {
+                        console.error("프로필 정보 가져오기 실패:", error);
+                        return board;
+                    }
+                })
+            );
+
+            setBoards(boardsWithProfile);
+            setTotalPages(response.data.totalPages || 0);
+            setPage(page); // 현재 페이지 번호 업데이트
+            setIsSearchMode(true);
         } catch (error) {
             console.error("검색 중 문제가 발생했습니다:", error);
         }
     };
+
 
     const handleSearch = () => {
         if (!keyword.trim()) {
             alert("검색어를 입력해주세요.");
             return;
         }
-        searchBoards(searchType, keyword); // 검색 실행
+        searchBoards(searchType, keyword, 0); // 검색 시 첫 페이지부터 시작
     };
 
     const handleReset = () => {
         setSearchType("titleContent");
         setKeyword("");
+        setIsSearchMode(false);
         setPage(0);
-        setIsSearchMode(false); // 검색 모드 비활성화
-        fetchBoards(0); // 초기 상태로 게시글 불러오기
+        fetchBoards(0);
     };
 
     const handlePageChange = (newPage) => {
         if (newPage >= 0 && newPage < totalPages) {
-            setPage(newPage);
             if (isSearchMode) {
                 // 검색 모드일 때는 searchBoards 호출
                 searchBoards(searchType, keyword, newPage);
@@ -98,6 +122,7 @@ const BoardList = () => {
                 // 일반 모드일 때는 fetchBoards 호출
                 fetchBoards(newPage);
             }
+            setPage(newPage); // 페이지 상태 업데이트
         }
     };
 
@@ -175,7 +200,7 @@ const BoardList = () => {
                                 onMouseLeave={(e) => {
                                     e.currentTarget.style.backgroundColor = "transparent";
                                 }}
-                            >
+                                >
 
                                 <div className="flex items-center mb-2">
                                     <Link to={`/mypage/feed/${board.authorIdx}`}>
@@ -203,7 +228,7 @@ const BoardList = () => {
                                             )}
                                         </div>
                                     </Link>
-                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-black-500 font-bold">
+                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-blue-500">
                                         {board.nickname}
                                     </Link>
                                 </div>
@@ -274,7 +299,7 @@ const BoardList = () => {
                     </button>
                     <button
                         onClick={() => handlePageChange(totalPages - 1)}
-                        disabled={page + 1 >= totalPages}
+                        disabled={page === totalPages - 1}
                         className="px-4 py-2 bg-gray-300 rounded-md disabled:opacity-50"
                     >
                         &gt;&gt;
@@ -284,6 +309,5 @@ const BoardList = () => {
         </div>
     );
 };
-
 
 export default BoardList;

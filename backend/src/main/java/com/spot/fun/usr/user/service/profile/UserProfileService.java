@@ -9,4 +9,8 @@ public interface UserProfileService {
   UserProfileResponseDTO getDuplicate(UserProfileRequestDTO userProfileRequestDTO);
 
   UserProfileResponseDTO putProfile(UserProfileRequestDTO userProfileRequestDTO);
+
+  UserProfileResponseDTO getProfileByNickname(String nickname);
+
 }
+

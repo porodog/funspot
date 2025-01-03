@@ -5,6 +5,10 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DOMPurify from "dompurify";
 
+const API_BASE_URL = process.env.REACT_APP_API_ROOT;
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.withCredentials = true;
+
 // Quill Toolbar 설정
 const toolbarOptions = [
     [{ header: [1, 2, 3, false] }], // 헤더 옵션
@@ -29,7 +33,7 @@ const EditBoard = () => {
     // 게시글 불러오기
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/api/boards/${id}`)
+            .get(`/api/boards/${id}`)
             .then((response) => {
                 setTitle(response.data.title);
                 setContent(response.data.content);
@@ -55,7 +59,7 @@ const EditBoard = () => {
             formData.append("file", file);
 
             try {
-                const response = await axios.post("http://localhost:8080/api/images/upload", formData, {
+                const response = await axios.post("/api/images/upload", formData, {
                     headers: { "Content-Type": "multipart/form-data" },
                 });
 
@@ -96,7 +100,7 @@ const EditBoard = () => {
 
         try {
             await axios.put(
-                `http://localhost:8080/api/boards/${id}`,
+                `/api/boards/${id}`,
                 { title, content: sanitizedContent },
                 { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
             );

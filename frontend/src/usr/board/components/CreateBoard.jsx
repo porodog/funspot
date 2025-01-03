@@ -6,6 +6,10 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import DOMPurify from "dompurify";
 
+const API_BASE_URL = process.env.REACT_APP_API_ROOT;
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.withCredentials = true;
+
 // Quill Toolbar 설정
 const toolbarOptions = [
     [{ header: [1, 2, 3, false] }], // 헤더 옵션
@@ -42,7 +46,7 @@ const CreateBoard = () => {
             formData.append("file", file);
 
             try {
-                const response = await axios.post("http://localhost:8080/api/images/upload", formData, {
+                const response = await axios.post("/api/images/upload", formData, {
                     headers: { "Content-Type": "multipart/form-data" },
                 });
 
@@ -59,8 +63,33 @@ const CreateBoard = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // 제목과 내용 유효성 검사
+        if (!title.trim()) {
+            alert("제목을 입력해주세요.");
+            return;
+        }
+
+        if (!content.trim()) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
+
         if (!userInfo) {
             alert("로그인이 필요합니다.");
+            return;
+        }
+
+        // 제목 길이 제한 체크
+        if (title.length > 100) {
+            alert("제목은 100자를 초과할 수 없습니다.");
+            return;
+        }
+
+        // 내용 길이 제한 체크 (HTML 태그 제외)
+        const plainContent = content.replace(/<[^>]*>/g, "");
+        if (plainContent.length > 5000) {
+            alert("내용은 5000자를 초과할 수 없습니다.");
             return;
         }
 
@@ -68,7 +97,7 @@ const CreateBoard = () => {
 
         try {
             const token = localStorage.getItem("authToken");
-            await axios.post("http://localhost:8080/api/boards", {
+            await axios.post("/api/boards", {
                 title,
                 content: sanitizedContent,
                 nickname: userInfo.nickname,

@@ -8,6 +8,7 @@ import com.spot.fun.usr.user.entity.User;
 import com.spot.fun.usr.user.entity.profile.UserProfile;
 import com.spot.fun.usr.user.repository.UserRepository;
 import com.spot.fun.usr.user.repository.profile.UserProfileRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -83,6 +85,27 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     return profile.toDTO();
   }
+
+  public UserProfileResponseDTO getProfileByNickname(String nickname) {
+    User user = userRepository.findByNickname(nickname);
+    if (user == null) {
+      throw new EntityNotFoundException("User not found with nickname: " + nickname);
+    }
+
+    Optional<UserProfile> userProfileOptional = userProfileRepository.findByUserIdx(user.getIdx());
+    if (userProfileOptional.isEmpty()) {
+      throw new EntityNotFoundException("Profile not found for user: " + nickname);
+    }
+
+    UserProfile userProfile = userProfileOptional.get();
+    return UserProfileResponseDTO.builder()
+            .userIdx(userProfile.getUser().getIdx())
+            .uploadName(userProfile.getUploadName())
+            .originName(userProfile.getOriginName())
+            .description(userProfile.getDescription())
+            .build();
+  }
+
 
   private UserProfile findByUserIdx(Long userIdx) {
     UserProfile profile = userProfileRepository.findByUserIdx(userIdx)

@@ -1,8 +1,32 @@
 import React, {useState, useEffect} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams, useNavigate, Link} from "react-router-dom";
 import axios from "axios";
 import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정보 가져오기
 import "./BoardDetail.css"; // CSS 파일 추가
+import { FaUser } from "react-icons/fa";
+
+// 프로필 이미지 렌더링 컴포넌트
+const ProfileImage = ({ profileImage, size = "w-10 h-10" }) => (
+    <div
+        className={`${size} rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center bg-gray-100`}
+    >
+        {profileImage ? (
+            <img
+                src={`http://localhost:8080/api/usr/profile/image/${profileImage}?t=${new Date().getTime()}`}
+                alt="프로필"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = '<FaUser className="text-gray-400 text-lg" />';
+                }}
+            />
+        ) : (
+            <FaUser className="text-gray-400 text-lg" />
+        )}
+    </div>
+);
+
+
 
 const BoardDetail = () => {
     const {id} = useParams();
@@ -24,14 +48,77 @@ const BoardDetail = () => {
 
     // 게시글 가져오기
     useEffect(() => {
-        axios
-            .get(`http://localhost:8080/api/boards/${id}`)
-            .then((response) => {
-                setBoard(response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching board:", error);
-            });
+        const fetchData = async () => {
+            try {
+                // 게시글과 댓글 데이터 가져오기
+                const [boardResponse, commentsResponse] = await Promise.all([
+                    axios.get(`/api/boards/${id}`),
+                    axios.get(`/api/comments/${id}`)
+                ]);
+
+                // 게시글 작성자의 프로필 이미지 가져오기
+                const boardProfileResponse = await axios.get(`/api/usr/profile`, {
+                    params: { userIdx: boardResponse.data.authorIdx }
+                });
+
+                // 게시글 데이터에 프로필 이미지 추가
+                const boardWithProfile = {
+                    ...boardResponse.data,
+                    profileImage: boardProfileResponse.data.uploadName // uploadName 사용
+                };
+
+                // 댓글과 대댓글에 프로필 이미지 추가
+                const commentsWithProfiles = await Promise.all(
+                    commentsResponse.data.map(async (comment) => {
+                        try {
+                            // 댓글 작성자의 프로필 이미지 가져오기
+                            const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
+                            const profileImage = commentProfileResponse.data;
+
+                            // 대댓글 처리
+                            let repliesWithProfiles = [];
+                            if (comment.replies && comment.replies.length > 0) {
+                                repliesWithProfiles = await Promise.all(
+                                    comment.replies.map(async (reply) => {
+                                        try {
+                                            // 대댓글 작성자의 프로필 이미지 가져오기
+                                            const replyProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${reply.author}`);
+                                            return {
+                                                ...reply,
+                                                profileImage: replyProfileResponse.data, // 프로필 이미지 추가
+                                            };
+                                        } catch (error) {
+                                            console.error("대댓글 프로필 가져오기 실패:", error);
+                                            return reply;
+                                        }
+                                    })
+                                );
+                            }
+
+                            return {
+                                ...comment,
+                                profileImage, // 프로필 이미지 추가
+                                replies: repliesWithProfiles,
+                            };
+                        } catch (error) {
+                            console.error("댓글 프로필 가져오기 실패:", error);
+                            return comment;
+                        }
+                    })
+                );
+
+
+                console.log('Board with profile:', boardWithProfile); // 디버깅용
+                console.log('Comments with profiles:', commentsWithProfiles); // 디버깅용
+
+                setBoard(boardWithProfile);
+                setComments(commentsWithProfiles);
+            } catch (error) {
+                console.error("데이터 로딩 실패:", error);
+            }
+        };
+
+        fetchData();
     }, [id]);
 
     // 게시글 추천 관리
@@ -99,25 +186,39 @@ const BoardDetail = () => {
     // 댓글 가져오기
     useEffect(() => {
         fetchComments();
-    }, [id]);
+    }, [id], [newComment]);
 
     const fetchComments = async () => {
         try {
             const response = await axios.get(`http://localhost:8080/api/comments/${id}`);
-            setComments(
-                Array.isArray(response.data)
-                    ? response.data.map((comment) => ({
+            const commentsWithProfiles = await Promise.all(
+                response.data.map(async (comment) => {
+                    const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
+                    const profileImage = commentProfileResponse.data;
+
+                    let repliesWithProfiles = [];
+                    if (comment.replies && comment.replies.length > 0) {
+                        repliesWithProfiles = await Promise.all(
+                            comment.replies.map(async (reply) => {
+                                const replyProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${reply.author}`);
+                                return {
+                                    ...reply,
+                                    profileImage: replyProfileResponse.data,
+                                };
+                            })
+                        );
+                    }
+
+                    return {
                         ...comment,
-                        author: comment?.author || "익명",
-                        replies: comment?.replies?.map((reply) => ({
-                            ...reply,
-                            author: reply?.author || "익명", // 대댓글에도 기본값 설정
-                        })) || [],
-                    }))
-                    : []
+                        profileImage,
+                        replies: repliesWithProfiles,
+                    };
+                })
             );
+            setComments(commentsWithProfiles);
         } catch (error) {
-            console.error("Error fetching comments:", error.response || error);
+            console.error("Error fetching comments:", error);
         }
     };
 
@@ -164,21 +265,23 @@ const BoardDetail = () => {
                 parentCommentId,
             };
 
-            const response = await axios.post(
-                `http://localhost:8080/api/comments/${id}`, // 경로 확인
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 인증 토큰 추가
-                    },
-                }
-            );
+            const response = await axios.post(`/api/comments/${id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`, // 인증 토큰 추가
+                },
+            });
 
-            // 댓글 상태 업데이트
+            // 작성된 대댓글에 프로필 이미지 추가
+            const replyProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${response.data.author}`);
+            const newReply = {
+                ...response.data,
+                profileImage: replyProfileResponse.data,
+            };
+
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === parentCommentId
-                        ? { ...comment, replies: [...(comment.replies || []), response.data] }
+                        ? { ...comment, replies: [...comment.replies, newReply] }
                         : comment
                 )
             );
@@ -189,6 +292,7 @@ const BoardDetail = () => {
             console.error("Error posting reply:", error);
         }
     };
+
 
 
     const handleEdit = () => {
@@ -301,6 +405,21 @@ const BoardDetail = () => {
             {/* 닉네임 */}
             <p className="text-sm text-gray-600 mb-4">작성자: {board.nickname}</p>
 
+            {/* 작성자 정보 영역 */}
+            <div className="flex items-center mb-4">
+                <Link to={`/mypage/feed/${board.authorIdx}`}>
+                    <ProfileImage profileImage={board.profileImage} />
+                </Link>
+                <Link to={`/mypage/feed/${board.authorIdx}`}>
+                    <span className="ml-2 font-bold text-black hover:text-emerald-500 transition-colors">
+                        {board.nickname}
+                    </span>
+                </Link>
+                <span className="ml-4 text-gray-500">
+                    {formatDateTime(board.regDate)}
+                </span>
+            </div>
+
             {/* 수정일 */}
             {board.modDate && (
                 <p className="text-sm text-gray-500 mb-4">
@@ -359,19 +478,22 @@ const BoardDetail = () => {
                     comments.map((comment) => (
                         <div key={`comment-${comment.id}`} className="mb-4 p-3 border rounded-md">
                             <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold mr-4">
-            {comment.author || "익명"}
-          </span>
-                                <span
-                                    className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
-                                    onClick={() => handleReplyToggle(comment.id)}
-                                >
-            {comment.content}
-          </span>
                                 <div className="flex items-center">
-            <span className="text-xs text-gray-500 mr-2">
-              {formatDateTime(comment.createdAt)}
-            </span>
+                                    <Link to={`/mypage/feed/${comment.authorIdx}`}>
+                                        <ProfileImage profileImage={comment.profileImage} size="w-8 h-8" />
+                                    </Link>
+                                    <span className="text-sm font-semibold ml-2 mr-4">
+                                        {comment.author || "익명"}
+                                    </span>
+                                    <span className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
+                                          onClick={() => handleReplyToggle(comment.id)}>
+                                        {comment.content}
+                                    </span>
+                                </div>
+                                <div className="flex items-center">
+                                    <span className="text-xs text-gray-500 mr-2">
+                                        {formatDateTime(comment.createdAt)}
+                                    </span>
                                     {userInfo?.nickname === comment.author && (
                                         <button
                                             className="text-red-500 text-sm font-bold"
@@ -383,9 +505,42 @@ const BoardDetail = () => {
                                 </div>
                             </div>
 
+                            {/* 대댓글 목록 */}
+                            {comment.replies && comment.replies.map((reply) => (
+                                <div key={`reply-${reply.id}`}
+                                     className="mt-4 ml-6 p-3 border rounded-md comment-replies">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <Link to={`/mypage/feed/${reply.authorIdx}`}>
+                                                <ProfileImage profileImage={reply.profileImage} size="w-6 h-6" />
+                                            </Link>
+                                            <span className="text-sm font-semibold ml-2">
+                                                {reply.author || "익명"}
+                                            </span>
+                                            <span className="text-gray-700 ml-2">
+                                                {reply.content}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <span className="text-xs text-gray-500 mr-2">
+                                                {formatDateTime(reply.createdAt)}
+                                            </span>
+                                            {userInfo?.nickname === reply.author && (
+                                                <button
+                                                    className="text-red-500 text-sm font-bold"
+                                                    onClick={() => handleDeleteComment(reply.id)}
+                                                >
+                                                    X
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
                             {/* 대댓글 입력창 */}
                             {replyVisibility[comment.id] && userInfo && (
-                                <div className="mt-2">
+                                <div className="mt-2 ml-6">
                                     <input
                                         type="text"
                                         value={replyContent[comment.id] || ""}
@@ -407,64 +562,29 @@ const BoardDetail = () => {
                                     </button>
                                 </div>
                             )}
-
-                            {/* 대댓글 렌더링 */}
-                            {comment.replies &&
-                                comment.replies.map((reply) => (
-                                    <div
-                                        key={`reply-${reply.id}`}
-                                        className="mt-4 ml-6 p-3 border rounded-md comment-replies"
-                                    >
-                                        <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold">
-                  {reply.author || "익명"}
-                </span>
-                                            <span className="text-gray-700 flex-1 ml-2">
-                  {reply.content.length > 60
-                      ? `${reply.content.slice(0, 60)}...`
-                      : reply.content}
-                </span>
-                                            <div className="flex items-center">
-                  <span className="text-xs text-gray-500 mr-2">
-                    {formatDateTime(reply.createdAt)}
-                  </span>
-                                                {userInfo?.nickname === reply.author && (
-                                                    <button
-                                                        className="text-red-500 text-sm font-bold"
-                                                        onClick={() => handleDeleteComment(reply.id)}
-                                                    >
-                                                        X
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
                         </div>
                     ))
                 ) : (
                     <p className="text-gray-500">댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
                 )}
-
                 {/* 로그인 안내문구 */}
                 {!userInfo && (
                     <p className="text-red-500 text-sm mt-4">
                         로그인 후 추천 및 댓글 작성 기능을 이용하실 수 있습니다.
                     </p>
                 )}
-
                 {/* 댓글 입력 필드 및 버튼 */}
                 {userInfo && (
                     <div className="new-comment mt-6">
-      <input
-          value={newComment}
-          onChange={(e) => {
-              const input = e.target.value;
-              setNewComment(input.length <= 50 ? input : input.slice(0, 50));
-          }}
-          placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
-          className="w-full border rounded-md px-3 py-2"
-      />
+                        <input
+                            value={newComment}
+                            onChange={(e) => {
+                                const input = e.target.value;
+                                setNewComment(input.length <= 50 ? input : input.slice(0, 50));
+                            }}
+                            placeholder="타인의 권리를 침해하거나 명예를 훼손하는 댓글은 운영원칙 및 관련 법률에 제재를 받을 수 있습니다. (최대 50자)"
+                            className="border rounded-md px-3 py-2 w-full"
+                        />
                         <button
                             onClick={handleCommentSubmit}
                             className="mt-2 bg-green-500 text-white px-4 py-2 rounded-md"
@@ -474,7 +594,6 @@ const BoardDetail = () => {
                     </div>
                 )}
             </div>
-
             {/* 목록으로 버튼 */}
             <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}
                 <button
@@ -485,7 +604,6 @@ const BoardDetail = () => {
                     목록으로
                 </button>
             </div>
-
         </div>
     );
 };
