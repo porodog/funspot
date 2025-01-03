@@ -10,7 +10,8 @@ const REACT_APP_SPOT_AREACODE_API_DECODING = process.env.REACT_APP_SPOT_AREACODE
 const REACT_APP_SPOT_CATEGORY_API_ENCODING = process.env.REACT_APP_SPOT_CATEGORY_API_ENCODING;
 const REACT_APP_SPOT_CATEGORY_API_DECODING = process.env.REACT_APP_SPOT_CATEGORY_API_DECODING;
 
-const contentTypeId = "&ContentTypeId="
+const contentTypeId = "&cat1="
+// const contentTypeId = "&contentTypeId="
 const areaCode = "&areaCode="
 const sigunguCode = "&sigunguCode="
 const category1 = "&cat1="
@@ -28,28 +29,28 @@ export const spotApi = {
     searchKeywordOrArea: async ({contentTypeId_, areaCode_, sigunguCode_, category1_, category2_, category3_, arrange_, keyword_}) => {
         let parameter = ""
         if(contentTypeId_){
-            parameter += contentTypeId + contentTypeId_;
+            parameter = parameter + contentTypeId + contentTypeId_;
         }
         if(areaCode_){
-            parameter += areaCode + areaCode_;
+            parameter = parameter + areaCode + areaCode_;
         }
         if(sigunguCode_){
-            parameter += sigunguCode + sigunguCode_;
+            parameter = parameter + sigunguCode + sigunguCode_;
         }
         if(category1_){
-            parameter += category1 + category1_;
+            parameter = parameter + category1 + category1_;
         }
         if(category2_){
-            parameter += category2 + category2_;
+            parameter = parameter + category2 + category2_;
         }
         if(category3_){
-            parameter += category3 + category3_;
+            parameter = parameter + category3 + category3_;
         }
         if(arrange_){
-            parameter += arrange + arrange_;
+            parameter = parameter + arrange + arrange_;
         }
         if(keyword_){
-            parameter += keyword + keyword_;
+            parameter = parameter + keyword + keyword_;
             const response = await tourApiClient.get(`${REACT_APP_SPOT_SEARCH_KEYWORD_API_ENCODING}${parameter}`);
             console.log(response);
             return response.data;

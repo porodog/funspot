@@ -13,17 +13,17 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
   // 초기 selectList 상태를 상수로 분리
   const initialSelectList = [
     {
-      id: "area",
+      id: "areaCode",
       title: "지역",
       optionList: []
     },
     {
-      id: "sigungu",
+      id: "sigunguCode",
       title: "시군구",
       optionList: []
     },
     {
-      id: "theme",
+      id: "contentTypeId",
       title: "테마",
       optionList: []
     },
@@ -76,7 +76,7 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
 
       setSelectList(prevList =>
           prevList.map(item =>
-              item.id === "area"
+              item.id === "areaCode"
                   ? { ...item, optionList: areaOptions }
                   : item
           )
@@ -103,7 +103,7 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
       // 시군구 옵션 업데이트
       setSelectList(prevList =>
           prevList.map(item =>
-              item.id === "sigungu"
+              item.id === "sigunguCode"
                   ? { ...item, optionList: sigunguOptions }
                   : item
           )
@@ -114,24 +114,22 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
   };
 
   // 테마(contentTypeId) 데이터 로드 함수
-  const loadThemeData = async () => {
+  const loadContentTypeData = async () => {
     try {
-      // 선택된 지역코드로 시군구 정보 조회
       const response = await spotApi.getCategory();
-      const themeData = response.response.body.items.item;
+      const contentTypeData = response.response.body.items.item;
 
-      // 시군구 데이터 가공
-      const themeOptions = themeData.map(theme => ({
-        key: theme.code,
-        value: theme.code,
-        name: theme.name
+      const contentTypeOptions = contentTypeData.map(contentType => ({
+        key: contentType.code,
+        value: contentType.code,
+        name: contentType.name
       }));
 
       // 시군구 옵션 업데이트
       setSelectList(prevList =>
           prevList.map(item =>
-              item.id === "theme"
-                  ? { ...item, optionList: themeOptions }
+              item.id === "contentTypeId"
+                  ? { ...item, optionList: contentTypeOptions }
                   : item
           )
       );
@@ -142,11 +140,11 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
 
   // select 변경 이벤트 처리 함수
   const handleSelectChange = async (selectId, value) => {
-    if (selectId === 'area') {
+    if (selectId === 'areaCode') {
       // 지역이 변경되면 기존 시군구 옵션 초기화
       setSelectList(prevList =>
           prevList.map(item =>
-              item.id === "sigungu"
+              item.id === "sigunguCode"
                   ? { ...item, optionList: [] }
                   : item
           )
@@ -157,6 +155,24 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
         await loadSigunguData(value);
       }
     }
+
+    // 로그로 현재 선택된 값들 확인
+    console.log("Current refs:", useSelectRef.current.map(ref => ref?.value));
+
+    // // 현재 선택된 모든 값으로 검색 파라미터 업데이트
+    // const selectValues = useSelectRef.current.reduce((acc, ref) => {
+    //   if (ref) {
+    //     acc[ref.id] = ref.value;
+    //   }
+    //   return acc;
+    // }, {});
+    //
+    // setSearchParameter(selectValues);
+    //
+    // // 검색어 값과 함께 검색 실행
+    // const searchObj = { searchValue: useInputRef.current.value };
+    // const searchParams = { ...searchObj, ...selectValues };
+    // await executeSearch(searchParams);  // 여기서 바로 검색 실행
   };
 
   // 검색 실행 함수
@@ -164,15 +180,23 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
     try {
       // API 호출을 위한 파라미터 객체 구성
       const apiParams = {
-        contentTypeId_: searchParams.theme || null,     // 테마(컨텐츠타입) 값
-        areaCode_: searchParams.area || null,           // 지역 코드
-        sigunguCode_: searchParams.sigungu || null,     // 시군구 코드
+        contentTypeId_: searchParams.contentTypeId || null,     // 테마(컨텐츠타입) 값
+        areaCode_: searchParams.areaCode || null,           // 지역 코드
+        sigunguCode_: searchParams.sigunguCode || null,     // 시군구 코드
         keyword_: searchParams.searchValue || null,      // 검색어
         arrange_: searchParams.arrange || null,          // 정렬 기준
         category1_: null,                               // 미사용
         category2_: null,                               // 미사용
         category3_: null                                // 미사용
       };
+      console.log(apiParams)
+
+      // 빈 문자열을 null로 변환
+      Object.keys(apiParams).forEach(key => {
+        if (apiParams[key] === "") {
+          apiParams[key] = null;
+        }
+      });
 
       // spotApi의 searchKeywordOrArea 메서드 호출
       const response = await spotApi.searchKeywordOrArea(apiParams);
@@ -233,13 +257,23 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
     // 검색어 값
     const searchObj = { searchValue: useInputRef.current.value };
 
-    // 셀렉트 값
-    const selectObj = useSelectRef.current.reduce((old, now) => {
-      return { ...old, [now.id]: now.value };
-    }, {});
+    // 셀렉트 값 - 실제 select 요소의 현재 값을 확인
+    const selectObj = {};
+    useSelectRef.current.forEach((ref, index) => {
+      if (ref && ref.value) {
+        const selectId = selectList[index].id;
+        selectObj[selectId] = ref.value;
+      }
+    });
+
+    // // 셀렉트 값
+    // const selectObj = useSelectRef.current.reduce((old, now) => {
+    //   return { ...old, [now.id]: now.value };
+    // }, {});
 
     // 검색 파라미터 통합
     const searchParams = { ...searchObj, ...selectObj };
+    console.log("Search Params:", searchParams); // 디버깅용
 
     // 상위 컴포넌트 상태관리값 세팅
     setSearchParameter(searchParams);
@@ -248,28 +282,11 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
     await executeSearch(searchParams);
   };
 
-  // // 검색 파라미터 설정
-  // const handleParameterEvent = () => {
-  //   // 검색어 값
-  //   const searchObj = { searchValue: useInputRef.current.value };
-  //
-  //   // 셀렉트 값
-  //   const selectObj = useSelectRef.current.reduce((old, now) => {
-  //     return { ...old, [now.id]: now.value };
-  //   }, {});
-  //
-  //   // 상위 컴포넌트 상태관리값 세팅처리
-  //   const param = { ...searchObj, ...selectObj };
-  //   setSearchParameter(param);
-  // };
-
-
-
   // 최초 마운트
   useEffect(() => {
     // setSelectList(sampleList);
     loadAreaData();
-    loadThemeData();
+    loadContentTypeData();
   }, []);
 
   return (
