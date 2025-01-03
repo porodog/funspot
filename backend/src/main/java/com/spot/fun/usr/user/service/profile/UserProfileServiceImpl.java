@@ -152,4 +152,8 @@ public class UserProfileServiceImpl implements UserProfileService {
     // 업로드파일 삭제로직 필요 >> 테이블 데이터 null 처리만...
     profile.changeFile(null, null);
   }
+
+
+
+
 }

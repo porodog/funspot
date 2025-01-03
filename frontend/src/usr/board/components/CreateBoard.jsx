@@ -56,7 +56,7 @@ const CreateBoard = () => {
                 editor.insertEmbed(range.index, "image", imageUrl);
             } catch (error) {
                 console.error("이미지 업로드 실패:", error);
-                alert("이미지 업로드에 실패했습니다.");
+                alert("이미지만 업로드 가능합니다.");
             }
         };
     }, []);
