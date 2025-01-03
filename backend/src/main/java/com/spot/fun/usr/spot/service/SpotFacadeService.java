@@ -5,6 +5,8 @@ import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
 import com.spot.fun.usr.spot.entity.Spot;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SpotFacadeService {
+  private static final Logger log = LoggerFactory.getLogger(SpotFacadeService.class);
   private final SpotUserMapService spotUserMapService;
   private final SpotService spotService;
 
@@ -46,21 +49,29 @@ public class SpotFacadeService {
   }
 
   public String postSpot(SpotPostRequestDTO spotPostRequestDTO) {
-    // 내 스팟에 담기
-    // 0. SpotUserMap 테이블에 spotPostRequestDTO.spotId && spotPostRequestDTO.userIdx가 있는지 확인(SpotUserMapService)
-    // 0-1. 만약 있다면 "이미 내 스팟에 추가된 항목입니다" 반환(SpotFacadeService)
-    // 1. 만약 없다면 Spot 테이블에 spotPostRequestDTO.spotId가 있는지 확인(SpotFacadeService & SpotService)
-    // 1-1. 만약 없다면 Spot 테이블에 spotPostRequestDTO를 토대로 데이터 추가(SpotService)
-    // 2. Spot 테이블에 spotId가 있다면 SpotUserMap 테이블에 spotPostRequestDTO의 spotId와 userIdx추가(SpotUserMap)
-    // 3. "내 스팟에 추가되었습니다" 반환(SpotFacadeService)
-    Long userIdx = spotPostRequestDTO.getUserIdx();
-    Long spotId = spotPostRequestDTO.getSpotId();
-    if(spotUserMapService.existsSpotIdsByUserIdx(userIdx, spotId)){
-      return "이미 내 스팟에 추가된 항목입니다";
+    try {
+      Long userIdx = spotPostRequestDTO.getUserIdx();
+//    Long spotId = spotPostRequestDTO.getSpotId();
+      Long spotId = spotPostRequestDTO.getContentId();  // contentId를 spotId로 사용
+
+      // 이미 저장된 스팟인지 확인
+      if(spotUserMapService.existsSpotIdsByUserIdx(userIdx, spotId)){
+        return "이미 내 스팟에 추가된 항목입니다";
+      }
+
+      // Spot 테이블에 데이터가 없으면 저장
+      if(!spotService.existsBySpotId(spotId)){
+        spotService.saveSpot(spotPostRequestDTO);
+      }
+
+      // SpotUserMap에 매핑 정보 저장
+      spotUserMapService.saveSpotUserMap(spotId, userIdx);
+
+      return "내 스팟에 추가되었습니다";
+    }catch (Exception e) {
+      // 로깅 추가
+      log.error("스팟 저장 중 에러 발생: ", e);
+      throw e;
     }
-    if(!spotService.existsBySpotId(spotId)){
-      spotService.saveSpot(spotPostRequestDTO);
-    }
-    return "내 스팟에 추가되었습니다";
   }
 }

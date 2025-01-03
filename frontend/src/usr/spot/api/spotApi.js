@@ -112,19 +112,19 @@ export const spotApi = {
     },
 
     getSpotList: async (userIdx) => {
-        const response = await axios.get(`${API_BASE_URL}/api/spot/getSpotList/${userIdx}`);
+        const response = await axios.get(`/api/spot/getSpotList/${userIdx}`);
         console.log(response);
         return response.data;
     },
 
     getSpot: async (spotId) => {
-        const response = await axios.get(`${API_BASE_URL}/api/spot/getSpot/${spotId}`);
+        const response = await axios.get(`/api/spot/getSpot/${spotId}`);
         console.log(response);
         return response.data;
     },
 
     postSpot: async (spotDTO) => {
-        const response = await axios.post(`${API_BASE_URL}/api/spot/postSpot`, spotDTO);
+        const response = await axios.post(`/api/spot/postSpot`, spotDTO);
         console.log(response);
         return response.data;
     }

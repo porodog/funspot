@@ -1,6 +1,8 @@
 package com.spot.fun.usr.spot.service;
 
+import com.spot.fun.usr.spot.entity.SpotUserMap;
 import com.spot.fun.usr.spot.repository.SpotUserMapRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,5 +19,15 @@ public class SpotUserMapService {
 
   public boolean existsSpotIdsByUserIdx(Long userIdx, Long spotId){
     return spotUserMapRepository.existsSpotByUserIdxAndSpotId(userIdx, spotId);
+  }
+
+  @Transactional
+  public void saveSpotUserMap(Long spotId, Long userIdx) {
+    SpotUserMap spotUserMap = SpotUserMap.builder()
+            .spotIdx(spotId)
+            .userIdx(userIdx)
+            .build();
+
+    spotUserMapRepository.save(spotUserMap);
   }
 }

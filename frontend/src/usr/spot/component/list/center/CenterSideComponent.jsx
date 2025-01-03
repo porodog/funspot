@@ -33,6 +33,68 @@ const sampleList = [
   },
 ];
 
+// const CenterSideComponent = ({ spotSelected, setSpotSelected }) => {
+//   return (
+//       <div className="relative z-10">
+//         <div className="w-96 h-4/5 absolute top-0 left-0 bg-white shadow-lg rounded-lg">
+//           <div className="w-full h-full p-4 space-y-6 flex flex-col">
+//             {/* 상단: 제목과 버튼 */}
+//             <div className="w-full flex justify-between items-start border-b pb-4">
+//               <div className="w-3/4">
+//                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
+//                   {spotSelected.title}
+//                 </h3>
+//               </div>
+//               <div className="w-1/4">
+//                 <ItemButtonComponent id={spotSelected.contentid} />
+//               </div>
+//             </div>
+//
+//             {/* 중간: 이미지 섹션 */}
+//             <div className="w-full">
+//               {spotSelected.firstimage && (
+//                   <div className="space-y-4">
+//                     <img
+//                         src={spotSelected.firstimage}
+//                         alt={spotSelected.title}
+//                         className="w-full h-64 object-cover rounded-lg"
+//                     />
+//                     {spotSelected.firstimage2 && (
+//                         <img
+//                             src={spotSelected.firstimage2}
+//                             alt={`${spotSelected.title} 추가 이미지`}
+//                             className="w-full h-64 object-cover rounded-lg"
+//                         />
+//                     )}
+//                   </div>
+//               )}
+//             </div>
+//
+//             {/* 하단: 상세 정보 */}
+//             <div className="w-full space-y-4">
+//               <div className="space-y-2">
+//                 <h4 className="font-medium text-gray-700">주소</h4>
+//                 <p className="text-gray-600">{spotSelected.addr1 || '주소 정보가 없습니다.'}</p>
+//               </div>
+//               <div className="space-y-2">
+//                 <h4 className="font-medium text-gray-700">연락처</h4>
+//                 <p className="text-gray-600">{spotSelected.tel || '연락처 정보가 없습니다.'}</p>
+//               </div>
+//             </div>
+//           </div>
+//
+//           {/* 닫기 버튼 */}
+//           <button
+//               className="absolute top-1/2 -right-5 px-4 py-2 bg-gray-500 text-white rounded-full transform -translate-y-1/2 z-10 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+//               onClick={() => setSpotSelected({})}
+//           >
+//             ❮
+//           </button>
+//         </div>
+//       </div>
+//   );
+// };
+
 const CenterSideComponent = ({ spotSelected, setSpotSelected }) => {
   const [spotDetail, setSpotDetail] = useState({});
 
@@ -48,7 +110,7 @@ const CenterSideComponent = ({ spotSelected, setSpotSelected }) => {
     <div className="relative z-10">
       <div
         className="w-96 h-4/5
-        absolute top-0 left-0 
+        absolute top-0 left-0
         bg-gray-200"
       >
         <div className="w-full h-full p-4 space-y-10 flex flex-col">

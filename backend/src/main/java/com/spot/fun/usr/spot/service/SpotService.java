@@ -5,12 +5,17 @@ import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
 import com.spot.fun.usr.spot.entity.Spot;
 import com.spot.fun.usr.spot.repository.SpotRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class SpotService {
+  private static final Logger log = LoggerFactory.getLogger(SpotService.class);
   private final SpotRepository spotRepository;
 
   public Spot getSpot(Long spotId){
@@ -56,29 +61,71 @@ public class SpotService {
     return spotRepository.existsBySpotId(spotId);
   }
 
-  public void saveSpot(SpotPostRequestDTO spotPostRequestDTO) {
-    spotRepository.save(Spot.builder()
-            .spotId(spotPostRequestDTO.getSpotId())
-            .contentId(spotPostRequestDTO.getContentId())
-            .addr1(spotPostRequestDTO.getAddr1())
-            .addr2(spotPostRequestDTO.getAddr2())
-            .areaCode(spotPostRequestDTO.getAreaCode())
-            .cat1(spotPostRequestDTO.getCat1())
-            .cat2(spotPostRequestDTO.getCat2())
-            .cat3(spotPostRequestDTO.getCat3())
-            .contentTypeId(spotPostRequestDTO.getContentTypeId())
-            .createdTime(spotPostRequestDTO.getCreatedTime())
-            .firstImage(spotPostRequestDTO.getFirstImage())
-            .firstImage2(spotPostRequestDTO.getFirstImage2())
-            .cpyrhtDivCd(spotPostRequestDTO.getCpyrhtDivCd())
-            .mapX(spotPostRequestDTO.getMapX())
-            .mapY(spotPostRequestDTO.getMapY())
-            .mlevel(spotPostRequestDTO.getMlevel())
-            .modifiedTime(spotPostRequestDTO.getModifiedTime())
-            .sigunguCode(spotPostRequestDTO.getSigunguCode())
-            .tel(spotPostRequestDTO.getTel())
-            .title(spotPostRequestDTO.getTitle())
-            .build());
+  @Transactional
+  public Spot saveSpot(SpotPostRequestDTO dto) {
+    try {
+      Spot spot = Spot.builder()
+              .contentId(dto.getContentId())
+              .addr1(dto.getAddr1())
+              .addr2(dto.getAddr2())
+              .areaCode(dto.getAreaCode())
+              .cat1(dto.getCat1())
+              .cat2(dto.getCat2())
+              .cat3(dto.getCat3())
+              .contentTypeId(dto.getContentTypeId())
+              .createdTime(dto.getCreatedTime())
+              .firstImage(dto.getFirstImage())
+              .firstImage2(dto.getFirstImage2())
+              .cpyrhtDivCd(dto.getCpyrhtDivCd())
+              .mapX(dto.getMapX())
+              .mapY(dto.getMapY())
+              .mlevel(dto.getMlevel())
+              .modifiedTime(dto.getModifiedTime())
+              .sigunguCode(dto.getSigunguCode())
+              .tel(dto.getTel())
+              .title(dto.getTitle())
+              .build();
+
+      return spotRepository.save(spot);
+    } catch (Exception e) {
+      log.error("Spot 저장 중 에러 발생: ", e);
+      throw new RuntimeException("Spot 저장 실패", e);
+    }
+  }
+
+//  @Transactional
+//  public void saveSpot(SpotPostRequestDTO spotPostRequestDTO) {
+//    spotRepository.save(Spot.builder()
+//            .spotId(spotPostRequestDTO.getSpotId())
+//            .contentId(spotPostRequestDTO.getContentId())
+//            .addr1(spotPostRequestDTO.getAddr1())
+//            .addr2(spotPostRequestDTO.getAddr2())
+//            .areaCode(spotPostRequestDTO.getAreaCode())
+//            .cat1(spotPostRequestDTO.getCat1())
+//            .cat2(spotPostRequestDTO.getCat2())
+//            .cat3(spotPostRequestDTO.getCat3())
+//            .contentTypeId(spotPostRequestDTO.getContentTypeId())
+//            .createdTime(spotPostRequestDTO.getCreatedTime())
+//            .firstImage(spotPostRequestDTO.getFirstImage())
+//            .firstImage2(spotPostRequestDTO.getFirstImage2())
+//            .cpyrhtDivCd(spotPostRequestDTO.getCpyrhtDivCd())
+//            .mapX(spotPostRequestDTO.getMapX())
+//            .mapY(spotPostRequestDTO.getMapY())
+//            .mlevel(spotPostRequestDTO.getMlevel())
+//            .modifiedTime(spotPostRequestDTO.getModifiedTime())
+//            .sigunguCode(spotPostRequestDTO.getSigunguCode())
+//            .tel(spotPostRequestDTO.getTel())
+//            .title(spotPostRequestDTO.getTitle())
+//            .build());
+//  }
+
+  public boolean existsByContentId(Long contentId) {
+    return spotRepository.existsByContentId(contentId);
+  }
+
+  public Spot findByContentId(Long contentId) {
+    return spotRepository.findByContentId(contentId)
+            .orElseThrow(() -> new EntityNotFoundException("Spot not found with contentId: " + contentId));
   }
 
 }

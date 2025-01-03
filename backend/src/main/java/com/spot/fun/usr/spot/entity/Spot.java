@@ -30,7 +30,7 @@ public class Spot {
   @Column(name = "cat1")
   private String cat1;    // 대분류
 
-  @Column(name = "cat2", nullable = false)
+  @Column(name = "cat2")
   private String cat2;    // 중분류
 
 
