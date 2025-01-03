@@ -60,7 +60,8 @@ public class DateCourseService {
                     place.getLatitude(),
                     place.getLongitude(),
                     place.getCost(),
-                    place.getTime()
+                    place.getTime(),
+                    place.getImage()
             ))
             .toList();
 
@@ -76,16 +77,7 @@ public class DateCourseService {
   }
 
 
-//    public Optional<DateCourse> getCourseWithPlaceIds(Long id) {
-//        return dateCourseRepository.findById(id).map(course -> {
-//            List<Long> placeIds = course.getPlaces()
-//                    .stream()
-//                    .map(DatePlaces::getId)
-//                    .collect(Collectors.toList());
-//            course.setPlaceIds(placeIds);
-//            return course;
-//        });
-//    }
+
 
 
   public DateCourse addCourse(DateCourseDTO dateCourseDTO) {
@@ -120,43 +112,3 @@ public class DateCourseService {
   }
 }
 
-//
-//import com.spot.fun.usr.course.dto.DateCourseDTO;
-//import com.spot.fun.usr.course.dto.DatePlacesDTO;
-//import com.spot.fun.usr.course.model.DateCourse;
-//import com.spot.fun.usr.course.repository.DateCourseRepository;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class DateCourseService {
-//
-//
-//    public DateCourseDTO getCourseWithPlaces(Long courseId) {
-//        DateCourse course = dateCourseRepository.findById(courseId)
-//                .orElseThrow(() -> new RuntimeException("Course not found"));
-//
-//        List<DatePlacesDTO> placesDTO = course.getPlaces().stream()
-//                .map(place -> new DatePlacesDTO(
-//                        place.getId(),
-//                        place.getName(),
-//                        place.getDescription(),
-//                        place.getLatitude(),
-//                        place.getLongitude(),
-//                        place.getCost(),
-//                        place.getTime()
-//                )).toList();
-//
-//        return new DateCourseDTO(
-//                course.getId(),
-//                course.getName(),
-//                course.getLocation(),
-//                course.getDescription(),
-//                course.getAgeGroup(),
-//                placesDTO
-//        );
-//    }
-//}
