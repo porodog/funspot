@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Size;
+
 @Data
 @Getter
 @Builder
@@ -22,6 +24,7 @@ public class PlaceDTO {
   private Integer durationMinutes;
   private String category;
   private String simpleAddress;
+  @Size(max = 1024)
   private String image;
   
 }

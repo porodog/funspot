@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import jakarta.persistence.Column;
 
 
 @Entity
@@ -40,6 +41,7 @@ public class Place {
   private Integer durationMinutes;
   private String category;
   private String simpleAddress;
+  @Column(name = "image", length = 1024)
   private String image;
 
   @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)

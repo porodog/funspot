@@ -20,9 +20,11 @@ public class CustomDTO {
     private Long idx;
     private List<PlaceDTO> places;
     private List<String> tags;
-   private String delYn = "N";
 
-   private Boolean hasNext;
+    @Builder.Default
+    private String delYn = "N";
+
+    private Boolean hasNext;
 
     @Builder.Default
     private boolean wishList = false;
