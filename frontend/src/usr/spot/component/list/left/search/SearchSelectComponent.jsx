@@ -40,8 +40,8 @@ const SearchSelectComponent = ({select, useSelectRef, onSelectChange}) => {
         // 시군구이면서 옵션 목록이 비어있을 때 비활성화
         disabled={select.id === 'sigunguCode' && !select.optionList.length}
       >
-        <option disabled hidden value="">{select.title}</option>
-        {/*<option value="all">전체</option>*/}
+        <option disabled hidden selected value="">{select.title}</option>
+        {/*<option value="">전체</option>*/}
         {select.optionList.map((option) => (
           <option key={option.key} value={option.value}>
             {option.name}
