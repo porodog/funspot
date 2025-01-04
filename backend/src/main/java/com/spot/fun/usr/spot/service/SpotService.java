@@ -26,8 +26,11 @@ public class SpotService {
     return SpotListResponseDTO.builder()
             .spotId(spot.getSpotId())
             .addr(spot.getAddr1()+" "+spot.getAddr2())
-            .category(spot.getCat1()+" "+spot.getCat2()+" "+spot.getCat3())
-            .contentType(spot.getContentTypeId()+"")
+            .category(String.format("%s > %s > %s",
+                    spot.getCat1Name(),
+                    spot.getCat2Name(),
+                    spot.getCat3Name()))
+            .contentType(spot.getContentTypeIdName())
             .firstImage(spot.getFirstImage())
             .firstImage2(spot.getFirstImage2())
             .tel(spot.getTel())
@@ -41,21 +44,56 @@ public class SpotService {
             .contentId(spot.getContentId())
             .addr1(spot.getAddr1())
             .addr2(spot.getAddr2())
-            .area(spot.getAreaCode())
-            .cat1(spot.getCat1())
-            .cat2(spot.getCat2())
-            .cat3(spot.getCat3())
-            .contentType(spot.getContentTypeId()+"")
+            .area(spot.getAreaCodeName())
+            .cat1(spot.getCat1Name())
+            .cat2(spot.getCat2Name())
+            .cat3(spot.getCat3Name())
+            .contentType(spot.getContentTypeIdName())
             .firstImage(spot.getFirstImage())
             .firstImage2(spot.getFirstImage2())
             .mapX(spot.getMapX())
             .mapY(spot.getMapY())
             .mLevel(spot.getMlevel())
-            .sigungu(spot.getSigunguCode()+"")
+            .sigungu(spot.getSigunguCodeName())
             .tel(spot.getTel())
             .title(spot.getTitle())
             .build();
   }
+
+//  public SpotListResponseDTO setSpotListResponseDTO(Spot spot){
+//    return SpotListResponseDTO.builder()
+//            .spotId(spot.getSpotId())
+//            .addr(spot.getAddr1()+" "+spot.getAddr2())
+//            .category(spot.getCat1()+" "+spot.getCat2()+" "+spot.getCat3())
+//            .contentType(spot.getContentTypeId()+"")
+//            .firstImage(spot.getFirstImage())
+//            .firstImage2(spot.getFirstImage2())
+//            .tel(spot.getTel())
+//            .title(spot.getTitle())
+//            .build();
+//  }
+//
+//  public SpotItemResponseDTO setSpotItemResponseDTO(Spot spot){
+//    return SpotItemResponseDTO.builder()
+//            .spotId(spot.getSpotId())
+//            .contentId(spot.getContentId())
+//            .addr1(spot.getAddr1())
+//            .addr2(spot.getAddr2())
+//            .area(spot.getAreaCode())
+//            .cat1(spot.getCat1())
+//            .cat2(spot.getCat2())
+//            .cat3(spot.getCat3())
+//            .contentType(spot.getContentTypeId()+"")
+//            .firstImage(spot.getFirstImage())
+//            .firstImage2(spot.getFirstImage2())
+//            .mapX(spot.getMapX())
+//            .mapY(spot.getMapY())
+//            .mLevel(spot.getMlevel())
+//            .sigungu(spot.getSigunguCode()+"")
+//            .tel(spot.getTel())
+//            .title(spot.getTitle())
+//            .build();
+//  }
 
   public boolean existsBySpotId(Long spotId){
     return spotRepository.existsBySpotId(spotId);
@@ -69,10 +107,15 @@ public class SpotService {
               .addr1(dto.getAddr1())
               .addr2(dto.getAddr2())
               .areaCode(dto.getAreaCode())
+              .areaCodeName(dto.getAreaCodeName())
               .cat1(dto.getCat1())
+              .cat1Name(dto.getCat1Name())
               .cat2(dto.getCat2())
+              .cat2Name(dto.getCat2Name())
               .cat3(dto.getCat3())
+              .cat3Name(dto.getCat3Name())
               .contentTypeId(dto.getContentTypeId())
+              .contentTypeIdName(dto.getContentTypeIdName())
               .createdTime(dto.getCreatedTime())
               .firstImage(dto.getFirstImage())
               .firstImage2(dto.getFirstImage2())
@@ -82,6 +125,7 @@ public class SpotService {
               .mlevel(dto.getMlevel())
               .modifiedTime(dto.getModifiedTime())
               .sigunguCode(dto.getSigunguCode())
+              .sigunguCodeName(dto.getSigunguCodeName())
               .tel(dto.getTel())
               .title(dto.getTitle())
               .build();

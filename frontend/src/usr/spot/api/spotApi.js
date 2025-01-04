@@ -97,20 +97,20 @@ export const spotApi = {
         }
     },
 
-    getCategory: async () => {
+    getCategory: async (contentTypeId_, category1_, category2_, category3_) => {
         let parameter = ""
-        // if(contentTypeId){
-        //     parameter += contentTypeId + contentTypeId_;
-        // }
-        // if(category1_){
-        //     parameter += category1 + category1_;
-        // }
-        // if(category2_){
-        //     parameter += category2 + category2_;
-        // }
-        // if(category3_){
-        //     parameter += category3 + category3_;
-        // }
+        if(contentTypeId_){
+            parameter += contentTypeId + contentTypeId_;
+        }
+        if(category1_){
+            parameter += category1 + category1_;
+        }
+        if(category2_){
+            parameter += category2 + category2_;
+        }
+        if(category3_){
+            parameter += category3 + category3_;
+        }
         const response = await tourApiClient.get(`${REACT_APP_SPOT_CATEGORY_API_ENCODING}${parameter}`);
         console.log(response);
         return response.data;
@@ -132,7 +132,101 @@ export const spotApi = {
         const response = await axios.post(`/api/spot/postSpot`, spotDTO);
         console.log(response);
         return response.data;
-    }
+    },
+
+    // contentTypeId에 따른 이름 매핑
+    getContentTypeName: (contentTypeId_) => {
+        const contentTypeMap = {
+            '12': '관광지',
+            '14': '문화시설',
+            '15': '축제/공연/행사',
+            '25': '여행코스',
+            '28': '레포츠',
+            '32': '숙박',
+            '38': '쇼핑',
+            '39': '음식'
+        };
+        return contentTypeMap[contentTypeId_] || '';
+    },
+
+    // 카테고리 코드에 해당하는 이름 찾기
+    findNameByCode: async (category, cat1Code_ = null, cat2Code_ = null, cat3Code_ = null) => {
+        try {
+            let response;
+            switch(category) {
+                case 'cat1':
+                    response = await spotApi.getCategory();
+                    const cat1Items = response?.response?.body?.items?.item || [];
+                    return cat1Items.find(item => item.code === cat1Code_)?.name || '';
+
+                case 'cat2':
+                    response = await spotApi.getCategory(null, cat1Code_);
+                    const cat2Items = response?.response?.body?.items?.item || [];
+                    return cat2Items.find(item => item.code === cat2Code_)?.name || '';
+
+                case 'cat3':
+                    response = await spotApi.getCategory(null, cat1Code_, cat2Code_);
+                    const cat3Items = response?.response?.body?.items?.item || [];
+                    // cat3Code_를 사용하여 정확한 항목 찾기
+                    return cat3Items.find(item => item.code === cat3Code_)?.name || '';
+
+                default:
+                    return '';
+            }
+        } catch (error) {
+            console.error('카테고리 이름 조회 중 에러:', error);
+            return '';
+        }
+    },
+    // findNameByCode: async (category, cat1Code_ = null, cat2Code_ = null) => {
+    //     try {
+    //         let response;
+    //         switch(category) {
+    //             case 'cat1':
+    //                 response = await spotApi.getCategory();
+    //                 const cat1Items = response?.response?.body?.items?.item || [];
+    //                 return cat1Items.find(item => item.code === cat1Code_)?.name || '';
+    //
+    //             case 'cat2':
+    //                 response = await spotApi.getCategory(null, cat1Code_);
+    //                 const cat2Items = response?.response?.body?.items?.item || [];
+    //                 return cat2Items.find(item => item.code === cat2Code_)?.name || '';
+    //
+    //             case 'cat3':
+    //                 response = await spotApi.getCategory(null, cat1Code_, cat2Code_);
+    //                 const cat3Items = response?.response?.body?.items?.item || [];
+    //                 return cat3Items[0]?.name || '';
+    //
+    //             default:
+    //                 return '';
+    //         }
+    //     } catch (error) {
+    //         console.error('카테고리 이름 조회 중 에러:', error);
+    //         return '';
+    //     }
+    // },
+
+    // 지역 코드에 해당하는 이름 찾기
+    findAreaNameByCode: async (areaCode_, sigunguCode_ = null) => {
+        try {
+            if (!areaCode_) return '';
+
+            if (!sigunguCode_) {
+                // 지역 이름 찾기
+                const response = await spotApi.getArea();
+                const items = response?.response?.body?.items?.item || [];
+                return items.find(item => item.code === areaCode_)?.name || '';
+            } else {
+                // 시군구 이름 찾기
+                const response = await spotApi.getArea(areaCode_);
+                const items = response?.response?.body?.items?.item || [];
+                return items.find(item => item.code === sigunguCode_)?.name || '';
+            }
+        } catch (error) {
+            console.error('지역 이름 조회 중 에러:', error);
+            return '';
+        }
+    },
 }
 
 
