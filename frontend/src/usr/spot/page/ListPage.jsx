@@ -1,6 +1,5 @@
 import LeftSideComponent from "../component/list/left/LeftSideComponent";
 import RightSideComponent from "../component/list/right/RightSideComponent";
-
 import { useState } from "react";
 import CenterSideComponent from "../component/list/center/CenterSideComponent";
 
@@ -34,8 +33,8 @@ const ListPage = () => {
 
       {/* 우측영역 - 지도 */}
       <RightSideComponent
-        searchParameter={searchParameter}
-        setSpotList={setSpotList}
+          spotList={spotList}
+          searchParameter={searchParameter}
       />
     </div>
   );
