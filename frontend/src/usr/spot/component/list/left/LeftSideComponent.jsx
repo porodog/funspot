@@ -39,6 +39,18 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
 
   const useSelectRef = useRef([]);
 
+  // 페이징 상태 추가
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [lastSearchParams, setLastSearchParams] = useState(null);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = async (newPage) => {
+    if (lastSearchParams) {
+      await executeSearch(lastSearchParams, newPage);
+    }
+  };
+
   // 필터 초기화 함수
   const handleReset = async () => {
     // 검색어 초기화
@@ -56,6 +68,10 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
 
     // 검색 파라미터도 초기화
     setSearchParameter({});
+
+    setCurrentPage(1);
+    setTotalCount(0);
+    setLastSearchParams(null);
   };
 
   // 지역 데이터 로드
@@ -176,7 +192,7 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
   };
 
   // 검색 실행 함수
-  const executeSearch = async (searchParams) => {
+  const executeSearch = async (searchParams, pageNo = 1) => {
     try {
       // API 호출을 위한 파라미터 객체 구성
       const apiParams = {
@@ -187,7 +203,8 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
         arrange_: searchParams.arrange || null,          // 정렬 기준
         category1_: null,                               // 미사용
         category2_: null,                               // 미사용
-        category3_: null                                // 미사용
+        category3_: null,                               // 미사용
+        pageNo_: pageNo // 페이지 번호 추가
       };
       console.log(apiParams)
 
@@ -214,8 +231,8 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
           contentid: item.contentid,
           contenttypeid: item.contenttypeid,
           createdtime: item.createdtime,
-          firstImage: item.firstimage,
-          firstImage2: item.firstimage2,
+          firstImage: item.firstimage || '../../../../../common/img/image_upload.jpg',
+          firstImage2: item.firstimage2 || '../../../../../common/img/image_upload.jpg',
           cpyrhtDivCd: item.cpyrhtDivCd,
           mapX: item.mapx,
           mapY: item.mapy,
@@ -242,13 +259,19 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
           // ].filter(img => img) // 빈 문자열이나 null 값 필터링
         }));
         setSpotList(transformedItems);
+        setTotalCount(response.response.body.totalCount);
+        setCurrentPage(pageNo);
       } else {
         // 검색 결과가 없는 경우
         setSpotList([]);
+        setTotalCount(0);
+        setCurrentPage(1);
       }
     } catch (error) {
       console.error("검색 중 오류 발생:", error);
       setSpotList([]);
+      setTotalCount(0);
+      setCurrentPage(1);
     }
   };
 
@@ -274,12 +297,13 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
     // 검색 파라미터 통합
     const searchParams = { ...searchObj, ...selectObj };
     console.log("Search Params:", searchParams); // 디버깅용
+    setLastSearchParams(searchParams); // 마지막 검색 파라미터 저장
 
     // 상위 컴포넌트 상태관리값 세팅
     setSearchParameter(searchParams);
 
     // 검색 실행
-    await executeSearch(searchParams);
+    await executeSearch(searchParams, 1);
   };
 
   // 최초 마운트
@@ -340,7 +364,11 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
                 ))}
 
                 {/* 페이지 */}
-                <PagingComponent/>
+                <PagingComponent
+                    currentPage={currentPage}
+                    totalCount={totalCount}
+                    onPageChange={handlePageChange}
+                />
               </>
           ) : (
               <>

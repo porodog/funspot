@@ -19,6 +19,7 @@ const category2 = "&cat2="
 const category3 = "&cat3="
 const arrange = "&arrange="
 const keyword = "&keyword="
+const pageNo = "&pageNo="
 
 // Tour API 전용 axios 인스턴스 생성
 const tourApiClient = axios.create({
@@ -26,7 +27,7 @@ const tourApiClient = axios.create({
 });
 
 export const spotApi = {
-    searchKeywordOrArea: async ({contentTypeId_, areaCode_, sigunguCode_, category1_, category2_, category3_, arrange_, keyword_}) => {
+    searchKeywordOrArea: async ({contentTypeId_, areaCode_, sigunguCode_, category1_, category2_, category3_, arrange_, pageNo_, keyword_}) => {
         let parameter = ""
         if(contentTypeId_){
             parameter = parameter + contentTypeId + contentTypeId_;
@@ -48,6 +49,9 @@ export const spotApi = {
         }
         if(arrange_){
             parameter = parameter + arrange + arrange_;
+        }
+        if(pageNo_){
+            parameter = parameter + pageNo + pageNo_;
         }
         if(keyword_){
             parameter = parameter + keyword + keyword_;
