@@ -1,15 +1,15 @@
 import {useEffect, useRef} from "react";
 
-const SearchSelectComponent = ({select, useSelectRef, onSelectChange}) => {
+const SearchSelectComponent = ({select, onRefChange, onSelectChange}) => {
     // ref 직접 선언
     const selectRef = useRef(null);
 
     useEffect(() => {
         // 부모 컴포넌트에 ref 전달
         if(selectRef.current) {
-            useSelectRef(selectRef.current);
+            onRefChange(selectRef.current);
         }
-    }, [useSelectRef]);
+    }, [onRefChange]);
 
     const handleChange = (e) => {
         // 모든 select 변경을 부모에게 알림

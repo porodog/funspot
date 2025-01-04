@@ -308,7 +308,7 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
                       <SearchSelectComponent
                           key={index}
                           select={select}
-                          useSelectRef={(e) => (useSelectRef.current[index] = e)}
+                          onRefChange={(ref) => (useSelectRef.current[index] = ref)}
                           // select 변경 이벤트 핸들러 전달
                           onSelectChange={handleSelectChange}
                       />
