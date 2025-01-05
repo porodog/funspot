@@ -81,7 +81,7 @@ const NewUserCourses = () => {
                   {/* 호버 시 나타나는 바로가기 버튼 */}
                   <Link
                     to={`/custom/read/${custom.cno}`}
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black p-2 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-300"
+                    className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-50  opacity-0 hover:opacity-100 transition-opacity duration-300"
                   >
                     바로가기 &gt;
                   </Link>

@@ -26,7 +26,7 @@ public class DatePlaces {
   private String cost;         // 예상 가격
   private String time;         // 소요 시간
 
-  @Size(max = 1024)
+  @Column(length = 1024)
   private String image;
 
 

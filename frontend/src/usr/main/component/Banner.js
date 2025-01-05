@@ -1,11 +1,11 @@
 // 메인 배너
 import React, { useState, useEffect } from 'react';
-import Bannerim from '../imgs/rocks-7354363_640.jpg'
+import Banner1 from '../imgs/Banner2.png'
 import Rion from '../imgs/rion.png'
 import Rion2 from '../imgs/img.jpg'
 
 const images = [
-  Bannerim,
+  Banner1,
   Rion,
   Rion2,
 ];

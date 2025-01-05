@@ -87,9 +87,9 @@ const SliderComponent = ({ items }) => {
                 </div>
               </div>
               {/* 텍스트 섹션 */}
-              <h1 className="mt-2 text-center font-bold text-lg">
+              <h3 className="mt-2 text-center font-bold text-sm">
                 {item.name}
-              </h1>
+              </h3>
               {/* <p className="text-center text-gray-500">
                 {item.cost} | {item.time}
               </p> */}

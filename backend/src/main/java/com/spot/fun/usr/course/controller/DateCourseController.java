@@ -8,9 +8,11 @@ import com.spot.fun.usr.course.repository.DateCourseRepository;
 import com.spot.fun.usr.course.repository.DatePlaceRepository;
 import com.spot.fun.usr.course.service.DateCourseService;
 import com.spot.fun.usr.course.service.PlacesService;
+import com.spot.fun.usr.user.dto.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +32,9 @@ public class DateCourseController {
     private final DateCourseRepository dateCourseRepository;
     private final DatePlaceRepository datePlaceRepository;
 
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/addcourse")
     public ResponseEntity<?> addCourse(@RequestBody DateCourseDTO dateCourseDTO) {
         try {
