@@ -41,13 +41,13 @@ public class ChatMessageService{
 
     // 양쪽 채팅방에 메시지 저장
     public ChatMessage saveMessageForBothRooms(Long userRoomId, Long otherRoomId, ChatMessageRequestDTO messageRequest, Long fromIdx, Long toIdx) {
-        // 송신자 채팅방 메시지
+        // 송신자 채팅방 메시지 - 내가 보낸 메시지는 항상 읽음 처리
         ChatMessage userMessage = chatMessageRepository.save(ChatMessage.builder()
                 .fromIdx(fromIdx)
                 .toIdx(toIdx)
                 .msg(messageRequest.getMsg())
                 .roomId(userRoomId)
-                .isRead(false)
+                .isRead(true)  // 내가 보낸 메시지는 항상 읽음 처리
                 .build());
 
         // 수신자 채팅방 메시지
@@ -68,6 +68,16 @@ public class ChatMessageService{
                 .fromIdx(chatMessage.getFromIdx())
                 .msg(chatMessage.getMsg())
                 .timestamp(chatMessage.getTimestamp())
+                .isRead(chatMessage.isRead())  // isRead 필드 추가
                 .build();
+    }
+
+    // 채팅방의 모든 메시지를 읽음 처리
+    public void markMessagesAsRead(Long roomId, Long toIdx) {
+        List<ChatMessage> unreadMessages = chatMessageRepository.findByRoomIdAndToIdxAndIsReadFalse(roomId, toIdx);
+        unreadMessages.forEach(message -> {
+            message.markAsRead();
+            chatMessageRepository.save(message);
+        });
     }
 }

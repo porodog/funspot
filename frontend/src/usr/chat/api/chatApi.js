@@ -99,5 +99,13 @@ export const chatApi = {
             }
             stompClient = null;
         }
+    },
+
+    markMessagesAsRead: async (roomId) => {
+        try {
+            await axios.post(`${API_BASE_URL}/api/chat/${roomId}/read`);
+        } catch (error) {
+            console.error('메시지 읽음 처리 실패:', error);
+        }
     }
 };

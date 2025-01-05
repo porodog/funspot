@@ -7,6 +7,7 @@ import com.spot.fun.usr.chat.dto.RoomIdPairDTO;
 import com.spot.fun.usr.chat.service.ChatFacadeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -55,5 +56,11 @@ public class ChatController {
 
         // 발신자 채널로만 메시지 전송
         messagingTemplate.convertAndSend("/sub/roomId/" + roomId, chatMessageResponseDTO);
+    }
+
+    @PostMapping("/{roomId}/read")
+    public ResponseEntity<Void> markMessagesAsRead(@PathVariable Long roomId) {
+        chatFacadeService.markMessagesAsRead(roomId);
+        return ResponseEntity.ok().build();
     }
 }

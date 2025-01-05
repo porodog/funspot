@@ -19,4 +19,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, String
     // 양방향 roomId로 메시지 조회
     @Query("SELECT m FROM ChatMessage m WHERE m.roomId IN (:userRoomId, :otherRoomId) ORDER BY m.timestamp ASC")
     List<ChatMessage> findAllByRoomIds(@Param("userRoomId") Long userRoomId, @Param("otherRoomId") Long otherRoomId);
+
+    // 읽지 않은 메시지 조회 메서드 추가
+    @Query("SELECT m FROM ChatMessage m WHERE m.roomId = :roomId AND m.toIdx = :toIdx AND m.isRead = false")
+    List<ChatMessage> findByRoomIdAndToIdxAndIsReadFalse(@Param("roomId") Long roomId, @Param("toIdx") Long toIdx);
 }

@@ -12,7 +12,7 @@ const ChatRoomListComponent = ({chatRoomListResponseDTOList, handleRoomClick}) =
                     otherIdx={chatRoomListResponseDTO.otherIdx}
                     otherNickname={chatRoomListResponseDTO.otherNickname}
                     recentMessage={chatRoomListResponseDTO.recentMessage}
-                    isRecentMessageRead={String(chatRoomListResponseDTO.isRecentMessageRead)}
+                    isRecentMessageRead={chatRoomListResponseDTO.recentMessageRead}
                     handleRoomClick={handleRoomClick}
                 />
             ))}

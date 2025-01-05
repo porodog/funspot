@@ -101,4 +101,10 @@ public class ChatFacadeService {
 
     return chatMessageService.toChatMessageResponseDTO(chatMessage);
   }
+
+  // 메시지 읽음 처리 메서드 추가
+  public void markMessagesAsRead(Long roomId) {
+    Long userIdx = authTokenService.getCurrentUserIdx();
+    chatMessageService.markMessagesAsRead(roomId, userIdx);
+  }
 }

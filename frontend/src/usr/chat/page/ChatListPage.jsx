@@ -1,23 +1,11 @@
 // pages/ChatListPage.jsx
 
-// pages/ChatListPage.jsx
 import React, { useEffect, useState } from 'react';
 import { useBasic } from "../../../common/context/BasicContext";
 import BasicLayout from "../../../common/layout/BasicLayout";
 import ChatRoomListComponent from "../component/ChatRoomListComponent";
 import { chatApi } from "../api/chatApi";
 import { useNavigate } from 'react-router-dom';
-
-// currentUser의 채팅방 목록 조회 페이지
-
-// 1. List<RoomListResponseDTO>는 chatApi /api/chat 요청으로 백엔드에게서 응답받아야댐
-//      -> 백엔드 controller로 userIdx를 받으면 굳이 토큰 꺼내쓰는 작업 없어도 될거임(= ChatController 수정 必)
-// 2. <ChatRoomListComponent/>에 props로 List<RoomListResponseDTO> 전달
-// 3. <ChatRoomListComponent>에서 .map으로 recentMessageTimestamp 순으로 순회
-// 3-1. .map으로 {otherNickname, recentMessage, isRecentMessageRead, otherIdx(DTO에 추가해야함)} 추출
-// 3-2. 추출한 데이터를 <ChatRoomItemComponent>에 props로 전달
-// 4-1. <ChatRoomItemComponent>에서 <div>태그에 데이터 채워서 반환
-
 
 const ChatListPage = () => {
     // 객체 { nickname: "유나티비", userIdx: 1 }
@@ -28,13 +16,15 @@ const ChatListPage = () => {
 
 
     useEffect(() => {
-        // if(userInfo == null){
-        //     console.log("useEffect userInfo: "+ userInfo);
-        //     navigate('/login')
-        // }
         const fetchChatRoomListResponseDTOList = async () => {
             try{
                 const response = await chatApi.getChatRoomList();
+                // 최근 메시지 시간순으로 정렬
+                const sortedList = response.sort((a, b) => {
+                    const timeA = new Date(a.recentMessageTimestamp);
+                    const timeB = new Date(b.recentMessageTimestamp);
+                    return timeB - timeA; // 내림차순 정렬 (최신순)
+                });
                 setChatRoomListResponseDTO(response);
                 console.log(response);
             }catch(error){
@@ -72,14 +62,6 @@ const ChatListPage = () => {
                         handleRoomClick={handleRoomClick}
                     />
                 </div>
-                // <>
-                //     채팅 목록 티비
-                //     <ChatRoomListComponent
-                //         chatRoomListResponseDTOList={chatRoomListResponseDTOList}
-                //         handleRoomClick={handleRoomClick}
-                //     />
-                //     <button onClick={()=>navigate(`/chat/3`)}>3번 채팅방 입장</button>
-                // </>
             )}
         </div>
     );

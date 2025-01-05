@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 
 const ChatRoomListItemComponent = ({otherIdx, otherNickname, recentMessage, isRecentMessageRead, handleRoomClick}) => {
     // console.log(otherIdx, otherNickname, recentMessage);
+    // const isUnread = isRecentMessageRead === 'false' || isRecentMessageRead === false;
     return(
         <button
             onClick={() => handleRoomClick(otherIdx)}
@@ -22,8 +23,14 @@ const ChatRoomListItemComponent = ({otherIdx, otherNickname, recentMessage, isRe
                         <p className="text-sm text-gray-500 mt-1 line-clamp-1">{recentMessage}</p>
                     </div>
                 </div>
-                {isRecentMessageRead === 'false' && (
-                    <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>
+                {/*{isRecentMessageRead === 'false' && (*/}
+                {/*    <span className="inline-block w-3 h-3 bg-blue-500 rounded-full"></span>*/}
+                {/*)}*/}
+                {/*{isUnread && (*/}
+                {/*    <span className="inline-block w-3 h-3 bg-emerald-500 rounded-full"></span>*/}
+                {/*)}*/}
+                {!isRecentMessageRead && (
+                    <span className="inline-block w-3 h-3 bg-emerald-500 rounded-full"></span>
                 )}
             </div>
             {/*<div>otherIdx : {otherIdx}</div>*/}

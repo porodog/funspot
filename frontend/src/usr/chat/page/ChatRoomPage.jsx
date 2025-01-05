@@ -1,5 +1,5 @@
 // pages/ChatRoomPage.jsx
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import { useParams } from 'react-router-dom';
 import { chatApi } from '../api/chatApi';
 import { useBasic } from '../../../common/context/BasicContext';
@@ -15,6 +15,20 @@ const ChatRoomPage = () => {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+
+    // 채팅방 메시지 읽음 처리
+    const markMessagesAsRead = useCallback(async () => {
+        if (roomInfo?.userRoomId) {
+            await chatApi.markMessagesAsRead(roomInfo.userRoomId);
+        }
+    }, [roomInfo]);
+
+    // 채팅방이 활성화될 때와 새 메시지가 올 때 읽음 처리
+    useEffect(() => {
+        if (messages.length > 0) {
+            markMessagesAsRead();
+        }
+    }, [messages, markMessagesAsRead]);
 
     useEffect(() => {
         scrollToBottom();
@@ -95,6 +109,33 @@ const ChatRoomPage = () => {
         }
     };
 
+    // 시간 포맷팅 함수 추가
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12; // 12시간 형식
+        const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+        return `${ampm}${formattedHours}:${formattedMinutes}`;
+    };
+
+    // 날짜 포맷팅 함수 추가
+    const formatDate = (timestamp) => {
+        const date = new Date(timestamp);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year} - ${month} - ${day}`;
+    };
+
+    // 날짜가 같은지 확인하는 함수
+    const isSameDay = (timestamp1, timestamp2) => {
+        const date1 = new Date(timestamp1);
+        const date2 = new Date(timestamp2);
+        return date1.toDateString() === date2.toDateString();
+    };
+
     return (
         <div className="container mx-auto max-w-2xl bg-gray-50 h-[735px]">
             <div className="flex flex-col justify-center py-5 bg-white w-full h-[735px]">
@@ -108,10 +149,29 @@ const ChatRoomPage = () => {
                 {/*<div className="flex-1 overflow-y-auto p-4 space-y-4">*/}
                 <div className="scrollbar-hide flex-0 overflow-y-auto p-4 space-y-4 h-[735px]">
                     {messages.map((message, index) => (
+                        <React.Fragment key={index}>
+                            {/* 날짜 구분선 추가 */}
+                            {(index === 0 || !isSameDay(messages[index - 1].timestamp, message.timestamp)) && (
+                                <div className="flex items-center justify-center my-4">
+                                    <div className="border-t border-gray-300 flex-grow"></div>
+                                    <div className="mx-4 text-sm text-gray-500">
+                                        {formatDate(message.timestamp)}
+                                    </div>
+                                    <div className="border-t border-gray-300 flex-grow"></div>
+                                </div>
+                            )}
+
                         <div
                             key={index}
                             className={`flex ${message.fromIdx === userInfo.userIdx ? 'justify-end' : 'justify-start'}`}
                         >
+                            {/* 내 메시지의 경우 시간을 왼쪽에 표시 */}
+                            {message.fromIdx === userInfo.userIdx && (
+                                <span className="text-xs text-gray-500 mr-2">
+                                    {formatTime(message.timestamp)}
+                                </span>
+                            )}
+
                             <div
                                 className={`max-w-[70%] p-3 rounded-lg ${
                                     message.fromIdx === userInfo.userIdx
@@ -121,7 +181,15 @@ const ChatRoomPage = () => {
                             >
                                 {message.msg}
                             </div>
+
+                            {/* 상대방 메시지의 경우 시간을 오른쪽에 표시 */}
+                            {message.fromIdx !== userInfo.userIdx && (
+                                <span className="text-xs text-gray-500 ml-2">
+                                    {formatTime(message.timestamp)}
+                                </span>
+                            )}
                         </div>
+                        </React.Fragment>
                     ))}
                     {/* 스크롤 위치 지정을 위한 빈 div */}
                     <div ref={messagesEndRef}/>
