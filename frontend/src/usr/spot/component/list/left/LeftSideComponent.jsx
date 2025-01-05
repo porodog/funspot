@@ -27,11 +27,11 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
       title: "테마",
       optionList: []
     },
-    {
-      id: "arrange",
-      title: "정렬",
-      optionList: []
-    },
+    // {
+    //   id: "arrange",
+    //   title: "정렬",
+    //   optionList: []
+    // },
   ];
 
   // selectList 상태 초기화 값 수정
@@ -175,20 +175,6 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
     // 로그로 현재 선택된 값들 확인
     console.log("Current refs:", useSelectRef.current.map(ref => ref?.value));
 
-    // // 현재 선택된 모든 값으로 검색 파라미터 업데이트
-    // const selectValues = useSelectRef.current.reduce((acc, ref) => {
-    //   if (ref) {
-    //     acc[ref.id] = ref.value;
-    //   }
-    //   return acc;
-    // }, {});
-    //
-    // setSearchParameter(selectValues);
-    //
-    // // 검색어 값과 함께 검색 실행
-    // const searchObj = { searchValue: useInputRef.current.value };
-    // const searchParams = { ...searchObj, ...selectValues };
-    // await executeSearch(searchParams);  // 여기서 바로 검색 실행
   };
 
   // 검색 실행 함수
@@ -250,44 +236,6 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
           ].filter(img => img !== "") // 빈 문자열 필터링
         }));
 
-        // const transformedItems = response.response.body.items.item.map(item => ({
-        //   addr1: item.addr1 || '주소 정보 없음',
-        //   addr2: item.addr2,
-        //   areacode: item.areacode,
-        //   booktour: item.booktour,
-        //   cat1: item.cat1,
-        //   cat2: item.cat2,
-        //   cat3: item.cat3,
-        //   contentid: item.contentid,
-        //   contenttypeid: item.contenttypeid,
-        //   createdtime: item.createdtime,
-        //   firstImage: item.firstimage || '../../../../../common/img/image_upload.jpg',
-        //   firstImage2: item.firstimage2 || '../../../../../common/img/image_upload.jpg',
-        //   cpyrhtDivCd: item.cpyrhtDivCd,
-        //   mapX: item.mapx,
-        //   mapY: item.mapy,
-        //   mlevel: item.mlevel,
-        //   modifiedtime: item.modifiedtime,
-        //   sigungucode: item.sigungucode,
-        //   tel: item.tel || '전화번호 정보 없음',
-        //   title: item.title,
-        //   bookmark: false,
-        //   imageList: [
-        //     item.firstimage || '../../../../../common/img/image_upload.jpg',
-        //     item.firstimage2 || '../../../../../common/img/image_upload.jpg'
-        //   ].filter(img => img) // 빈 문자열이나 null 값 필터링
-
-
-          // id: item.contentid,
-          // name: item.title,
-          // address: item.addr1 || '주소 정보 없음',
-          // tel: item.tel || '전화번호 정보 없음',
-          // bookmark: false, // 기본값으로 false 설정
-          // imageList: [
-          //   item.firstimage || '../../../../../common/img/image_upload.jpg',
-          //   item.firstimage2 || '../../../../../common/img/image_upload.jpg'
-          // ].filter(img => img) // 빈 문자열이나 null 값 필터링
-        // }));
         setSpotList(transformedItems);
         setTotalCount(response.response.body.totalCount);
         setCurrentPage(pageNo);
@@ -381,7 +329,7 @@ const LeftSideComponent = ({spotList, setSpotList, setSearchParameter, setSpotSe
 
         {/* 하단 */}
         {/* 인벤토리(검색결과) */}
-        <div className="w-full h-auto p-2 space-y-3 flex flex-col overflow-y-auto">
+        <div className="w-full h-auto p-2 space-y-3 flex flex-col overflow-y-auto scrollbar-hide">
           {(spotList ?? []).length > 0 ? (
               <>
                 {/* 아이템 (목록) */}

@@ -9,7 +9,7 @@ const RightSideComponent = ({ spotList }) => {
           <ItemMapComponent spotList={spotList} />
 
           {/* 버튼 (코스저장) */}
-          <ItemButtonComponent />
+          {/*<ItemButtonComponent />*/}
         </div>
       </div>
   );

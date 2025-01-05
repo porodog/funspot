@@ -32,7 +32,7 @@ const SearchSelectComponent = ({select, onRefChange, onSelectChange}) => {
         // id={select.id}
         // defaultValue={'all'}
         ref={selectRef}
-        className="w-1/4 p-2 
+        className="w-1/3 p-2
         text-sm font-light
         border-2 bg-white rounded-3xl 
         focus:outline-none focus:ring-1 focus:border-emerald-500"

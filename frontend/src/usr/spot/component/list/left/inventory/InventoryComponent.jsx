@@ -34,7 +34,7 @@ const InventoryComponent = ({
 
                 <div className="w-2/5 h-full pl-3 relative flex content-end">
                     {/* 즐겨찾기 */}
-                    <ItemBookmarkComponent id={contentid} bookmark={bookmark} />
+                    {/*<ItemBookmarkComponent id={contentid} bookmark={bookmark} />*/}
                     {/* 담기 버튼 */}
                     <ItemButtonComponent id={contentid} spotData={{
                         addr1 : addr1,
