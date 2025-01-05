@@ -5,7 +5,7 @@ import ChatRoomListItemComponent from "./ChatRoomListItemComponent";
 
 const ChatRoomListComponent = ({chatRoomListResponseDTOList, handleRoomClick}) => {
     return (
-        <div>
+        <div className="space-y-3">
             {chatRoomListResponseDTOList.map((chatRoomListResponseDTO) => (
                 <ChatRoomListItemComponent
                     key={chatRoomListResponseDTO.roomId}
@@ -16,7 +16,12 @@ const ChatRoomListComponent = ({chatRoomListResponseDTOList, handleRoomClick}) =
                     handleRoomClick={handleRoomClick}
                 />
             ))}
-            끗
+            {chatRoomListResponseDTOList.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                    채팅 내역이 없습니다
+                </div>
+            )}
+            {/*끗*/}
         </div>
     )
 }

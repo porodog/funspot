@@ -56,18 +56,30 @@ const ChatListPage = () => {
     }
 
     return (
-        <div>
+        <div className="container mx-auto max-w-2xl bg-gray-50 h-[735px]">
             {userInfo == null ? (
-                <>비로그인 사용자는 채팅 목록을 열람할 수 없습니다.</>
+                // <>비로그인 사용자는 채팅 목록을 열람할 수 없습니다.</>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="p-8 text-center bg-white rounded-lg shadow-md">
+                        <p className="text-lg text-gray-700">비로그인 사용자는 채팅 목록을 열람할 수 없습니다.</p>
+                    </div>
+                </div>
             ) : (
-                <>
-                    채팅 목록 티비
+                <div className="p-4">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-6">채팅 목록</h1>
                     <ChatRoomListComponent
                         chatRoomListResponseDTOList={chatRoomListResponseDTOList}
                         handleRoomClick={handleRoomClick}
                     />
-                    <button onClick={()=>navigate(`/chat/3`)}>3번 채팅방 입장</button>
-                </>
+                </div>
+                // <>
+                //     채팅 목록 티비
+                //     <ChatRoomListComponent
+                //         chatRoomListResponseDTOList={chatRoomListResponseDTOList}
+                //         handleRoomClick={handleRoomClick}
+                //     />
+                //     <button onClick={()=>navigate(`/chat/3`)}>3번 채팅방 입장</button>
+                // </>
             )}
         </div>
     );
