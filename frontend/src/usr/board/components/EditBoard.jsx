@@ -156,7 +156,7 @@ const EditBoard = () => {
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                        className="px-4 py-2 bg-custom-cyan text-white rounded-md hover:bg-emerald-600"
                     >
                         수정
                     </button>

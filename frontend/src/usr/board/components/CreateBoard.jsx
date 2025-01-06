@@ -146,7 +146,7 @@ const CreateBoard = () => {
                 </p>
                 <button
                     type="submit"
-                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
+                    className="w-full bg-custom-cyan text-white py-2 rounded-md hover:bg-emerald-600"
                 >
                     작성하기
                 </button>

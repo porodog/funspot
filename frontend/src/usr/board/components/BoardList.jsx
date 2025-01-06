@@ -172,8 +172,8 @@ const BoardList = () => {
                 />
                 <button
                     onClick={handleSearch}
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
-                    style={{ backgroundColor: "#25E2B6" }}
+                    className="px-4 py-2 bg-custom-cyan text-white rounded-md hover:bg-emerald-600 transition"
+
                 >
                     검색
                 </button>
@@ -287,7 +287,7 @@ const BoardList = () => {
                             onClick={() => handlePageChange(pageNum)}
                             className={`px-4 py-2 rounded-md ${
                                 pageNum === page
-                                    ? "bg-green-500 text-white"
+                                    ? "bg-custom-cyan text-white "
                                     : "bg-gray-300 hover:bg-gray-400"
                             }`}
                         >

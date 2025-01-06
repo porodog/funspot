@@ -444,7 +444,7 @@ const BoardDetail = () => {
                         className={`px-4 py-2 rounded-md transition ${
                             hasLiked
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-green-500 text-white hover:bg-green-600"
+                                : "bg-custom-cyan text-white hover:bg-emerald-600"
                         }`}
                     >
                         {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
@@ -566,7 +566,7 @@ const BoardDetail = () => {
                                         />
                                         <button
                                             onClick={() => handleReplySubmit(comment.id)}
-                                            className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                            className="bg-custom-cyan hover:bg-emerald-600 text-white px-4 py-2 rounded-md"
                                         >
                                             대댓글 작성
                                         </button>
@@ -602,7 +602,7 @@ const BoardDetail = () => {
                                 />
                                 <button
                                     onClick={handleCommentSubmit}
-                                    className="ml-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                                    className="ml-2 bg-custom-cyan text-white hover:bg-emerald-600 px-4 py-2 rounded-md"
                                 >
                                     댓글 작성
                                 </button>
@@ -616,8 +616,7 @@ const BoardDetail = () => {
             <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}
                 <button
                     onClick={() => navigate("/board")}
-                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
-                    style={{backgroundColor: "#25E2B6"}}
+                    className="w-full bg-custom-cyan hover:bg-emerald-600 text-white py-2 rounded-md transition"
                 >
                     목록으로
                 </button>
