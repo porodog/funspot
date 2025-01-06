@@ -1,5 +1,6 @@
 package com.spot.fun.usr.spot.cotroller;
 
+import com.spot.fun.usr.spot.dto.SpotForPlaceDTO;
 import com.spot.fun.usr.spot.dto.SpotItemResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
@@ -19,7 +20,7 @@ public class SpotController {
 
   // 내 스팟 리스트 조회
   @GetMapping("/getSpotList/{userIdx}")
-  public List<SpotListResponseDTO> getSpotList(@PathVariable("userIdx") Long userIdx){
+  public List<SpotForPlaceDTO> getSpotList(@PathVariable("userIdx") Long userIdx){
     return spotFacadeService.getSpotList(userIdx);
   }
 

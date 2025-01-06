@@ -1,5 +1,6 @@
 package com.spot.fun.usr.spot.service;
 
+import com.spot.fun.usr.spot.dto.SpotForPlaceDTO;
 import com.spot.fun.usr.spot.dto.SpotItemResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
@@ -35,6 +36,23 @@ public class SpotService {
             .firstImage2(spot.getFirstImage2())
             .tel(spot.getTel())
             .title(spot.getTitle())
+            .build();
+  }
+
+  // Spot을 Place 형식의 DTO로 변환
+  public SpotForPlaceDTO setSpotForPlaceDTO(Spot spot){
+    return SpotForPlaceDTO.builder()
+            .id(spot.getSpotId())
+            .address(spot.getAddr1() + " " + spot.getAddr2())
+            .category(spot.getCat2Name())
+            .description("")
+            .durationMinutes(0)
+            .estimatedCost(0)
+            .latitude(spot.getMapX())
+            .longitude(spot.getMapY())
+            .name(spot.getTitle())
+            .simpleAddress(spot.getAreaCodeName() + " " + spot.getSigunguCodeName())
+            .image(spot.getFirstImage())
             .build();
   }
 
