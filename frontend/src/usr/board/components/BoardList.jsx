@@ -202,7 +202,7 @@ const BoardList = () => {
                                 }}
                                 >
 
-                                <div className="flex items-center mb-2 gap-1"> {/* gap 속성으로 간격 조정 */}
+                                <div className="flex items-center mb-2 gap-0.3"> {/* gap 속성으로 간격 조정 */}
                                     <Link to={`/mypage/feed/${board.authorIdx}`}>
                                         <div
                                             className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center">
