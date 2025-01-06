@@ -208,7 +208,7 @@ const BoardList = () => {
                                             {console.log('프로필 이미지 데이터:', board.profileImage)} {/* 디버깅용 로그 */}
                                             {board.profileImage ? (
                                                 <img
-                                                    src={`http://localhost:8080/api/usr/profile/image/${board.profileImage}`}
+                                                    src={`http://funspot.store/api/usr/profile/image/${board.profileImage}`}
                                                     alt="프로필 이미지"
                                                     className="w-full h-full object-contain rounded-full"
                                                     onError={(e) => {
