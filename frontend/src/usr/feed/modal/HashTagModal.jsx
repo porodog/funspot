@@ -25,7 +25,7 @@ const HashTagModal = ({
       onClick={closeHashtagModal}
     >
       <div
-        className="bg-white rounded-lg w-250 p-6 flex flex-col"
+        className="bg-white rounded-lg w-96 p-6 flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* 상단 툴바 X 버튼 */}
@@ -63,7 +63,7 @@ const HashTagModal = ({
                   hashtagList.find((item) => item.hashtagIdx === tag.idx)
                     ? "bg-emerald-400 text-white border-emerald-400 "
                     : "bg-white text-gray-400 border-gray-200 "
-                } px-4 py-3 border-2 inline-flex items-center rounded-full text-sm font-medium cursor-pointer
+                } px-4 py-3 mb-2 border-2 inline-flex items-center rounded-full text-sm font-medium cursor-pointer
               hover:bg-emerald-500 hover:text-white hover:border-emerald-400`}
               >
                 {tag.tagName}
