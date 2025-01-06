@@ -18,6 +18,7 @@ public class CustomDTO {
     private String title;
     private String description;
     private Long idx;
+    private String nickname;
     private List<PlaceDTO> places;
     private List<String> tags;
 

@@ -47,6 +47,7 @@ public class CustomServiceImpl implements CustomService {
               .title(customDTO.getTitle())
               .description(customDTO.getDescription())
               .idx(customDTO.getIdx())
+              .nickname(customDTO.getNickname())
               .tags(String.join(",", customDTO.getTags()))
               .delYn(customDTO.getDelYn())
               .build();
@@ -136,6 +137,7 @@ public class CustomServiceImpl implements CustomService {
       // 1️⃣ 코스 기본 정보 업데이트 (제목, 설명, 태그)
       existingCustom.setTitle(customDTO.getTitle());
       existingCustom.setDescription(customDTO.getDescription());
+      existingCustom.setNickname(customDTO.getNickname());
       existingCustom.setTags(String.join(",", customDTO.getTags())); // 태그 업데이트
 
       // 2️⃣ 장소 정보 업데이트

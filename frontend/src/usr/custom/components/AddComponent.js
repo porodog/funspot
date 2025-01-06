@@ -119,6 +119,7 @@ const AddComponent = () => {
       places: selectedPlaces,
       tags: selectedTags,
       idx: loginUserIdx,
+      nickname: loginNickName,
     };
 
     try {

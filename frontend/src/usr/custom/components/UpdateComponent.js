@@ -135,6 +135,7 @@ const UpdateComponent = () => {
       description,
       places: selectedPlaces,
       tags: selectedTags,
+      nickname: loginNickName,
     };
 
     try {
