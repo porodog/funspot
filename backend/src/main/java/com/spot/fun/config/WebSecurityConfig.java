@@ -113,6 +113,7 @@ public class WebSecurityConfig {
 
         // 허용하는 Origin 설정
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("funspot.store");
         configuration.addAllowedOrigin(serverUrl);
 
         // 허용할 HTTP 메서드 추가 (PATCH, DELETE, OPTIONS 등)
