@@ -1,13 +1,13 @@
 // 메인 배너
 import React, { useState, useEffect } from 'react';
-import Banner1 from '../imgs/Banner2.png'
-import Rion from '../imgs/rion.png'
-import Rion2 from '../imgs/img.jpg'
+import Banner1 from '../imgs/Banner1.png'
+import Banner2 from '../imgs/Banner2.png'
+import Banner3 from '../imgs/Banner3.png'
 
 const images = [
   Banner1,
-  Rion,
-  Rion2,
+  Banner2,
+  Banner3,
 ];
 
 const Banner = () => {
@@ -28,7 +28,7 @@ const Banner = () => {
           <div key={index} className="w-full flex-shrink-0 relative">
             <img src={image} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 h-1 bg-transparent w-1/5">
-              <div className="h-full bg-blue-500 transition-all duration-[5s] ease-linear" style={{ width: currentIndex === index ? '100%' : '0%' }}></div>
+              <div className="h-full bg-custom-cyan transition-all duration-[5s] ease-linear" style={{ width: currentIndex === index ? '100%' : '0%' }}></div>
             </div>
           </div>
         ))}
