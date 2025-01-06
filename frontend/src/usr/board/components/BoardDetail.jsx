@@ -444,7 +444,7 @@ const BoardDetail = () => {
                         className={`px-4 py-2 rounded-md transition ${
                             hasLiked
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                : "bg-green-500 text-white hover:bg-green-600"
+                                : "bg-custom-cyan text-white hover:bg-emerald-600"
                         }`}
                     >
                         {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
@@ -486,15 +486,14 @@ const BoardDetail = () => {
                                         <ProfileImage profileImage={comment.profileImage} size="w-8 h-8"/>
                                     </Link>
                                     <span className="text-sm font-semibold ml-2 cursor-pointer">
-    <Link to={`/mypage/feed/${comment.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
-        {comment.author || "익명"}
-    </Link>
-</span>
-
-                                    <span className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
+        <Link to={`/mypage/feed/${comment.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
+            {comment.author || "익명"}
+        </Link>
+    </span>
+                                    <span className="text-gray-700 flex-1 ml-2 truncate cursor-pointer" // 여백 추가
                                           onClick={() => handleReplyToggle(comment.id)}>
-                                        {comment.content}
-                                    </span>
+        {comment.content}
+    </span>
                                 </div>
                                 <div className="flex items-center">
                                     <span className="text-xs text-gray-500 mr-2">
@@ -567,7 +566,7 @@ const BoardDetail = () => {
                                         />
                                         <button
                                             onClick={() => handleReplySubmit(comment.id)}
-                                            className="bg-green-500 text-white px-4 py-2 rounded-md"
+                                            className="bg-custom-cyan hover:bg-emerald-600 text-white px-4 py-2 rounded-md"
                                         >
                                             대댓글 작성
                                         </button>
@@ -603,7 +602,7 @@ const BoardDetail = () => {
                                 />
                                 <button
                                     onClick={handleCommentSubmit}
-                                    className="ml-2 bg-green-500 text-white px-4 py-2 rounded-md"
+                                    className="ml-2 bg-custom-cyan text-white hover:bg-emerald-600 px-4 py-2 rounded-md"
                                 >
                                     댓글 작성
                                 </button>
@@ -617,8 +616,7 @@ const BoardDetail = () => {
             <div className="text-center" style={{marginTop: "2rem"}}> {/* 상단 간격을 2rem으로 설정 */}
                 <button
                     onClick={() => navigate("/board")}
-                    className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition"
-                    style={{backgroundColor: "#25E2B6"}}
+                    className="w-full bg-custom-cyan hover:bg-emerald-600 text-white py-2 rounded-md transition"
                 >
                     목록으로
                 </button>

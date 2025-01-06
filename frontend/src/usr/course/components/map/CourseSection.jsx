@@ -59,7 +59,7 @@ const CourseSection = ({ places }) => {
               />
 
               {/* 번호 표시 */}
-              <div className="absolute top-2 left-2 bg-blue-500 text-white text-lg font-bold rounded-full w-10 h-10 flex items-center justify-center">
+              <div className="absolute top-2 left-2 bg-custom-cyan text-white text-lg font-bold rounded-full w-10 h-10 flex items-center justify-center">
                 {index + 1}
               </div>
             </div>
@@ -79,7 +79,7 @@ const CourseSection = ({ places }) => {
                     )},${place.latitude},${place.longitude}`
                   )
                 }
-                className="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+                className="mt-4 w-full py-2 bg-custom-cyan text-white rounded-lg hover:bg-emerald-600 transition"
               >
                 길찾기
               </button>

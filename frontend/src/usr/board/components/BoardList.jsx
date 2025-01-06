@@ -172,8 +172,8 @@ const BoardList = () => {
                 />
                 <button
                     onClick={handleSearch}
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
-                    style={{ backgroundColor: "#25E2B6" }}
+                    className="px-4 py-2 bg-custom-cyan text-white rounded-md hover:bg-emerald-600 transition"
+
                 >
                     검색
                 </button>
@@ -202,9 +202,10 @@ const BoardList = () => {
                                 }}
                                 >
 
-                                <div className="flex items-center mb-2">
+                                <div className="flex items-center mb-2 gap-0.3"> {/* gap 속성으로 간격 조정 */}
                                     <Link to={`/mypage/feed/${board.authorIdx}`}>
-                                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center">
+                                        <div
+                                            className="w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center">
                                             {console.log('프로필 이미지 데이터:', board.profileImage)} {/* 디버깅용 로그 */}
                                             {board.profileImage ? (
                                                 <img
@@ -215,23 +216,26 @@ const BoardList = () => {
                                                         console.log('이미지 로드 에러:', e); // 디버깅용 로그
                                                         e.target.style.display = 'none';
                                                         e.target.parentElement.innerHTML = `
-                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                            <FaUser className="text-gray-400 text-lg" />
-                        </div>
-                    `;
+            <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                <FaUser className="text-gray-400 text-lg" />
+            </div>
+        `;
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                                    <FaUser className="text-gray-400 text-lg" />
+                                                <div
+                                                    className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <FaUser className="text-gray-400 text-lg"/>
                                                 </div>
                                             )}
                                         </div>
                                     </Link>
-                                    <Link to={`/mypage/feed/${board.authorIdx}`} className="text-blue-500">
+                                    <Link to={`/mypage/feed/${board.authorIdx}`}
+                                          className="text-blue-500 ml-2"> {/* 간격 추가 */}
                                         {board.nickname}
                                     </Link>
                                 </div>
+
 
                                 <h2 className="text-lg font-semibold mt-2">
                                     {truncateText(board.title, 40)}
@@ -283,7 +287,7 @@ const BoardList = () => {
                             onClick={() => handlePageChange(pageNum)}
                             className={`px-4 py-2 rounded-md ${
                                 pageNum === page
-                                    ? "bg-green-500 text-white"
+                                    ? "bg-custom-cyan text-white "
                                     : "bg-gray-300 hover:bg-gray-400"
                             }`}
                         >
