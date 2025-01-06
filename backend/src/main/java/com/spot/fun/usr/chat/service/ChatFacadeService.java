@@ -7,7 +7,10 @@ import com.spot.fun.usr.chat.entity.ChatRoom;
 import com.spot.fun.usr.user.dto.UserDTO;
 import com.spot.fun.usr.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -16,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ChatFacadeService {
+  private static final Logger log = LoggerFactory.getLogger(ChatFacadeService.class);
   private final ChatRoomService chatRoomService;
   private final ChatMessageService chatMessageService;
   private final UserServiceImpl userService;
@@ -102,9 +106,17 @@ public class ChatFacadeService {
     return chatMessageService.toChatMessageResponseDTO(chatMessage);
   }
 
-  // 메시지 읽음 처리 메서드 추가
+  @Transactional
   public void markMessagesAsRead(Long roomId) {
-    Long userIdx = authTokenService.getCurrentUserIdx();
-    chatMessageService.markMessagesAsRead(roomId, userIdx);
+    try {
+      Long userIdx = authTokenService.getCurrentUserIdx();
+      if (userIdx == null) {
+        throw new IllegalArgumentException("현재 로그인한 사용자를 찾을 수 없습니다.");
+      }
+      chatMessageService.markMessagesAsRead(roomId, userIdx);
+    } catch (Exception e) {
+      log.error("메시지 읽음 처리 중 오류 발생: ", e);
+      throw new RuntimeException("메시지 읽음 처리에 실패했습니다.", e);
+    }
   }
 }

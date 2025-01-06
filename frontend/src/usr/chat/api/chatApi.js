@@ -103,9 +103,22 @@ export const chatApi = {
 
     markMessagesAsRead: async (roomId) => {
         try {
-            await axios.post(`${API_BASE_URL}/api/chat/${roomId}/read`);
+            if (!roomId) {
+                console.error('Invalid roomId');
+                return;
+            }
+            const response = await axios.post(`${API_BASE_URL}/api/chat/${roomId}/read`);
+            if (response.status === 200) {
+                console.log('Mey' +
+                    'ssages marked as read successfully');
+            }
         } catch (error) {
             console.error('메시지 읽음 처리 실패:', error);
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
+            throw error;
         }
     }
+
 };

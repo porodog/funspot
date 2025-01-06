@@ -4,7 +4,10 @@ import com.spot.fun.usr.chat.dto.*;
 import com.spot.fun.usr.chat.entity.ChatMessage;
 import com.spot.fun.usr.chat.repository.ChatMessageRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +16,7 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService{
+    private static final Logger log = LoggerFactory.getLogger(ChatMessageService.class);
     private final ChatMessageRepository chatMessageRepository;
 
     public ChatRoomListResponseDTO setChatRoomListResponseDTO(Long roomId) {
@@ -72,12 +76,14 @@ public class ChatMessageService{
                 .build();
     }
 
-    // 채팅방의 모든 메시지를 읽음 처리
+    @Transactional
     public void markMessagesAsRead(Long roomId, Long toIdx) {
-        List<ChatMessage> unreadMessages = chatMessageRepository.findByRoomIdAndToIdxAndIsReadFalse(roomId, toIdx);
-        unreadMessages.forEach(message -> {
-            message.markAsRead();
-            chatMessageRepository.save(message);
-        });
+        try {
+            int updatedCount = chatMessageRepository.markMessagesAsRead(roomId, toIdx);
+            log.debug("Updated {} messages as read for roomId: {} and toIdx: {}", updatedCount, roomId, toIdx);
+        } catch (Exception e) {
+            log.error("Error marking messages as read: ", e);
+            throw new RuntimeException("메시지 읽음 처리 중 오류가 발생했습니다", e);
+        }
     }
 }

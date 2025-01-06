@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -57,10 +58,18 @@ public class ChatController {
         // 발신자 채널로만 메시지 전송
         messagingTemplate.convertAndSend("/sub/roomId/" + roomId, chatMessageResponseDTO);
     }
-
     @PostMapping("/{roomId}/read")
-    public ResponseEntity<Void> markMessagesAsRead(@PathVariable Long roomId) {
-        chatFacadeService.markMessagesAsRead(roomId);
-        return ResponseEntity.ok().build();
+    @Transactional
+    public ResponseEntity<Void> markMessagesAsRead(@PathVariable("roomId") Long roomId) {
+        try {
+            chatFacadeService.markMessagesAsRead(roomId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            log.error("잘못된 요청 파라미터: ", e);
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            log.error("메시지 읽음 처리 중 서버 오류: ", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
