@@ -140,9 +140,9 @@ const InsertModal = ({ closeInsertModal }) => {
           <ContentComponent useTextRef={useTextRef} />
 
           {/* 해시태그 */}
-          <div className="flex items-center space-x-4">
+          <div className="flex space-x-4">
             <button
-              className="py-4 px-6 border-2 border-emerald-400 
+              className="py-4 px-6 w-42 max-h-14 border-2 border-emerald-400
               text-emerald-400 font-semibold text-sm rounded-full 
               hover:bg-emerald-400 hover:text-white transition duration-300 ease-in-out"
               onClick={() => setIsHashtagModalOpen(true)}
@@ -151,7 +151,7 @@ const InsertModal = ({ closeInsertModal }) => {
             </button>
 
             {/* 선택된 해시태그들 */}
-            <div className="flex flex-wrap space-x-3">
+            <div className="flex flex-wrap space-x-3 w-9/12">
               {(hashtagList ?? []).length > 0 && (
                 <HashtagComponent
                   hashtagList={hashtagList}
