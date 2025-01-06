@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.spot.fun.usr.spot.entity.Spot;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import com.spot.fun.usr.custom.dto.PlaceDTO;
 import com.spot.fun.usr.custom.repository.PlaceRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +44,24 @@ public class PlaceServiceImpl implements PlaceService {
                 .map(place -> modelMapper.map(place, PlaceDTO.class))
                 .collect(Collectors.toList());
     }
+
+  @Transactional
+  public Place saveFromSpot(Spot spot) {
+    Place place = Place.builder()
+            .name(spot.getTitle())
+            .address(spot.getAddr1() + " " + spot.getAddr2())
+            .simpleAddress(spot.getAreaCodeName() + " " + spot.getSigunguCodeName())
+            .latitude(spot.getMapX())
+            .longitude(spot.getMapY())
+            .category(spot.getCat2Name())
+            .description("")
+            .estimatedCost(0)
+            .durationMinutes(0)
+            .image(spot.getFirstImage())
+            .build();
+
+    return placeRepository.save(place);
+  }
     
 }
 
