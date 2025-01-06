@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useBasic } from "../../../common/context/BasicContext";
 import { useNavigate } from 'react-router-dom';
+import { chatApi } from '../../chat/api/chatApi';
+import {useEffect, useState} from "react";
 
 const ButtonComponent = ({
   openProfileModal,
@@ -11,6 +13,24 @@ const ButtonComponent = ({
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
   const navigate = useNavigate();
+
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        const chatRooms = await chatApi.getChatRoomList();
+        const unreadCount = chatRooms.reduce((count, room) => {
+          return count + (room.isRecentMessageRead ? 0 : 1);
+        }, 0);
+        setUnreadCount(unreadCount);
+      } catch (error) {
+        console.error('Failed to fetch unread messages:', error);
+      }
+    };
+
+    fetchUnreadMessages();
+  }, []);
 
   return (
     <>
@@ -30,6 +50,11 @@ const ButtonComponent = ({
                   onClick={()=>navigate(`/chat/`)}
               >
                 내 채팅방
+                {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {unreadCount}
+          </span>
+                )}
               </button>
             </>
         ) : (
