@@ -1,5 +1,7 @@
 package com.spot.fun.usr.spot.service;
 
+import com.spot.fun.usr.custom.service.PlaceService;
+import com.spot.fun.usr.custom.service.PlaceServiceImpl;
 import com.spot.fun.usr.spot.dto.SpotItemResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
@@ -18,6 +20,7 @@ public class SpotFacadeService {
   private static final Logger log = LoggerFactory.getLogger(SpotFacadeService.class);
   private final SpotUserMapService spotUserMapService;
   private final SpotService spotService;
+  private final PlaceServiceImpl placeService;
 
 
   // userIdx로 내 스팟 조회를 하려면 매퍼테이블이 있어야댐....
@@ -59,9 +62,16 @@ public class SpotFacadeService {
         return "이미 내 스팟에 추가된 항목입니다";
       }
 
+      Spot savedSpot = null;
+
       // Spot 테이블에 데이터가 없으면 저장
       if(!spotService.existsBySpotId(spotId)){
-        spotService.saveSpot(spotPostRequestDTO);
+        // Spot이 새로 저장된 경우에만 Place도 저장
+//        placeService.saveFromSpot(savedSpot);
+//        spotService.saveSpot(spotPostRequestDTO);
+        savedSpot = spotService.saveSpot(spotPostRequestDTO);
+        // Spot이 새로 저장된 경우에만 Place도 저장
+        placeService.saveFromSpot(savedSpot);
       }
 
       // SpotUserMap에 매핑 정보 저장
