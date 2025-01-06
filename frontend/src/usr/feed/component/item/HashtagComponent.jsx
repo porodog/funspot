@@ -4,7 +4,7 @@ const HashtagComponent = ({ hashtagList, handleDeleteHashTagEvent }) => {
       {hashtagList.map((tag) => (
         <span
           key={tag.hashtagIdx}
-          className="px-4 py-3 inline-flex items-center 
+          className="px-4 py-3 mb-1 inline-flex items-center
           bg-emerald-400
           text-white rounded-full text-sm font-medium cursor-pointer
           hover:bg-emerald-500 transition duration-300 ease-in-out"
