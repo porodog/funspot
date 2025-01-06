@@ -486,15 +486,14 @@ const BoardDetail = () => {
                                         <ProfileImage profileImage={comment.profileImage} size="w-8 h-8"/>
                                     </Link>
                                     <span className="text-sm font-semibold ml-2 cursor-pointer">
-    <Link to={`/mypage/feed/${comment.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
-        {comment.author || "익명"}
-    </Link>
-</span>
-
-                                    <span className="text-gray-700 flex-1 mr-4 truncate cursor-pointer"
+        <Link to={`/mypage/feed/${comment.profileImage.userIdx}`} className="hover:text-emerald-500 transition-colors">
+            {comment.author || "익명"}
+        </Link>
+    </span>
+                                    <span className="text-gray-700 flex-1 ml-2 truncate cursor-pointer" // 여백 추가
                                           onClick={() => handleReplyToggle(comment.id)}>
-                                        {comment.content}
-                                    </span>
+        {comment.content}
+    </span>
                                 </div>
                                 <div className="flex items-center">
                                     <span className="text-xs text-gray-500 mr-2">
