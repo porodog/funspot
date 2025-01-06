@@ -57,7 +57,7 @@ export const chatApi = {
 
     getChatRoomList: async () => {
         const res = await axios.get(`${API_BASE_URL}/api/chat/`);
-        console.log(res);
+        console.log("API 응답 데이터:", res.data);  // API 응답 데이터 확인
         return res.data;
     },
 
