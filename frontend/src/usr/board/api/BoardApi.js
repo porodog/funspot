@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/boards'; // API 서버 URL
+const API_URL = 'http://funspot.store/api/boards'; // API 서버 URL
 
 // 1. 게시글 목록 조회
 export const getPosts = async () => {

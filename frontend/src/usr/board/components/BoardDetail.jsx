@@ -12,7 +12,7 @@ const ProfileImage = ({profileImage, size = "w-10 h-10"}) => (
     >
         {profileImage?.uploadName ? (
             <img
-                src={`http://localhost:8080/api/usr/profile/image/${profileImage.uploadName}?t=${new Date().getTime()}`}
+                src={`http://funspot.store/api/usr/profile/image/${profileImage.uploadName}?t=${new Date().getTime()}`}
                 alt="프로필"
                 className="w-full h-full object-cover"
                 onError={(e) => {
@@ -130,13 +130,13 @@ const BoardDetail = () => {
             try {
 
                 // 게시글 데이터 가져오기
-                const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
+                const boardResponse = await axios.get(`http://funspot.store/api/boards/${id}`);
                 setBoard(boardResponse.data);
 
                 // 추천 여부 확인
                 if (userInfo?.userIdx) {
                     const likeResponse = await axios.get(
-                        `http://localhost:8080/api/boards/${id}/has-liked`,
+                        `http://funspot.store/api/boards/${id}/has-liked`,
                         {
                             params: {userIdx: userInfo?.userIdx}, // userIdx 전달
                         }
@@ -156,12 +156,12 @@ const BoardDetail = () => {
         const fetchData = async () => {
             try {
                 // 게시글 데이터 가져오기
-                const boardResponse = await axios.get(`http://localhost:8080/api/boards/${id}`);
+                const boardResponse = await axios.get(`http://funspot.store/api/boards/${id}`);
                 setBoard(boardResponse.data);
                 console.log(userInfo?.userIdx ?? 0);
                 // 조회수 증가 요청
 
-                await axios.get(`http://localhost:8080/api/boards/${id}/view`, {
+                await axios.get(`http://funspot.store/api/boards/${id}/view`, {
                     params: {userIdx: userInfo?.userIdx ?? 0},
                 });
 
@@ -193,7 +193,7 @@ const BoardDetail = () => {
 
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/comments/${id}`);
+            const response = await axios.get(`http://funspot.store/api/comments/${id}`);
             const commentsWithProfiles = await Promise.all(
                 response.data.map(async (comment) => {
                     const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
@@ -239,7 +239,7 @@ const BoardDetail = () => {
             console.log("Sending Payload:", payload);
 
             const response = await axios.post(
-                `http://localhost:8080/api/comments/${id}`,
+                `http://funspot.store/api/comments/${id}`,
                 payload,
                 {
                     headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
@@ -307,7 +307,7 @@ const BoardDetail = () => {
 
         try {
             await axios.patch(
-                `http://localhost:8080/api/boards/${id}/delete`,
+                `http://funspot.store/api/boards/${id}/delete`,
                 {},
                 {
                     headers: {},
@@ -326,7 +326,7 @@ const BoardDetail = () => {
 
         try {
             await axios.post(
-                `http://localhost:8080/api/boards/${id}/like`,
+                `http://funspot.store/api/boards/${id}/like`,
                 null,
                 {
                     params: {userIdx: userInfo?.userIdx}, // userIdx 전달
@@ -373,7 +373,7 @@ const BoardDetail = () => {
 
         try {
             // 서버에 삭제 요청
-            await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+            await axios.delete(`http://funspot.store/api/comments/${commentId}`, {
                 headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
             });
 
@@ -399,13 +399,13 @@ const BoardDetail = () => {
             {/* 제목 */}
             <h1 className="text-3xl font-bold text-gray-800 mb-6">{board.title}</h1>
 
-            {/* 작성일 */}
-            <p className="text-sm text-gray-500 mb-1">
-                작성일: {formatDateTime(board.regDate)}
-            </p>
+            {/*/!* 작성일 *!/*/}
+            {/*<p className="text-sm text-gray-500 mb-1">*/}
+            {/*    작성일: {formatDateTime(board.regDate)}*/}
+            {/*</p>*/}
 
-            {/* 닉네임 */}
-            <p className="text-sm text-gray-600 mb-4">작성자: {board.nickname}</p>
+            {/*/!* 닉네임 *!/*/}
+            {/*<p className="text-sm text-gray-600 mb-4">작성자: {board.nickname}</p>*/}
 
             {/* 작성자 정보 영역 */}
             <div className="flex items-center mb-4">
@@ -583,32 +583,12 @@ const BoardDetail = () => {
                 {/* 로그인 안내문구 */}
                 {!userInfo && (
                     <p className="text-red-500 text-sm mt-4">
-                        로그인 후 추천 및 댓글 작성 기능을 이용하실 수 있습니다.
+                        로그인 후 댓글 작성 기능을 이용하실 수 있습니다.
                     </p>
                 )}
                 {/* 댓글 입력 필드 및 버튼 */}
                 {userInfo && (
                     <div className="new-comment mt-6">
-                        {/* 추천 버튼 */}
-                        {userInfo ? (
-                            <div className="flex justify-center mb-6">
-                                <button
-                                    onClick={handleLike}
-                                    disabled={hasLiked}
-                                    className={`px-4 py-2 rounded-md transition ${
-                                        hasLiked
-                                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                            : "bg-green-500 text-white hover:bg-green-600"
-                                    }`}
-                                >
-                                    {hasLiked ? "추천 완료" : "추천"} ({board.likeCount || 0})
-                                </button>
-                            </div>
-                        ) : (
-                            <p className="text-red-500 text-sm mt-4 text-center">
-                                로그인 후 추천 기능을 이용하실 수 있습니다.
-                            </p>
-                        )}
 
                         <div className="new-comment mt-6">
                             <div className="flex items-center">
