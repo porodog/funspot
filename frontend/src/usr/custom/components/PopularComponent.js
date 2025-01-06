@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getCustomPopularListAll } from "../api/WishListApi";
+import { useBasic } from "../../../common/context/BasicContext";
 import { Link } from "react-router-dom";
 
 import locate from "../img/locate.png";
@@ -8,6 +9,9 @@ const PopularComponent = () => {
   const [customs, setCustoms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const { userInfo } = useBasic();
+  const loginNickName = userInfo?.nickname || "";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,7 +96,7 @@ const PopularComponent = () => {
                 {/* 코스 정보 */}
                 <div className="p-4">
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {custom.title}
+                    {loginNickName}님의 {custom.title}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {custom.places.reduce(

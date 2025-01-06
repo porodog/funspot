@@ -11,6 +11,7 @@ const ListComponent = () => {
 
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
+  const loginNickName = userInfo?.nickname || "";
 
   const navigate = useNavigate();
 
@@ -154,7 +155,7 @@ const ListComponent = () => {
                 {/* 코스 정보 */}
                 <div className="p-4">
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {custom.title}
+                    {loginNickName}님의 {custom.title}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {custom.places.reduce(

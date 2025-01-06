@@ -23,6 +23,7 @@ const ReadComponent = () => {
 
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
+  const loginNickName = userInfo?.nickname || "";
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -245,7 +246,9 @@ const ReadComponent = () => {
 
       <div className="flex items-center justify-between mb-2">
         {/* 제목 */}
-        <h1 className="text-2xl font-bold">{custom.title}</h1>
+        <h1 className="text-2xl font-bold">
+          {loginNickName}님의 {custom.title}
+        </h1>
 
         {/* 버튼 그룹 */}
         <div className="flex items-center gap-2">
