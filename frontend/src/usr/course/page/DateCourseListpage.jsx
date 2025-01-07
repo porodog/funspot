@@ -60,7 +60,7 @@ const DateCourseListPage = () => {
     // 장소 필터
     if (locationFilter) {
       filtered = filtered.filter((course) =>
-        course.places?.some((place) => place.location.includes(locationFilter))
+          course.places?.some((place) => place.location.includes(locationFilter))
       );
     }
 
@@ -76,81 +76,81 @@ const DateCourseListPage = () => {
   };
 
   return (
-    <BasicLayout>
-      <GoBackButton />
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">데이트 코스 목록</h1>
+      <BasicLayout>
+        <GoBackButton />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">데이트 코스 목록</h1>
 
-        <div className="mb-8 text-center">
-          {userRole === "ROLE_ADMIN" && (
-            <button
-              onClick={navigateToAddCoursePage}
-              className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer"
-            >
-              새로운 코스 추가
-            </button>
+          <div className="mb-8 text-center">
+            {userRole === "ROLE_ADMIN" && (
+                <button
+                    onClick={navigateToAddCoursePage}
+                    className="w-full bg-custom-cyan text-white py-2 px-4 rounded-md hover:bg-emerald-500 transition duration-200 cursor-pointer"
+                >
+                  새로운 코스 추가
+                </button>
+            )}
+          </div>
+
+          {/* 필터 UI 추가 */}
+          <div className="flex justify-between mb-6">
+            <div className="flex items-center">
+              <label htmlFor="ageGroupFilter" className="mr-2">
+                연령대:
+              </label>
+              <select
+                  id="ageGroupFilter"
+                  value={ageGroupFilter}
+                  onChange={(e) => setAgeGroupFilter(e.target.value)}
+                  className="border rounded-md px-4 py-2"
+              >
+                <option value="">전체</option>
+                <option value="10대">10대</option>
+                <option value="20대">20대</option>
+                <option value="30대">30대</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <label htmlFor="locationFilter" className="mr-2">
+                지역:
+              </label>
+              <select
+                  id="locationFilter"
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                  className="border rounded-md px-4 py-2"
+              >
+                <option value="">전체</option>
+                <option value="경기">경기</option>
+                <option value="서울">서울</option>
+                <option value="부산">부산</option>
+                <option value="제주">제주</option>
+              </select>
+            </div>
+          </div>
+
+          {Array.isArray(filteredCourses) && filteredCourses.length > 0 ? (
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-2xl font-semibold mb-6 text-gray-700">등록된 코스</h2>
+                <ul className="space-y-4">
+                  {filteredCourses.map((course) => (
+                      <li key={course.id} className="border-b pb-4">
+                        <Link to={`/datecourses/${course.id}`}>{course.name}</Link>
+                        <p className="text-gray-600">설명 : {course.description}</p>
+                        <p className="text-gray-700">연령대 : {course.ageGroup}</p>
+                        <p className="text-gray-600">
+                          장소 : {course.places?.map((place) => place.location).join(", ") || "정보 없음"}
+                        </p>
+                        <p className="text-gray-500">{course.fixed ? "고정된 코스" : "변동 가능한 코스"}</p>
+                      </li>
+                  ))}
+                </ul>
+              </div>
+          ) : (
+              <p className="text-center text-gray-500">등록된 코스가 없습니다.</p>
           )}
         </div>
-
-        {/* 필터 UI 추가 */}
-        <div className="flex justify-between mb-6">
-          <div className="flex items-center">
-            <label htmlFor="ageGroupFilter" className="mr-2">
-              연령대:
-            </label>
-            <select
-              id="ageGroupFilter"
-              value={ageGroupFilter}
-              onChange={(e) => setAgeGroupFilter(e.target.value)}
-              className="border rounded-md px-4 py-2"
-            >
-              <option value="">전체</option>
-              <option value="10대">10대</option>
-              <option value="20대">20대</option>
-              <option value="30대">30대</option>
-            </select>
-          </div>
-          <div className="flex items-center">
-            <label htmlFor="locationFilter" className="mr-2">
-              지역:
-            </label>
-            <select
-              id="locationFilter"
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="border rounded-md px-4 py-2"
-            >
-              <option value="">전체</option>
-              <option value="경기">경기</option>
-              <option value="서울">서울</option>
-              <option value="부산">부산</option>
-              <option value="제주">제주</option>
-            </select>
-          </div>
-        </div>
-
-        {Array.isArray(filteredCourses) && filteredCourses.length > 0 ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-700">등록된 코스</h2>
-            <ul className="space-y-4">
-              {filteredCourses.map((course) => (
-                <li key={course.id} className="border-b pb-4">
-                  <Link to={`/datecourses/${course.id}`}>{course.name}</Link>
-                  <p className="text-gray-600">설명 : {course.description}</p>
-                  <p className="text-gray-700">연령대 : {course.ageGroup}</p>
-                  <p className="text-gray-600">
-                    장소 : {course.places?.[0]?.location || "정보 없음"}
-                  </p>
-                  <p className="text-gray-500">{course.fixed ? "고정된 코스" : "변동 가능한 코스"}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p className="text-center text-gray-500">등록된 코스가 없습니다.</p>
-        )}
-      </div>
-    </BasicLayout>
+      </BasicLayout>
   );
 };
 
