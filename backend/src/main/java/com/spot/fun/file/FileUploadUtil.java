@@ -105,7 +105,9 @@ public class FileUploadUtil {
         folderPath.mkdirs();
       }
 
-      resource = new FileSystemResource(archivePath + FILE_SEPARATOR + "no_image.jpg");
+      // 이미지파일 삭제로 인한 변경
+      //resource = new FileSystemResource(archivePath + FILE_SEPARATOR + "no_image.jpg");
+      resource = null;
     }
 
     HttpHeaders headers = new HttpHeaders();
