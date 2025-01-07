@@ -7,6 +7,7 @@ import PopularCourses from "../component/PopularCourses";
 import NewUserCourses from "../component/NewUserCourses";
 import Header from "../../../common/component/Header";
 import Footer from "../../../common/component/Footer";
+import SideNavigationMenu from "../component/SideNavigationMenu";
 
 const MainPage = () => {
   return (
