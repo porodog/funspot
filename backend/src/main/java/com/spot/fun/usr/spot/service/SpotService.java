@@ -20,7 +20,7 @@ public class SpotService {
   private final SpotRepository spotRepository;
 
   public Spot getSpot(Long spotId){
-    return spotRepository.findAllBySpotId(spotId);
+    return spotRepository.findAllByContentId(spotId);
   }
 
   public SpotListResponseDTO setSpotListResponseDTO(Spot spot){
