@@ -49,25 +49,35 @@ const InsertModal = ({ closeInsertModal }) => {
 
   // 글 등록
   const handleFeedSubmit = () => {
-    const content = useTextRef.current.value;
-    if (content.trim().length < 1) {
-      window.alert("[피드등록] 컨텐츠 내용을 입력해주세요");
-      return false;
-    }
+
 
     const confirm = window.confirm("[피드등록] 등록 하시겠습니까?");
     if (!confirm) {
       return;
     }
 
+const content = useTextRef.current.value;
+    if (content.trim().length < 1) {
+      window.alert("[피드등록] 컨텐츠 내용을 입력해주세요");
+      return false;
+    }
+
     const form = new FormData();
 
+    let cnt = 0;
     useFileRef.current.forEach((item) => {
       const itemFile = item.files[0];
       if (itemFile) {
         form.append("uploadFiles", itemFile);
+        cnt++;
       }
     });
+
+    if(cnt===0) {
+        window.alert("[피드등록] 이미지를 첨부해주세요");
+      return false;
+    }
+
     form.append("content", content);
 
     hashtagList.map((item, index) =>

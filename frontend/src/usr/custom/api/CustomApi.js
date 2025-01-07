@@ -54,8 +54,3 @@ export const getCustomNewList = async (userIdx) => {
   );
   return response.data;
 };
-
-export const getSpotList = async (userIdx) => {
-  const response = await axios.get(`${API_BASE_URL}/api/spot/getSpotList/${userIdx}`);
-  return response.data;
-};

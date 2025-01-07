@@ -1,8 +1,6 @@
 package com.spot.fun.usr.spot.cotroller;
 
-import com.spot.fun.usr.spot.dto.SpotForPlaceDTO;
 import com.spot.fun.usr.spot.dto.SpotItemResponseDTO;
-import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
 import com.spot.fun.usr.spot.service.SpotFacadeService;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +15,6 @@ import java.util.List;
 @RequestMapping("/api/spot")
 public class SpotController {
   private final SpotFacadeService spotFacadeService;
-
-  // 내 스팟 리스트 조회
-  @GetMapping("/getSpotList/{userIdx}")
-  public List<SpotForPlaceDTO> getSpotList(@PathVariable("userIdx") Long userIdx){
-    return spotFacadeService.getSpotList(userIdx);
-  }
 
   // 내 스팟 아이템 조회
   @GetMapping("/getSpot/{spotId}")

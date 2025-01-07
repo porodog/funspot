@@ -30,7 +30,8 @@ public class ChatMessageService{
         return ChatRoomListResponseDTO.builder()
                 .roomId(roomId)
                 .recentMessage(recentChatMessage.getMsg())
-                .recentMessageTimestamp(recentChatMessage.getTimestamp())
+                //.recentMessageTimestamp(recentChatMessage.getTimestamp())
+                .localDateTime(recentChatMessage.getTimestamp())
                 .isRecentMessageRead(recentChatMessage.isRead())
                 .build();
     }
@@ -71,6 +72,7 @@ public class ChatMessageService{
         return ChatMessageResponseDTO.builder()
                 .fromIdx(chatMessage.getFromIdx())
                 .msg(chatMessage.getMsg())
+                //.timestamp(chatMessage.getTimestamp())
                 .timestamp(chatMessage.getTimestamp())
                 .isRead(chatMessage.isRead())  // isRead 필드 추가
                 .build();
