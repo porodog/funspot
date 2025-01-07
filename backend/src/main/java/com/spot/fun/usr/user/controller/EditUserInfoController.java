@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/usr")
 @RequiredArgsConstructor
 public class EditUserInfoController {
 

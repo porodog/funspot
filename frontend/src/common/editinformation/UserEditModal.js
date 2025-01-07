@@ -174,7 +174,7 @@ export default function UserEditModal({ onClose }) {
     try {
       if (userInfo.provider === "LOCAL") {
         // 자체 회원 비밀번호 확인
-        const response = await axios.post("/api/usr/verify-password", {
+        const response = await axios.post("/api/user/verify-password", {
           password: passwordForDelete,
         });
         if (response.status !== 200) {
@@ -189,7 +189,7 @@ export default function UserEditModal({ onClose }) {
 
       // 회원 탈퇴 요청 (비활성화 처리)
       const deactivateResponse = await axios.post(
-        "/api/usr/searchuserinfo/deactivate",
+        "/api/user/searchuserinfo/deactivate",
         {
           userIdx: userInfo.idx,
         }
