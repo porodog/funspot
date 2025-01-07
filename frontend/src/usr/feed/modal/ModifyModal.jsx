@@ -54,30 +54,39 @@ const ModifyModal = ({ feed, closeModifyModal }) => {
 
   // 수정 등록
   const handleFeedSubmit = () => {
-    const content = useTextRef.current.value;
-    if (content.trim().length < 1) {
-      window.alert("[피드수정] 내용을 입력해주세요");
-      return false;
-    }
-
     const confirm = window.confirm("[피드수정] 저장 하시겠습니까?");
     if (!confirm) {
       return;
     }
 
+const content = useTextRef.current.value;
+    if (content.trim().length < 1) {
+      window.alert("[피드수정] 내용을 입력해주세요");
+      return false;
+    }
+
     const form = new FormData();
 
+    let cnt = imgList.length;
     useFileRef.current.forEach((item) => {
       const itemFile = item.files[0];
       if (itemFile) {
         form.append("uploadFiles", itemFile);
+        cnt++;
       }
     });
     delImgList.forEach((item) => {
       if (item) {
         form.append("deleteFiles", item);
+        cnt--;
       }
     });
+
+    if(cnt===0) {
+        window.alert("[피드수정] 이미지를 첨부해주세요");
+      return false;
+    }
+
     form.append("content", content);
 
     hashtagList.map((item, index) =>
