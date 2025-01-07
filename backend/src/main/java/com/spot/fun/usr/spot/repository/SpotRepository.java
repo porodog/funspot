@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface SpotRepository extends JpaRepository<Spot, Long> {
-  Spot findAllByContentId(Long spotId);
+  Spot findAllBySpotId(Long spotId);
   boolean existsBySpotId(Long spotId);
   boolean existsByContentId(Long contentId);
   Optional<Spot> findByContentId(Long contentId);

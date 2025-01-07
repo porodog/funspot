@@ -189,7 +189,7 @@ export default function UserEditModal({ onClose }) {
 
       // 회원 탈퇴 요청 (비활성화 처리)
       const deactivateResponse = await axios.post(
-        "/api/user/searchuserinfo/deactivate",
+        "/api/usr/searchuserinfo/deactivate",
         {
           userIdx: userInfo.idx,
         }

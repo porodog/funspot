@@ -10,8 +10,7 @@ import java.util.List;
 
 @Repository
 public interface SpotUserMapRepository extends JpaRepository<SpotUserMap, Long> {
-  @Query("SELECT map.spotId FROM SpotUserMap map WHERE map.userIdx=:userIdx")
-  List<Long> findSpotIdsByUserIdx(@Param("userIdx") Long userIdx);
+  List<Long> findSpotIdsByUserIdx(Long userIdx);
 
   boolean existsSpotByUserIdxAndSpotId(Long userIdx, Long spotIdx);
 }
