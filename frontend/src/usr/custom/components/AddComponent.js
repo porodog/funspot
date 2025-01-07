@@ -4,6 +4,7 @@ import { useBasic } from "../../../common/context/BasicContext";
 import { searchPlaces, registerDateCourse } from "../api/CustomApi";
 import regions from "../data/regions";
 import locate from "../img/locate.png";
+import {getSpotList} from "../api/CustomApi";
 
 const WITH_TAGS = [
   "연인과",
@@ -47,6 +48,33 @@ const AddComponent = () => {
   const { userInfo } = useBasic();
   const loginUserIdx = userInfo?.userIdx || "";
   const loginNickName = userInfo?.nickname || "";
+
+  // First, add new state for toggle
+  const [isMySpot, setIsMySpot] = useState(false);
+
+// Add new handler for fetching my spots
+  const handleMySpotSearch = async () => {
+    try {
+      if (!loginUserIdx) {
+        alert("로그인이 필요한 서비스입니다.");
+        return;
+      }
+      const data = await getSpotList(loginUserIdx);
+      setPlaces(data);
+    } catch (error) {
+      console.error("Error fetching my spots:", error);
+      alert("스팟 목록을 불러오는데 실패했습니다.");
+    }
+  };
+// Add toggle handler
+  const handleSpotToggle = () => {
+    setIsMySpot(!isMySpot);
+    setPlaces([]); // Clear current places
+    if (!isMySpot) {
+      // If toggling to My Spot
+      handleMySpotSearch();
+    }
+  };
 
   // 🔥 단계 변경 핸들러
   const handleNextStep = () => {
@@ -235,6 +263,13 @@ const AddComponent = () => {
                   onClick={handleSearch}
                 >
                   검색
+                </button>
+                {/* 내 Spot 조회하기 버튼 추가 */}
+                <button
+                    className="px-8 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition duration-200 cursor-pointer"
+                    onClick={handleMySpotSearch}
+                >
+                  내 Spot 조회하기
                 </button>
               </div>
             </div>

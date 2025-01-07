@@ -2,6 +2,7 @@ package com.spot.fun.usr.spot.service;
 
 import com.spot.fun.usr.custom.service.PlaceService;
 import com.spot.fun.usr.custom.service.PlaceServiceImpl;
+import com.spot.fun.usr.spot.dto.SpotForPlaceDTO;
 import com.spot.fun.usr.spot.dto.SpotItemResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotListResponseDTO;
 import com.spot.fun.usr.spot.dto.SpotPostRequestDTO;
@@ -24,7 +25,7 @@ public class SpotFacadeService {
 
 
   // userIdx로 내 스팟 조회를 하려면 매퍼테이블이 있어야댐....
-  public List<SpotListResponseDTO> getSpotList(Long userIdx) {
+  public List<SpotForPlaceDTO> getSpotList(Long userIdx) {
     // 1. userIdx로 spotId 리스트를 추출한다 (SpotUserMapService)
     // 2. spotId 리스트를 순회하는데,..(SpotFacadeService)
     // 2-1. spotId에 해당하는 Spot entity를 추출한다(SpotService)
@@ -34,11 +35,14 @@ public class SpotFacadeService {
 
     List<Long> spotIdList = spotUserMapService.getSpotIdList(userIdx);
 
-    return spotIdList.stream()
+    List<SpotForPlaceDTO> list = spotIdList.stream()
             .map(spotId -> {
               Spot spot = spotService.getSpot(spotId);
-              return spotService.setSpotListResponseDTO(spot);
-            }).collect(Collectors.toList());
+              return spotService.setSpotForPlaceDTO(spot);
+            }).toList();
+    log.info(list.toString());
+
+    return list;
   }
 
   public SpotItemResponseDTO getSpotItem(Long spotId) {
@@ -71,7 +75,7 @@ public class SpotFacadeService {
 //        spotService.saveSpot(spotPostRequestDTO);
         savedSpot = spotService.saveSpot(spotPostRequestDTO);
         // Spot이 새로 저장된 경우에만 Place도 저장
-        placeService.saveFromSpot(savedSpot);
+//        placeService.saveFromSpot(savedSpot);
       }
 
       // SpotUserMap에 매핑 정보 저장
