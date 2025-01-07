@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,8 +32,10 @@ public class ChatMessage {
     @Column(name = "room_id", updatable = false, nullable = false)
     private Long roomId;
 
+//    @Column(name = "timestamp", updatable = false, nullable = false)
+//    private Timestamp timestamp;
     @Column(name = "timestamp", updatable = false, nullable = false)
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
 
     @Column(name = "is_read", nullable = false)
     @ColumnDefault("0")
@@ -45,7 +48,8 @@ public class ChatMessage {
         this.toIdx = toIdx;
         this.msg = msg;
         this.roomId = roomId;
-        this.timestamp = Timestamp.from(Instant.now());
+        //this.timestamp = Timestamp.from(Instant.now());
+        this.timestamp = LocalDateTime.now();
         this.isRead = isRead;
     }
 
