@@ -139,7 +139,7 @@ const DateCourseListPage = () => {
                         <p className="text-gray-600">설명 : {course.description}</p>
                         <p className="text-gray-700">연령대 : {course.ageGroup}</p>
                         <p className="text-gray-600">
-                          장소 : {course.places?.map((place) => place.location).join(", ") || "정보 없음"}
+                          장소 : {course.places?.[0]?.location || "정보 없음"}
                         </p>
                         <p className="text-gray-500">{course.fixed ? "고정된 코스" : "변동 가능한 코스"}</p>
                       </li>
