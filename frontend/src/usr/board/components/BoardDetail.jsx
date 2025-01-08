@@ -5,23 +5,25 @@ import {useBasic} from "../../../common/context/BasicContext"; // 로그인 정�
 import "./BoardDetail.css"; // CSS 파일 추가
 import {FaUser} from "react-icons/fa";
 
+export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
+
 // 프로필 이미지 렌더링 컴포넌트
-const ProfileImage = ({profileImage, size = "w-10 h-10"}) => (
+const ProfileImage = ({ profileImage, size = "w-10 h-10" }) => (
     <div
         className={`${size} rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center bg-gray-100`}
     >
         {profileImage?.uploadName ? (
             <img
-                src={`http://funspot.store/api/usr/profile/image/${profileImage.uploadName}?t=${new Date().getTime()}`}
+                src={`${API_BASE_URL}/api/usr/profile/image/${profileImage.uploadName}?t=${new Date().getTime()}`}
                 alt="프로필"
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.innerHTML = '<FaUser className="text-gray-400 text-lg" />';
+                    console.error("이미지 로드 실패:", e);
+                    e.target.src = "/default-profile.png"; // 기본 이미지 경로
                 }}
             />
         ) : (
-            <FaUser className="text-gray-400 text-lg"/>
+            <FaUser className="text-gray-400 text-lg" />
         )}
     </div>
 );
@@ -47,82 +49,61 @@ const BoardDetail = () => {
 
     // 게시글 가져오기
     useEffect(() => {
+        let isMounted = true; // 컴포넌트 마운트 상태 추적
+
         const fetchData = async () => {
             try {
-                // 게시글과 댓글 데이터 가져오기
-                const [boardResponse, commentsResponse] = await Promise.all([
-                    axios.get(`/api/boards/${id}`),
-                    axios.get(`/api/comments/${id}`)
-                ]);
+                // 게시글 데이터 가져오기
+                const boardResponse = await axios.get(`/api/boards/${id}`);
+                if (!isMounted) return;
 
-                // 게시글 작성자의 프로필 이미지 가져오기
-                const boardProfileResponse = await axios.get(`/api/usr/profile`, {
-                    params: {userIdx: boardResponse.data.authorIdx}
-                });
+                // 프로필 이미지 가져오기 (authorIdx 사용)
+                let profileImage = null;
+                try {
+                    const profileResponse = await axios.get(`/api/usr/profile`, {
+                        params: { userIdx: boardResponse.data.authorIdx }
+                    });
+                    
+                    if (!isMounted) return;
+                    profileImage = profileResponse.data;
+                } catch (profileError) {
+                    console.warn("프로필 이미지 로딩 실패:", profileError);
+                }
 
-                // 게시글 데이터에 프로필 이미지 추가
+                // 댓글 데이터 가져오기
+                const commentsResponse = await axios.get(`/api/comments/${id}`);
+                if (!isMounted) return;
+
+                // 게시글 데이터 �성
                 const boardWithProfile = {
                     ...boardResponse.data,
                     profileImage: {
-                        uploadName:boardProfileResponse.data.uploadName // uploadName 사용
+                        uploadName: profileImage?.uploadName || null,
+                        userIdx: boardResponse.data.authorIdx
                     }
                 };
 
-                // 댓글과 대댓글에 프로필 이미지 추가
-                const commentsWithProfiles = await Promise.all(
-                    commentsResponse.data.map(async (comment) => {
-                        try {
-                            // 댓글 작성자의 프로필 이미지 가져오기
-                            const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
-                            const profileImage = commentProfileResponse.data;
-
-                            // 대댓글 처리
-                            let repliesWithProfiles = [];
-                            if (comment.replies && comment.replies.length > 0) {
-                                repliesWithProfiles = await Promise.all(
-                                    comment.replies.map(async (reply) => {
-                                        try {
-                                            // 대댓글 작성자의 프로필 이미지 가져오기
-                                            const replyProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${reply.author}`);
-                                            return {
-                                                ...reply,
-                                                profileImage: replyProfileResponse.data, // 프로필 이미지 추가
-                                            };
-                                        } catch (error) {
-                                            console.error("대댓글 프로필 가져오기 실패:", error);
-                                            return reply;
-                                        }
-                                    })
-                                );
-                            }
-
-                            return {
-                                ...comment,
-                                profileImage, // 프로필 이미지 추가
-                                replies: repliesWithProfiles,
-                            };
-                        } catch (error) {
-                            console.error("댓글 프로필 가져오기 실패:", error);
-                            return comment;
-                        }
-                    })
-                );
-
-
-                console.log('Board with profile:', boardWithProfile); // 디버깅용
-                console.log('Comments with profiles:', commentsWithProfiles); // 디버깅용
-
+                // 상태 업데이트는 한 번에 수행
                 setBoard(boardWithProfile);
-                //setComments(commentsWithProfiles);
+                setComments(commentsResponse.data);
+
             } catch (error) {
                 console.error("데이터 로딩 실패:", error);
+                if (isMounted) {
+                    setBoard(null);
+                    setComments([]);
+                }
             }
         };
 
         fetchData();
+
+        // 클린업 함수
+        return () => {
+            isMounted = false;
+        };
     }, [id]);
 
-    console.log(board);
 
     // 게시글 추천 관리
     useEffect(() => {
@@ -130,13 +111,13 @@ const BoardDetail = () => {
             try {
 
                 // 게시글 데이터 가져오기
-                const boardResponse = await axios.get(`http://funspot.store/api/boards/${id}`);
+                const boardResponse = await axios.get(`${API_BASE_URL}/api/boards/${id}`);
                 setBoard(boardResponse.data);
 
                 // 추천 여부 확인
                 if (userInfo?.userIdx) {
                     const likeResponse = await axios.get(
-                        `http://funspot.store/api/boards/${id}/has-liked`,
+                        `${API_BASE_URL}/api/boards/${id}/has-liked`,
                         {
                             params: {userIdx: userInfo?.userIdx}, // userIdx 전달
                         }
@@ -156,12 +137,12 @@ const BoardDetail = () => {
         const fetchData = async () => {
             try {
                 // 게시글 데이터 가져오기
-                const boardResponse = await axios.get(`http://funspot.store/api/boards/${id}`);
+                const boardResponse = await axios.get(`${API_BASE_URL}/api/boards/${id}`);
                 setBoard(boardResponse.data);
                 console.log(userInfo?.userIdx ?? 0);
                 // 조회수 증가 요청
 
-                await axios.get(`http://funspot.store/api/boards/${id}/view`, {
+                await axios.get(`${API_BASE_URL}/api/boards/${id}/view`, {
                     params: {userIdx: userInfo?.userIdx ?? 0},
                 });
 
@@ -193,7 +174,7 @@ const BoardDetail = () => {
 
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://funspot.store/api/comments/${id}`);
+            const response = await axios.get(`${API_BASE_URL}/api/comments/${id}`);
             const commentsWithProfiles = await Promise.all(
                 response.data.map(async (comment) => {
                     const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
@@ -239,7 +220,7 @@ const BoardDetail = () => {
             console.log("Sending Payload:", payload);
 
             const response = await axios.post(
-                `http://funspot.store/api/comments/${id}`,
+                `${API_BASE_URL}/api/comments/${id}`,
                 payload,
                 {
                     headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
@@ -307,7 +288,7 @@ const BoardDetail = () => {
 
         try {
             await axios.patch(
-                `http://funspot.store/api/boards/${id}/delete`,
+                `${API_BASE_URL}/api/boards/${id}/delete`,
                 {},
                 {
                     headers: {},
@@ -326,7 +307,7 @@ const BoardDetail = () => {
 
         try {
             await axios.post(
-                `http://funspot.store/api/boards/${id}/like`,
+                `${API_BASE_URL}/api/boards/${id}/like`,
                 null,
                 {
                     params: {userIdx: userInfo?.userIdx}, // userIdx 전달
@@ -373,7 +354,7 @@ const BoardDetail = () => {
 
         try {
             // 서버에 삭제 요청
-            await axios.delete(`http://funspot.store/api/comments/${commentId}`, {
+            await axios.delete(`${API_BASE_URL}/api/comments/${commentId}`, {
                 headers: {Authorization: `Bearer ${localStorage.getItem("authToken")}`},
             });
 
