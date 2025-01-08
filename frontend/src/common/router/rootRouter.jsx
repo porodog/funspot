@@ -24,6 +24,7 @@ const MyPageIndexPage = lazy(() => import("../../usr/mypage/page/IndexPage"));
 const SignupPage = lazy(() => import("../../usr/signup/page/SignupPage"));
 const FeedIndexPage = lazy(() => import("../../usr/feed/page/IndexPage"));
 const BoardIndexPage = lazy(() => import("../../usr/board/BoardIndex"));
+const FAQPage = lazy(() => import("../../usr/board/FAQPage"));
 const SocialSignupPage = lazy(() =>
   import("../../usr/signup/page/SocialSignupPage")
 );
@@ -131,6 +132,16 @@ const rootRouter = createBrowserRouter(
       ),
       children: boardRouter(),
     },
+      {
+          path: "faq",
+          element: (
+              <Suspense fallback={Loading}>
+                  <FAQPage />
+              </Suspense>
+          ),
+          children: boardRouter(),
+      },
+
     {
       path: "datecourses", // 데이트 코스 목록 페이지 경로
       element: (

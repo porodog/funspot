@@ -115,7 +115,7 @@ const AddCoursePage = () => {
                 placeholder="코스 이름을 입력하세요"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
               />
             </div>
 
@@ -128,7 +128,7 @@ const AddCoursePage = () => {
                 placeholder="코스에 대한 설명을 입력하세요"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-cyan"
               />
             </div>
 
@@ -142,7 +142,7 @@ const AddCoursePage = () => {
                   <label
                     key={age}
                     className={`px-4 py-2 rounded-lg cursor-pointer ${ageGroup === age
-                      ? "bg-blue-500 text-white"
+                      ? "bg-custom-cyan text-white"
                       : "bg-gray-100 text-gray-700"
                       }`}
                   >
@@ -166,7 +166,7 @@ const AddCoursePage = () => {
                   type="checkbox"
                   checked={fixed}
                   onChange={() => setFixed((prev) => !prev)}
-                  className="h-5 w-5 text-blue-500"
+                  className="h-5 w-5 text-custom-cyan"
                 />
                 <span className="ml-2 text-gray-700 font-semibold">
                   고정 여부
@@ -221,7 +221,7 @@ const AddCoursePage = () => {
                       <label
                         key={place.id}
                         className={`flex items-center p-2 rounded-lg border cursor-pointer ${selectedPlaces.includes(place.id)
-                          ? "bg-blue-100 border-blue-500"
+                          ? "bg-blue-100 border-custom-cyan"
                           : "hover:bg-gray-100"
                           }`}
                       >
@@ -245,7 +245,7 @@ const AddCoursePage = () => {
               disabled={isSaveDisabled || loading}
               className={`w-full py-3 font-bold rounded-lg transition ${isSaveDisabled || loading
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600"
+                : "bg-custom-cyan text-white hover:bg-emerald-600"
                 }`}
             >
               {loading ? "저장 중..." : "코스 저장 🚀"}
