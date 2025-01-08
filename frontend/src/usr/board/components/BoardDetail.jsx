@@ -9,27 +9,45 @@ export const API_BASE_URL = process.env.REACT_APP_API_ROOT;
 
 // 프로필 이미지 렌더링 컴포넌트
 const ProfileImage = ({ profileImage, size = "w-10 h-10" }) => {
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageError, setImageError] = useState(false);
+
+    useEffect(() => {
+        // 프로필 이미지가 변경될 때 상태 초기화
+        if (profileImage?.uploadName) {
+            setImageLoaded(false);
+            setImageError(false);
+        }
+    }, [profileImage?.uploadName]);
+
     return (
         <div
-            className={`${size} rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center bg-gray-100`}
+            className={`${size} relative rounded-full overflow-hidden border-2 border-emerald-400 flex items-center justify-center bg-gray-100`}
         >
-            {profileImage?.uploadName ? (
-                <img
-                    src={`${API_BASE_URL}/api/usr/profile/image/${profileImage.uploadName}`}
-                    alt="프로필"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                        console.error("이미지 로드 실패:", e);
-                        e.target.onerror = null; // 무한 루프 방지
-                        e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center"><FaUser className="text-gray-400 text-lg" /></div>';
-                    }}
-                />
+            {profileImage?.uploadName && !imageError ? (
+                <>
+                    {!imageLoaded && (
+                        <FaUser className="text-gray-400 text-lg absolute" />
+                    )}
+                    <img
+                        src={`${API_BASE_URL}/api/usr/profile/image/${profileImage.uploadName}`}
+                        alt="프로필"
+                        className={`w-full h-full object-cover transition-opacity duration-300 ${
+                            imageLoaded ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        onLoad={() => setImageLoaded(true)}
+                        onError={() => {
+                            setImageError(true);
+                        }}
+                    />
+                </>
             ) : (
                 <FaUser className="text-gray-400 text-lg" />
             )}
         </div>
     );
 };
+
 
 
 const BoardDetail = () => {
@@ -52,65 +70,80 @@ const BoardDetail = () => {
 
     // 게시글 가져오기
     useEffect(() => {
-        let isMounted = true;
-
         const fetchData = async () => {
             try {
-                // 게시글 데이터 가져오기
-                const boardResponse = await axios.get(`/api/boards/${id}`);
-                if (!isMounted) return;
+                // 게시글과 댓글 데이터 가져오기
+                const [boardResponse, commentsResponse] = await Promise.all([
+                    axios.get(`/api/boards/${id}`),
+                    axios.get(`/api/comments/${id}`)
+                ]);
 
-                // 게시글 작성자의 프로필 이미지 가져오기 (authorIdx 사용)
-                let profileImage = null;
-                try {
-                    // nickname이 아닌 authorIdx로 프로필 조회
-                    const profileResponse = await axios.get(`/api/usr/profile`, {
-                        params: { userIdx: boardResponse.data.authorIdx }
-                    });
-                    
-                    if (!isMounted) return;
-                    
-                    // 프로필 이미지 ��이터가 유효한지 확인
-                    if (profileResponse.data && profileResponse.data.uploadName) {
-                        profileImage = {
-                            uploadName: profileResponse.data.uploadName,
-                            userIdx: boardResponse.data.authorIdx
-                        };
-                    }
-                } catch (profileError) {
-                    console.error("프로필 이미지 로딩 실패:", profileError);
-                }
+                // 게시글 작성자의 프로필 이미지 가져오기
+                const boardProfileResponse = await axios.get(`/api/usr/profile`, {
+                    params: {userIdx: boardResponse.data.authorIdx}
+                });
 
+                console.log("uploadName:"+ boardProfileResponse.data.uploadName);
                 // 게시글 데이터에 프로필 이미지 추가
                 const boardWithProfile = {
                     ...boardResponse.data,
-                    profileImage: profileImage || { uploadName: null, userIdx: boardResponse.data.authorIdx }
+                    profileImage: {
+                        uploadName:boardProfileResponse.data.uploadName // uploadName 사용
+                    }
                 };
 
-                // 댓글 데이터 가져오기
-                const commentsResponse = await axios.get(`/api/comments/${id}`);
-                if (!isMounted) return;
+                // 댓글과 대댓글에 프로필 이미지 추가
+                const commentsWithProfiles = await Promise.all(
+                    commentsResponse.data.map(async (comment) => {
+                        try {
+                            // 댓글 작성자의 프로필 이미지 가져오기
+                            const commentProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${comment.author}`);
+                            const profileImage = commentProfileResponse.data;
 
-                // 상태 업데이트는 한 번에 수행
-                if (isMounted) {
-                    setBoard(boardWithProfile);
-                    setComments(commentsResponse.data);
-                }
+                            // 대댓글 처리
+                            let repliesWithProfiles = [];
+                            if (comment.replies && comment.replies.length > 0) {
+                                repliesWithProfiles = await Promise.all(
+                                    comment.replies.map(async (reply) => {
+                                        try {
+                                            // 대댓글 작성자의 프로필 이미지 가져오기
+                                            const replyProfileResponse = await axios.get(`/api/boards/profile/by-nickname/${reply.author}`);
+                                            return {
+                                                ...reply,
+                                                profileImage: replyProfileResponse.data, // 프로필 이미지 추가
+                                            };
+                                        } catch (error) {
+                                            console.error("대댓글 프로필 가져오기 실패:", error);
+                                            return reply;
+                                        }
+                                    })
+                                );
+                            }
 
+                            return {
+                                ...comment,
+                                profileImage, // 프로필 이미지 추가
+                                replies: repliesWithProfiles,
+                            };
+                        } catch (error) {
+                            console.error("댓글 프로필 가져오기 실패:", error);
+                            return comment;
+                        }
+                    })
+                );
+
+
+                console.log('Board with profile:', boardWithProfile); // 디버깅용
+                console.log('Comments with profiles:', commentsWithProfiles); // 디버깅용
+
+                setBoard(boardWithProfile);
+                //setComments(commentsWithProfiles);
             } catch (error) {
                 console.error("데이터 로딩 실패:", error);
-                if (isMounted) {
-                    setBoard(null);
-                    setComments([]);
-                }
             }
         };
 
         fetchData();
-
-        return () => {
-            isMounted = false;
-        };
     }, [id]);
 
 
