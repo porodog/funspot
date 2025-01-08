@@ -85,7 +85,7 @@ const BoardDetail = () => {
 
                 console.log("uploadName:"+ boardProfileResponse.data.uploadName);
                 // 게시글 데이터에 프로필 이미지 추가
-                const boardWithProfile = {
+                const boardWithProfile = await {
                     ...boardResponse.data,
                     profileImage: {
                         uploadName:boardProfileResponse.data.uploadName // uploadName 사용
@@ -181,9 +181,23 @@ const BoardDetail = () => {
                 // 게시글 데이터 가져오기
                 const boardResponse = await axios.get(`${API_BASE_URL}/api/boards/${id}`);
                 setBoard(boardResponse.data);
-                console.log(userInfo?.userIdx ?? 0);
-                // 조회수 증가 요청
 
+                console.log(userInfo?.userIdx ?? 0);
+                // 게시글 작성자의 프로필 이미지 가져오기
+                const boardProfileResponse = await axios.get(`/api/usr/profile`, {
+                    params: {userIdx: boardResponse.data.authorIdx}
+                });
+
+                console.log("uploadName:"+ boardProfileResponse.data.uploadName);
+                // 게시글 데이터에 프로필 이미지 추가
+                const boardWithProfile = await {
+                    ...boardResponse.data,
+                    profileImage: {
+                        uploadName:boardProfileResponse.data.uploadName // uploadName 사용
+                    }
+                };
+                // 조회수 증가 요청
+                setBoard(boardWithProfile);
                 await axios.get(`${API_BASE_URL}/api/boards/${id}/view`, {
                     params: {userIdx: userInfo?.userIdx ?? 0},
                 });
