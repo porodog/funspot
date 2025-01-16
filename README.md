@@ -17,4 +17,4 @@
 - TailwindCSS
 - AWS
 - Gabia ( 도메인 연동 )
-- 
+- JWT
